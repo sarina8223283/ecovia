@@ -21,12 +21,12 @@ const Navbar = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <span className="font-serif text-2xl sm:text-3xl font-bold text-primary">
-              Mittika
+          <Link to="/" className="flex flex-col">
+            <span className="font-serif text-xl sm:text-2xl font-bold text-primary">
+              Ecovia Enterprises
             </span>
-            <span className="hidden sm:block text-xs text-muted-foreground font-sans">
-              by Ecovia Enterprises
+            <span className="text-xs text-muted-foreground font-sans">
+              Brand: Mittika
             </span>
           </Link>
 
