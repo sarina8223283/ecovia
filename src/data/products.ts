@@ -9,6 +9,9 @@ import hibiscusPowder from '@/assets/products/hibiscus-powder.jpg';
 import brahmiPowder from '@/assets/products/brahmi-powder.jpg';
 import neemPowder from '@/assets/products/neem-powder.jpg';
 import rosePetalsPowder from '@/assets/products/rose-petals-powder.jpg';
+import coconutPowder from '@/assets/products/coconut-powder.jpg';
+import onionPowder from '@/assets/products/onion-powder.jpg';
+import orangePeelPowder from '@/assets/products/orange-peel-powder.jpg';
 
 export interface Product {
   id: string;
@@ -94,6 +97,27 @@ export const products: Product[] = [
     name: 'Rose Petals Powder',
     description: 'Delicate flower powder that tones skin, provides natural fragrance, and soothes sensitive complexions beautifully.',
     image: rosePetalsPowder,
+    category: 'skin',
+  },
+  {
+    id: 'coconut-powder',
+    name: 'Coconut Powder',
+    description: 'Nourishing powder rich in healthy fats that deeply moisturizes skin and hair. Doctor recommends mixing with water for a hydrating hair mask.',
+    image: coconutPowder,
+    category: 'hair',
+  },
+  {
+    id: 'onion-powder',
+    name: 'Onion Powder',
+    description: 'Sulfur-rich powder that stimulates hair follicles, reduces hair fall, and promotes regrowth. Doctor recommends applying paste to scalp weekly.',
+    image: onionPowder,
+    category: 'hair',
+  },
+  {
+    id: 'orange-peel-powder',
+    name: 'Orange Peel Powder',
+    description: 'Vitamin C rich powder that brightens skin, removes tan, and fights acne. Doctor recommends mixing with yogurt for a glowing face pack.',
+    image: orangePeelPowder,
     category: 'skin',
   },
 ];
