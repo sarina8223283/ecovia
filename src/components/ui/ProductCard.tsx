@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Stethoscope } from 'lucide-react';
 
 interface ProductCardProps {
   name: string;
@@ -38,6 +39,11 @@ const ProductCard = ({ name, description, image, category }: ProductCardProps) =
         {/* Category Badge */}
         <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-medium ${categoryColors[category]}`}>
           {categoryLabels[category]}
+        </span>
+        {/* Doctor Recommended Badge */}
+        <span className="absolute top-3 right-3 flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-medium">
+          <Stethoscope size={12} />
+          Doctor's Choice
         </span>
       </div>
 
