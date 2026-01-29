@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail, MapPin, Instagram, Facebook } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -66,6 +66,28 @@ const Footer = () => {
                 </span>
               </li>
             </ul>
+
+            {/* Social Links */}
+            <div className="flex gap-4 mt-6">
+              <a
+                href="https://instagram.com/mittika"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-primary-foreground/10 rounded-full flex items-center justify-center hover:bg-primary-foreground/20 transition-colors"
+                aria-label="Follow us on Instagram"
+              >
+                <Instagram size={20} className="opacity-90" />
+              </a>
+              <a
+                href="https://facebook.com/mittika"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-primary-foreground/10 rounded-full flex items-center justify-center hover:bg-primary-foreground/20 transition-colors"
+                aria-label="Follow us on Facebook"
+              >
+                <Facebook size={20} className="opacity-90" />
+              </a>
+            </div>
           </div>
         </div>
 
