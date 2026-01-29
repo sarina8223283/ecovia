@@ -70,7 +70,7 @@ const Footer = () => {
             {/* Social Links */}
             <div className="flex gap-4 mt-6">
               <a
-                href="https://instagram.com/mittika"
+                href="https://instagram.com/info.ecovia"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-primary-foreground/10 rounded-full flex items-center justify-center hover:bg-primary-foreground/20 transition-colors"
@@ -79,7 +79,7 @@ const Footer = () => {
                 <Instagram size={20} className="opacity-90" />
               </a>
               <a
-                href="https://facebook.com/mittika"
+                href="https://www.facebook.com/share/1Bm5epz5C2/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-primary-foreground/10 rounded-full flex items-center justify-center hover:bg-primary-foreground/20 transition-colors"
