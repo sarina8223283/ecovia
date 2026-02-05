@@ -159,6 +159,7 @@ const Index = () => {
             {featuredProducts.map((product) => (
               <ProductCard
                 key={product.id}
+               id={product.id}
                 name={product.name}
                 description={product.description}
                 image={product.image}

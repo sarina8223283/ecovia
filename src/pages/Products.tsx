@@ -88,6 +88,7 @@ const Products = () => {
                 transition={{ delay: 0.1 * index }}
               >
                 <ProductCard
+                   id={product.id}
                   name={product.name}
                   description={product.description}
                   image={product.image}

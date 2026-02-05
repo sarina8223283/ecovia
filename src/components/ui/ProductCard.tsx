@@ -1,7 +1,9 @@
-import { motion } from 'framer-motion';
-import { Stethoscope } from 'lucide-react';
+ import { Link } from 'react-router-dom';
+ import { motion } from 'framer-motion';
+ import { Stethoscope } from 'lucide-react';
 
 interface ProductCardProps {
+   id?: string;
   name: string;
   description: string;
   image: string;
@@ -20,14 +22,18 @@ const categoryLabels = {
   wellness: 'Wellness',
 };
 
-const ProductCard = ({ name, description, image, category }: ProductCardProps) => {
+ const ProductCard = ({ id, name, description, image, category }: ProductCardProps) => {
+   const CardWrapper = id ? Link : 'div';
+   const wrapperProps = id ? { to: `/product/${id}` } : {};
+ 
   return (
-    <motion.div
+     <CardWrapper {...wrapperProps as any}>
+       <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
-      className="group bg-card rounded-xl overflow-hidden shadow-soft hover:shadow-card transition-all duration-300"
+       className="group bg-card rounded-xl overflow-hidden shadow-soft hover:shadow-card transition-all duration-300 cursor-pointer h-full"
     >
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden bg-secondary">
@@ -57,6 +63,7 @@ const ProductCard = ({ name, description, image, category }: ProductCardProps) =
         </p>
       </div>
     </motion.div>
+     </CardWrapper>
   );
 };
 
