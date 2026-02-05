@@ -1,11 +1,15 @@
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+ import { useState } from 'react';
+ import { Link, useLocation } from 'react-router-dom';
+ import { Menu, X, User, Instagram, Facebook } from 'lucide-react';
+ import { motion, AnimatePresence } from 'framer-motion';
+ import CartDrawer from '@/components/ui/CartDrawer';
+ import { useAuth } from '@/contexts/AuthContext';
 
 const navLinks = [
   { name: 'Home', path: '/' },
   { name: 'Products', path: '/products' },
+   { name: 'Bulk Orders', path: '/bulk-orders' },
+   { name: 'Export', path: '/export' },
   { name: 'About Us', path: '/about' },
   { name: 'Contact', path: '/contact' },
 ];
@@ -13,6 +17,7 @@ const navLinks = [
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+   const { user } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -31,12 +36,12 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+           <div className="hidden lg:flex items-center gap-6">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`relative font-sans text-sm font-medium transition-colors duration-200 hover:text-primary ${
+                 className={`relative font-sans text-sm font-medium transition-colors duration-200 hover:text-primary whitespace-nowrap ${
                   isActive(link.path) ? 'text-primary' : 'text-muted-foreground'
                 }`}
               >
@@ -51,14 +56,54 @@ const Navbar = () => {
             ))}
           </div>
 
+           {/* Right Actions */}
+           <div className="hidden md:flex items-center gap-3">
+             {/* Social Links */}
+             <div className="flex items-center gap-1">
+               <a
+                 href="https://instagram.com/info.ecovia"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                 aria-label="Instagram"
+               >
+                 <Instagram size={18} className="text-muted-foreground hover:text-primary" />
+               </a>
+               <a
+                 href="https://www.facebook.com/share/1Bm5epz5C2/"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                 aria-label="Facebook"
+               >
+                 <Facebook size={18} className="text-muted-foreground hover:text-primary" />
+               </a>
+             </div>
+ 
+             {/* Cart */}
+             <CartDrawer />
+ 
+             {/* Account */}
+             <Link
+               to={user ? '/account' : '/auth'}
+               className="p-2 hover:bg-secondary rounded-lg transition-colors"
+               aria-label="Account"
+             >
+               <User size={22} className={user ? 'text-primary' : 'text-foreground'} />
+             </Link>
+           </div>
+ 
           {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 text-foreground hover:text-primary transition-colors"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+           <div className="flex md:hidden items-center gap-2">
+             <CartDrawer />
+             <button
+               onClick={() => setIsOpen(!isOpen)}
+               className="p-2 text-foreground hover:text-primary transition-colors"
+               aria-label="Toggle menu"
+             >
+               {isOpen ? <X size={24} /> : <Menu size={24} />}
+             </button>
+           </div>
         </div>
       </div>
 
@@ -70,7 +115,7 @@ const Navbar = () => {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden overflow-hidden bg-background border-b border-border"
+             className="lg:hidden overflow-hidden bg-background border-b border-border"
           >
             <div className="container mx-auto px-4 py-4 space-y-3">
               {navLinks.map((link) => (
@@ -85,6 +130,36 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
+               
+               <div className="border-t border-border pt-3 mt-3">
+                 <Link
+                   to={user ? '/account' : '/auth'}
+                   onClick={() => setIsOpen(false)}
+                   className="flex items-center gap-2 py-2 font-sans text-base font-medium text-muted-foreground"
+                 >
+                   <User size={18} />
+                   {user ? 'My Account' : 'Sign In'}
+                 </Link>
+               </div>
+ 
+               <div className="flex items-center gap-4 pt-2">
+                 <a
+                   href="https://instagram.com/info.ecovia"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="text-muted-foreground hover:text-primary"
+                 >
+                   <Instagram size={20} />
+                 </a>
+                 <a
+                   href="https://www.facebook.com/share/1Bm5epz5C2/"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="text-muted-foreground hover:text-primary"
+                 >
+                   <Facebook size={20} />
+                 </a>
+               </div>
             </div>
           </motion.div>
         )}
