@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import SarinaBot from '@/components/chat/SarinaBot';
 
 interface LayoutProps {
   children: ReactNode;
@@ -10,10 +11,11 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-1 pt-20">
+      <main className="flex-1 pt-32 sm:pt-36">
         {children}
       </main>
       <Footer />
+      <SarinaBot />
     </div>
   );
 };

@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
-import { Leaf, Target, Heart, Award } from 'lucide-react';
+import { Leaf, Heart, Award, Shield, Globe, Users, MessageCircle, Instagram, Facebook, FileCheck } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
-import aboutHero from '@/assets/about-hero.jpg';
+import { Link } from 'react-router-dom';
 
 const values = [
   {
@@ -11,9 +11,9 @@ const values = [
     description: 'We source only the finest natural ingredients, ensuring every product is 100% pure and free from chemicals.',
   },
   {
-    icon: Target,
+    icon: Shield,
     title: 'Quality',
-    description: 'Rigorous quality control at every step guarantees consistent excellence in all our herbal powders.',
+    description: 'Rigorous quality testing with NABL-approved labs guarantees consistent excellence in all our herbal powders.',
   },
   {
     icon: Heart,
@@ -28,19 +28,15 @@ const values = [
 ];
 
 const About = () => {
+  const handleRequestCertificate = () => {
+    const message = `Hi! I would like to request the quality test certificates for Mittika products.`;
+    window.open(`https://wa.me/918758808684?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative py-20 sm:py-32 overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src={aboutHero}
-            alt="Traditional herbal preparation"
-            className="w-full h-full object-cover opacity-25"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-background/80 to-background" />
-        </div>
-
+      <section className="relative py-20 sm:py-32 overflow-hidden bg-hero-pattern">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <motion.span
             initial={{ opacity: 0, y: 20 }}
@@ -55,7 +51,7 @@ const About = () => {
             transition={{ delay: 0.1 }}
             className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6"
           >
-            About Mittika
+            The Luxury of Earthly Purity
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -63,113 +59,164 @@ const About = () => {
             transition={{ delay: 0.2 }}
             className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto"
           >
-            A journey rooted in tradition, dedicated to bringing the purest 
-            Ayurvedic wellness to modern lives.
+            Mittika by Ecovia Enterprises - Your Smart Path to Ecological Living. 
+            Bringing nature's purest essence directly to you.
           </motion.p>
         </div>
       </section>
 
-      {/* About Ecovia */}
+      {/* Image + Story Section */}
       <section className="py-16 sm:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left: Natural Collection Image */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
+              className="relative"
             >
-              <span className="text-primary font-medium text-sm uppercase tracking-wider">
-                Ecovia Enterprises
-              </span>
-              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-foreground mt-2 mb-6">
-                The Company Behind Mittika
-              </h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Ecovia Enterprises was founded with a vision to bridge the gap 
-                between ancient Ayurvedic traditions and modern wellness needs. 
-                We believe that nature holds the answers to true health and beauty.
-              </p>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                Under the guidance of our Director, <strong>Sagar Jadhav</strong>, 
-                we have built a company that prioritizes authenticity, sustainability, 
-                and customer satisfaction above all else.
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                Mittika, our flagship brand, represents our commitment to delivering 
-                the highest quality herbal powders that are as effective as they are pure.
-              </p>
+              <div className="aspect-[4/5] rounded-2xl overflow-hidden shadow-elevated bg-secondary">
+                <img
+                  src="https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=800&q=80"
+                  alt="Traditional herbal collection"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute bottom-4 right-4 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                  <span className="text-xs font-medium text-foreground/70">ECOVIA</span>
+                </div>
+              </div>
+              {/* Floating Badge */}
+              <div className="absolute -bottom-6 -right-6 bg-primary text-primary-foreground p-6 rounded-2xl shadow-lg">
+                <p className="font-serif text-2xl font-bold">15+</p>
+                <p className="text-sm text-primary-foreground/80">Premium Products</p>
+              </div>
             </motion.div>
 
+            {/* Right: Story Content */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="bg-card rounded-2xl p-8 shadow-card"
             >
-              <div className="space-y-6">
-                <div className="flex items-center gap-4 p-4 bg-secondary/50 rounded-xl">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Leaf className="w-8 h-8 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-serif font-semibold text-foreground">11+</h4>
-                    <p className="text-sm text-muted-foreground">Premium Products</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 p-4 bg-secondary/50 rounded-xl">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Heart className="w-8 h-8 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-serif font-semibold text-foreground">100%</h4>
-                    <p className="text-sm text-muted-foreground">Natural & Pure</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 p-4 bg-secondary/50 rounded-xl">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                    <Award className="w-8 h-8 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-serif font-semibold text-foreground">Quality</h4>
-                    <p className="text-sm text-muted-foreground">Assured Products</p>
-                  </div>
-                </div>
+              <span className="text-primary font-medium text-sm uppercase tracking-wider">
+                How We Collect
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-foreground mt-2 mb-6">
+                From Earth to Your Hands
+              </h2>
+              <div className="space-y-4 text-muted-foreground leading-relaxed">
+                <p>
+                  Every Mittika product begins its journey in the fields and forests of India, 
+                  where skilled collectors handpick herbs, flowers, and plants at their peak potency. 
+                  We work directly with farming communities who understand the rhythm of nature.
+                </p>
+                <p>
+                  <strong className="text-foreground">Why we're sure about our products:</strong> Our quality 
+                  isn't just promised—it's proven. Every batch is tested at NABL-approved laboratories 
+                  before reaching you.
+                </p>
+                <p>
+                  <strong className="text-foreground">"The Luxury of Earthly Purity"</strong> isn't just 
+                  our tagline—it's our philosophy. We believe true luxury comes from authenticity, 
+                  from products that are as pure as nature intended.
+                </p>
+                <p>
+                  <strong className="text-foreground">Ecovia: Your Smart Path to Ecological Living</strong> — 
+                  Our name reflects our mission: to create a path (via) that connects you to 
+                  ecological (eco) wellness through smart, sustainable choices.
+                </p>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Mission Section */}
+      {/* Vision Section */}
       <section className="py-16 sm:py-24 bg-primary">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.h2
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="font-serif text-3xl sm:text-4xl font-bold text-primary-foreground mb-6"
           >
-            Our Mission
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-lg text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed"
-          >
-            To deliver authentic, pure, and high-quality Ayurvedic herbal powders 
-            that empower individuals to embrace natural wellness. We are committed 
-            to preserving traditional knowledge while ensuring our products meet 
-            the highest standards of purity and efficacy.
-          </motion.p>
+            <Globe size={48} className="mx-auto text-primary-foreground/80 mb-6" />
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-primary-foreground mb-6">
+              Our Vision
+            </h2>
+            <p className="text-lg text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed">
+              To serve each customer the natural essence directly from earth. We know that 
+              today's conscious consumer seeks products that are truly natural, free from 
+              adverse effects, and rich in inherent benefits. Mittika exists to fulfill 
+              this need with unwavering commitment to purity.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* About Ecovia Section */}
+      <section className="py-16 sm:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <span className="text-primary font-medium text-sm uppercase tracking-wider">
+                About Us
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-foreground mt-2 mb-6">
+                Ecovia Enterprises
+              </h2>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="prose prose-lg max-w-none text-muted-foreground"
+            >
+              <p className="text-lg leading-relaxed">
+                <strong className="text-foreground">Ecovia Enterprises</strong> is a trusted trader and 
+                supplier of premium-quality herbal powders, natural seeds, fruit & peel extracts, clays, 
+                and essential plant-based products. We are dedicated to bringing the purity of nature to 
+                our customers by sourcing and supplying authentic, chemical-free, and finely processed 
+                herbal solutions.
+              </p>
+              <p className="text-lg leading-relaxed">
+                <strong className="text-foreground">Mittika</strong> is dedicated to delivering quality, 
+                purity, and consistency, ensuring that our clients receive products that align with 
+                traditional Ayurvedic wisdom as well as modern herbal applications. Whether for personal 
+                care, wellness, or industrial use, our products are crafted to support a healthier and 
+                more natural lifestyle.
+              </p>
+            </motion.div>
+
+            {/* Company Info Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+              <div className="text-center p-6 bg-card rounded-xl shadow-soft">
+                <h4 className="font-semibold text-foreground mb-2">Company</h4>
+                <p className="text-muted-foreground">Ecovia Enterprises</p>
+              </div>
+              <div className="text-center p-6 bg-card rounded-xl shadow-soft">
+                <h4 className="font-semibold text-foreground mb-2">Brand</h4>
+                <p className="text-muted-foreground">MITTIKA</p>
+              </div>
+              <div className="text-center p-6 bg-card rounded-xl shadow-soft">
+                <h4 className="font-semibold text-foreground mb-2">Director</h4>
+                <p className="text-muted-foreground">Sagar Jadhav</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Values Section */}
-      <section className="py-16 sm:py-24">
+      <section className="py-16 sm:py-24 bg-secondary/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <span className="text-primary font-medium text-sm uppercase tracking-wider">
@@ -205,42 +252,85 @@ const About = () => {
         </div>
       </section>
 
-      {/* The Mittika Promise */}
+      {/* Brand Promise Section */}
       <section className="py-16 sm:py-24 bg-card">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="font-serif text-3xl sm:text-4xl font-bold text-foreground mb-6"
-            >
-              The Mittika Promise
-            </motion.h2>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="space-y-4 text-muted-foreground leading-relaxed"
             >
-              <p>
-                Every product that bears the Mittika name is a testament to our 
-                unwavering commitment to quality. From sourcing raw materials 
-                from trusted farmers to using traditional processing methods, 
-                we ensure that you receive only the purest herbal powders.
+              <FileCheck size={48} className="mx-auto text-primary mb-6" />
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-foreground mb-6">
+                Mittika Brand Promise
+              </h2>
+              <p className="text-muted-foreground text-lg leading-relaxed mb-6">
+                Every product that bears the Mittika name is backed by our unwavering 
+                commitment to quality assurance. We provide test certificates from 
+                NABL-approved laboratories for all our products.
               </p>
-              <p>
-                We believe that wellness should be accessible, natural, and 
-                authentic. That's why we never compromise on the quality of 
-                our ingredients or cut corners in our production process.
+              <p className="text-xl font-serif font-semibold text-primary mb-8">
+                "Our price is higher because we promise quality."
               </p>
-              <p className="font-medium text-foreground">
-                When you choose Mittika, you choose purity. You choose tradition. 
-                You choose nature's best.
-              </p>
+              <button
+                onClick={handleRequestCertificate}
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+              >
+                <MessageCircle size={20} />
+                Request Test Certificates via WhatsApp
+              </button>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Social Links Section */}
+      <section className="py-16 bg-secondary/30">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="font-serif text-2xl font-bold text-foreground mb-6">
+            Connect With Us
+          </h2>
+          <div className="flex justify-center gap-4">
+            <a
+              href="https://instagram.com/info.ecovia"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-4 bg-card rounded-xl shadow-soft hover:shadow-card transition-all flex items-center gap-3"
+            >
+              <Instagram size={24} className="text-primary" />
+              <span className="text-foreground font-medium">@info.ecovia</span>
+            </a>
+            <a
+              href="https://www.facebook.com/share/1Bm5epz5C2/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-4 bg-card rounded-xl shadow-soft hover:shadow-card transition-all flex items-center gap-3"
+            >
+              <Facebook size={24} className="text-primary" />
+              <span className="text-foreground font-medium">Ecovia Enterprises</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 bg-primary">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <Users size={48} className="mx-auto text-primary-foreground/80 mb-6" />
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">
+            Ready to Experience Mittika?
+          </h2>
+          <p className="text-primary-foreground/80 mb-8 max-w-2xl mx-auto">
+            Explore our range of pure, natural herbal powders and experience 
+            the luxury of earthly purity.
+          </p>
+          <Link
+            to="/products"
+            className="inline-flex items-center gap-2 bg-background text-foreground px-8 py-4 rounded-lg font-medium hover:bg-background/90 transition-colors"
+          >
+            Explore Our Products
+          </Link>
         </div>
       </section>
 
