@@ -10,6 +10,7 @@ const navLinks = [
   { name: 'Home', path: '/' },
   { name: 'Products', path: '/products' },
   { name: 'Shop by Category', path: '/shop-by-category' },
+  { name: 'Directions of Use', path: '/directions' },
   { name: 'Bulk Orders', path: '/bulk-orders' },
   { name: 'Export', path: '/export' },
   { name: 'About Us', path: '/about' },
@@ -27,36 +28,33 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Logo Section - Full Width */}
-        <div className="flex justify-center py-3 border-b border-border/50">
-          <Link to="/" className="block">
+        {/* Single Row: Logo + Brand + Nav + Actions */}
+        <div className="flex items-center justify-between h-16 sm:h-20">
+          {/* Logo + Brand Name (Left) */}
+          <Link to="/" className="flex items-center gap-3 flex-shrink-0">
             <img 
               src={ecoviaLogo} 
               alt="Ecovia - Your Smart Path to Ecological Living" 
-              className="h-16 sm:h-20 w-auto object-contain"
+              className="h-10 sm:h-14 w-auto object-contain rounded-md"
+              style={{ background: 'transparent' }}
             />
-          </Link>
-        </div>
-
-        {/* Navigation Row */}
-        <div className="flex items-center justify-between h-14">
-          {/* Brand Text - Mobile */}
-          <Link to="/" className="lg:hidden flex flex-col">
-            <span className="font-serif text-lg font-bold text-primary">
-              Ecovia Enterprises
-            </span>
-            <span className="text-xs text-muted-foreground font-sans">
-              Brand: Mittika
-            </span>
+            <div className="flex flex-col">
+              <span className="font-serif text-base sm:text-lg font-bold text-primary leading-tight">
+                Ecovia Enterprises
+              </span>
+              <span className="text-[10px] sm:text-xs text-muted-foreground font-sans leading-tight">
+                Brand: Mittika
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center justify-center flex-1 gap-4 xl:gap-6">
+          <div className="hidden xl:flex items-center gap-3 2xl:gap-5">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`relative font-sans text-sm font-medium transition-colors duration-200 hover:text-primary whitespace-nowrap ${
+                className={`relative font-sans text-xs 2xl:text-sm font-medium transition-colors duration-200 hover:text-primary whitespace-nowrap ${
                   isActive(link.path) ? 'text-primary' : 'text-muted-foreground'
                 }`}
               >
@@ -72,26 +70,26 @@ const Navbar = () => {
           </div>
 
           {/* Right Actions */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2">
             {/* Social Links */}
             <div className="flex items-center gap-1">
               <a
                 href="https://instagram.com/info.ecovia"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                className="p-1.5 hover:bg-secondary rounded-lg transition-colors"
                 aria-label="Instagram"
               >
-                <Instagram size={18} className="text-muted-foreground hover:text-primary" />
+                <Instagram size={16} className="text-muted-foreground hover:text-primary" />
               </a>
               <a
                 href="https://www.facebook.com/share/1Bm5epz5C2/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                className="p-1.5 hover:bg-secondary rounded-lg transition-colors"
                 aria-label="Facebook"
               >
-                <Facebook size={18} className="text-muted-foreground hover:text-primary" />
+                <Facebook size={16} className="text-muted-foreground hover:text-primary" />
               </a>
             </div>
 
@@ -104,12 +102,12 @@ const Navbar = () => {
               className="p-2 hover:bg-secondary rounded-lg transition-colors"
               aria-label="Account"
             >
-              <User size={22} className={user ? 'text-primary' : 'text-foreground'} />
+              <User size={20} className={user ? 'text-primary' : 'text-foreground'} />
             </Link>
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="flex lg:hidden items-center gap-2">
+          <div className="flex xl:hidden items-center gap-2">
             <CartDrawer />
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -130,7 +128,7 @@ const Navbar = () => {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="lg:hidden overflow-hidden bg-background border-b border-border"
+            className="xl:hidden overflow-hidden bg-background border-b border-border"
           >
             <div className="container mx-auto px-4 py-4 space-y-3">
               {navLinks.map((link) => (

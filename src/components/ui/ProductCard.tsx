@@ -47,9 +47,11 @@ const ProductCard = ({ id, name, description, image, category }: ProductCardProp
             alt={name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
-          {/* Ecovia Watermark */}
-          <div className="absolute bottom-3 right-3 bg-background/80 backdrop-blur-sm px-2 py-1 rounded">
-            <span className="text-[10px] font-medium text-foreground/60 tracking-wider">ECOVIA</span>
+          {/* Ecovia Watermark - Centered */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <span className="text-4xl font-serif font-bold text-white/15 tracking-[0.3em] select-none">
+              ECOVIA
+            </span>
           </div>
           {/* Category Badge */}
           <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-medium ${categoryColors[category]}`}>

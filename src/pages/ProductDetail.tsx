@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Plus, MessageCircle, Check, ChevronDown, ChevronUp } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
+import TestimonialsSection from '@/components/ui/TestimonialsSection';
 import { getProductById, products } from '@/data/products';
-import { productPricing, PriceTier } from '@/data/pricing';
+import { productPricing } from '@/data/pricing';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
@@ -140,9 +141,11 @@ const ProductDetail = () => {
                   alt={product.name}
                   className="w-full h-full object-cover"
                 />
-                {/* Ecovia Watermark */}
-                <div className="absolute bottom-4 right-4 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                  <span className="text-xs font-medium text-foreground/70">ECOVIA</span>
+                {/* Ecovia Watermark - Centered */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <span className="text-5xl sm:text-6xl font-serif font-bold text-white/12 tracking-[0.3em] select-none">
+                    ECOVIA
+                  </span>
                 </div>
                 {/* Mittika Brand */}
                 <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
@@ -313,6 +316,9 @@ const ProductDetail = () => {
         </div>
       </section>
 
+      {/* Customer Testimonials */}
+      <TestimonialsSection productId={product.id} themeColor={product.themeColor} />
+
       {/* FAQ Section */}
       <section className="py-12 bg-card">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -370,8 +376,11 @@ const ProductDetail = () => {
                       alt={relatedProduct.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm px-2 py-1 rounded">
-                      <span className="text-[10px] font-medium text-foreground/60">ECOVIA</span>
+                    {/* Ecovia Watermark - Centered */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <span className="text-2xl font-serif font-bold text-white/15 tracking-[0.2em] select-none">
+                        ECOVIA
+                      </span>
                     </div>
                   </div>
                   <div className="p-3">

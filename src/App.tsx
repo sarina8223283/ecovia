@@ -17,6 +17,7 @@ import BulkOrders from "./pages/BulkOrders";
 import Export from "./pages/Export";
 import ShopByCategory from "./pages/ShopByCategory";
 import PurityVerification from "./pages/PurityVerification";
+import DirectionsOfUse from "./pages/DirectionsOfUse";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
                 <Route path="/export" element={<Export />} />
                 <Route path="/shop-by-category" element={<ShopByCategory />} />
                 <Route path="/purity" element={<PurityVerification />} />
+                <Route path="/directions" element={<DirectionsOfUse />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
