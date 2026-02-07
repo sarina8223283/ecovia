@@ -4,6 +4,7 @@ import { ArrowRight, Leaf, Shield, Heart } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/ui/ProductCard';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
+import HeroProductStrip from '@/components/home/HeroProductStrip';
 import { products } from '@/data/products';
 import heroBanner from '@/assets/hero-banner.jpg';
 
@@ -13,7 +14,7 @@ const Index = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center bg-hero-pattern overflow-hidden">
+      <section className="relative min-h-[85vh] flex items-center bg-hero-pattern overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
@@ -79,6 +80,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Product Image Strip */}
+      <HeroProductStrip />
 
       {/* Features Section */}
       <section className="py-16 sm:py-20 bg-secondary/50">
@@ -159,7 +163,7 @@ const Index = () => {
             {featuredProducts.map((product) => (
               <ProductCard
                 key={product.id}
-               id={product.id}
+                id={product.id}
                 name={product.name}
                 description={product.description}
                 image={product.image}
