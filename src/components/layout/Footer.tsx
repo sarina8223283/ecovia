@@ -11,7 +11,7 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <h3 className="font-serif text-2xl sm:text-3xl font-bold mb-2">Mittika</h3>
-            <p className="text-sm opacity-80 mb-4">by Ecovia Enterprises</p>
+            <p className="text-sm opacity-80 mb-4">by Ecovia Enterprises OPC Pvt. Ltd.</p>
             <p className="text-sm opacity-90 leading-relaxed max-w-md">
               Delivering authentic, pure, and natural ayurvedic powders crafted from 
               traditional wisdom. Experience the power of nature with every product.
@@ -94,7 +94,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-primary-foreground/20 mt-10 pt-8 text-center">
           <p className="text-sm opacity-70">
-            © {currentYear} Ecovia Enterprises – All Rights Reserved | Brand: Mittika
+            © {currentYear} Ecovia Enterprises OPC Pvt. Ltd. – All Rights Reserved | Brand: Mittika
           </p>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { Leaf, Heart, Award, Shield, Globe, Users, MessageCircle, Instagram, Fac
 import Layout from '@/components/layout/Layout';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { Link } from 'react-router-dom';
+import aboutHero from '@/assets/about-hero.jpg';
 
 const values = [
   {
@@ -59,17 +60,17 @@ const About = () => {
             transition={{ delay: 0.2 }}
             className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto"
           >
-            Mittika by Ecovia Enterprises - Your Smart Path to Ecological Living. 
+            Mittika by Ecovia Enterprises — Your Smart Path to Ecological Living. 
             Bringing nature's purest essence directly to you.
           </motion.p>
         </div>
       </section>
 
-      {/* Image + Story Section */}
+      {/* Image + Story Section - Premium Redesign */}
       <section className="py-16 sm:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left: Natural Collection Image */}
+            {/* Left: Product Collection Image */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -77,12 +78,18 @@ const About = () => {
               transition={{ duration: 0.6 }}
               className="relative"
             >
-              <div className="aspect-[4/5] rounded-2xl overflow-hidden shadow-elevated bg-secondary">
+              <div className="aspect-[4/5] rounded-2xl overflow-hidden shadow-elevated bg-secondary relative">
                 <img
-                  src="https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=800&q=80"
-                  alt="Traditional herbal collection"
+                  src={aboutHero}
+                  alt="Mittika natural herbal product collection with flowers, herbs and powders"
                   className="w-full h-full object-cover"
                 />
+                {/* Ecovia Watermark */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <span className="text-5xl sm:text-6xl font-serif font-bold text-white/12 tracking-[0.3em] select-none">
+                    ECOVIA
+                  </span>
+                </div>
                 <div className="absolute bottom-4 right-4 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
                   <span className="text-xs font-medium text-foreground/70">ECOVIA</span>
                 </div>
@@ -115,12 +122,12 @@ const About = () => {
                 </p>
                 <p>
                   <strong className="text-foreground">Why we're sure about our products:</strong> Our quality 
-                  isn't just promised—it's proven. Every batch is tested at NABL-approved laboratories 
+                  isn't just promised — it's proven. Every batch is tested at NABL-approved laboratories 
                   before reaching you.
                 </p>
                 <p>
                   <strong className="text-foreground">"The Luxury of Earthly Purity"</strong> isn't just 
-                  our tagline—it's our philosophy. We believe true luxury comes from authenticity, 
+                  our tagline — it's our philosophy. We believe true luxury comes from authenticity, 
                   from products that are as pure as nature intended.
                 </p>
                 <p>
@@ -200,7 +207,7 @@ const About = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
               <div className="text-center p-6 bg-card rounded-xl shadow-soft">
                 <h4 className="font-semibold text-foreground mb-2">Company</h4>
-                <p className="text-muted-foreground">Ecovia Enterprises</p>
+                <p className="text-muted-foreground">Ecovia Enterprises OPC Pvt. Ltd.</p>
               </div>
               <div className="text-center p-6 bg-card rounded-xl shadow-soft">
                 <h4 className="font-semibold text-foreground mb-2">Brand</h4>
@@ -291,7 +298,7 @@ const About = () => {
           <h2 className="font-serif text-2xl font-bold text-foreground mb-6">
             Connect With Us
           </h2>
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a
               href="https://instagram.com/info.ecovia"
               target="_blank"

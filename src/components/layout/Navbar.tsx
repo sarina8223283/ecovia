@@ -4,7 +4,7 @@ import { Menu, X, User, Instagram, Facebook } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CartDrawer from '@/components/ui/CartDrawer';
 import { useAuth } from '@/contexts/AuthContext';
-import ecoviaLogo from '@/assets/ecovia-logo.jpg';
+import ecoviaLogoIcon from '@/assets/ecovia-logo-icon.png';
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -30,20 +30,19 @@ const Navbar = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Single Row: Logo + Brand + Nav + Actions */}
         <div className="flex items-center justify-between h-16 sm:h-20">
-          {/* Logo + Brand Name (Left) */}
-          <Link to="/" className="flex items-center gap-3 flex-shrink-0">
+          {/* Logo Icon + Brand Name (Left) - merged in single row */}
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
             <img 
-              src={ecoviaLogo} 
-              alt="Ecovia - Your Smart Path to Ecological Living" 
-              className="h-10 sm:h-14 w-auto object-contain rounded-md"
-              style={{ background: 'transparent' }}
+              src={ecoviaLogoIcon} 
+              alt="Ecovia Logo" 
+              className="h-8 sm:h-10 w-auto object-contain"
             />
-            <div className="flex flex-col">
-              <span className="font-serif text-base sm:text-lg font-bold text-primary leading-tight">
+            <div className="flex flex-col leading-none">
+              <span className="font-serif text-sm sm:text-base font-bold text-primary leading-tight">
                 Ecovia Enterprises
               </span>
-              <span className="text-[10px] sm:text-xs text-muted-foreground font-sans leading-tight">
-                Brand: Mittika
+              <span className="text-[9px] sm:text-[10px] text-muted-foreground font-sans leading-tight">
+                Brand: MITTIKA
               </span>
             </div>
           </Link>

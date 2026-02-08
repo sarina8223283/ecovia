@@ -244,7 +244,7 @@ const Export = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
               <div>
                 <h4 className="font-semibold text-foreground mb-2">Company</h4>
-                <p className="text-muted-foreground">Ecovia Enterprises</p>
+                <p className="text-muted-foreground">Ecovia Enterprises OPC Pvt. Ltd.</p>
               </div>
               <div>
                 <h4 className="font-semibold text-foreground mb-2">Brand</h4>
