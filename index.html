@@ -24,6 +24,17 @@
     <meta name="keywords" content="Mittika, Ecovia Enterprises, Ayurvedic powders, herbal powders, natural skincare, hair care, Multani Mitti, Kasturi Haldi, Amla powder, Brahmi, Neem powder, organic wellness" />
     <meta name="author" content="Ecovia Enterprises" />
     <meta name="robots" content="index, follow" />
+
+    <!-- SPA Redirect Fix for GitHub Pages -->
+    <script>
+      (function(){
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.href) {
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
