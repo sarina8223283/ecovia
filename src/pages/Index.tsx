@@ -14,47 +14,55 @@ const Index = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center bg-hero-pattern overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0">
+      <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-earth/5">
+        {/* Background Image & Overlay */}
+        <div className="absolute inset-0 z-0">
           <img
             src={heroBanner}
             alt="Natural herbal powders"
-            className="w-full h-full object-cover opacity-30"
+            className="w-full h-full object-cover opacity-100"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-background/40" />
+          {/* Gradient overlay for better text readability and vibrant look */}
+          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/60 to-transparent" />
+          <div className="absolute inset-0 bg-primary/10 mix-blend-overlay" />
         </div>
 
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl">
-            <motion.span
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-sm font-medium mb-6 shadow-lg backdrop-blur-sm"
             >
+              <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
               100% Pure & Natural
-            </motion.span>
+            </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight"
+              className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-[1.1] drop-shadow-sm"
             >
-              Discover the Power of{' '}
-              <span className="text-gradient">Ayurvedic</span> Herbal Powders
+              Experience the <br/>
+              <span className="text-primary relative inline-block">
+                Luxury
+                <svg className="absolute w-full h-3 -bottom-1 left-0 text-primary/20" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="3" fill="none" />
+                </svg>
+              </span> of <br/>
+              Earthly Purity
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg sm:text-xl text-muted-foreground mb-8 leading-relaxed"
+              className="text-xl sm:text-2xl text-foreground/80 mb-10 leading-relaxed font-light max-w-2xl"
             >
               Mittika brings you authentic, chemical-free herbal powders rooted in 
-              ancient Ayurvedic traditions. Experience natural wellness for your 
-              skin, hair, and overall health.
+              ancient Ayurvedic traditions. Elevate your wellness journey naturally.
             </motion.p>
 
             <motion.div
@@ -65,14 +73,14 @@ const Index = () => {
             >
               <Link
                 to="/products"
-                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-xl text-lg font-medium hover:bg-primary/90 hover:scale-105 transition-all shadow-xl shadow-primary/20"
               >
-                Explore Products
-                <ArrowRight size={18} />
+                Explore Collection
+                <ArrowRight size={20} />
               </Link>
               <Link
                 to="/about"
-                className="inline-flex items-center gap-2 bg-secondary text-secondary-foreground px-6 py-3 rounded-lg font-medium hover:bg-secondary/80 transition-colors"
+                className="inline-flex items-center gap-2 bg-white/50 backdrop-blur-md text-foreground border border-foreground/10 px-8 py-4 rounded-xl text-lg font-medium hover:bg-white/80 transition-all"
               >
                 Our Story
               </Link>
