@@ -244,11 +244,15 @@ const Index = () => {
                   <img
                     src={products[0].image}
                     alt="Herbal powder"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full aspect-square object-cover rounded-xl shadow-card"
                   />
                   <img
                     src={products[4].image}
                     alt="Herbal powder"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full aspect-[4/3] object-cover rounded-xl shadow-card"
                   />
                 </div>
@@ -256,11 +260,15 @@ const Index = () => {
                   <img
                     src={products[3].image}
                     alt="Herbal powder"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full aspect-[4/3] object-cover rounded-xl shadow-card"
                   />
                   <img
                     src={products[9].image}
                     alt="Herbal powder"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full aspect-square object-cover rounded-xl shadow-card"
                   />
                 </div>

@@ -139,6 +139,8 @@ const ProductDetail = () => {
                 <img 
                   src={product.image} 
                   alt={product.name}
+                  loading="eager"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
                 {/* Ecovia Watermark - Centered */}
@@ -374,6 +376,8 @@ const ProductDetail = () => {
                     <img 
                       src={relatedProduct.image} 
                       alt={relatedProduct.name}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     {/* Ecovia Watermark - Centered */}
