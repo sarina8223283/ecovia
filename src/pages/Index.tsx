@@ -241,36 +241,44 @@ const Index = () => {
             >
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
-                  <img
-                    src={products[0].image}
-                    alt="Herbal powder"
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full aspect-square object-cover rounded-xl shadow-card"
-                  />
-                  <img
-                    src={products[4].image}
-                    alt="Herbal powder"
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full aspect-[4/3] object-cover rounded-xl shadow-card"
-                  />
+                  <Link to={`/product/${products[0].id}`}>
+                    <img
+                      src={products[0].image}
+                      alt={products[0].name}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full aspect-square object-cover rounded-xl shadow-card hover:scale-105 transition-transform duration-300"
+                    />
+                  </Link>
+                  <Link to={`/product/${products[4].id}`}>
+                    <img
+                      src={products[4].image}
+                      alt={products[4].name}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full aspect-[4/3] object-cover rounded-xl shadow-card hover:scale-105 transition-transform duration-300"
+                    />
+                  </Link>
                 </div>
                 <div className="space-y-4 pt-8">
-                  <img
-                    src={products[3].image}
-                    alt="Herbal powder"
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full aspect-[4/3] object-cover rounded-xl shadow-card"
-                  />
-                  <img
-                    src={products[9].image}
-                    alt="Herbal powder"
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full aspect-square object-cover rounded-xl shadow-card"
-                  />
+                  <Link to={`/product/${products[3].id}`}>
+                    <img
+                      src={products[3].image}
+                      alt={products[3].name}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full aspect-[4/3] object-cover rounded-xl shadow-card hover:scale-105 transition-transform duration-300"
+                    />
+                  </Link>
+                  <Link to={`/product/${products[9].id}`}>
+                    <img
+                      src={products[9].image}
+                      alt={products[9].name}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full aspect-square object-cover rounded-xl shadow-card hover:scale-105 transition-transform duration-300"
+                    />
+                  </Link>
                 </div>
               </div>
             </motion.div>
