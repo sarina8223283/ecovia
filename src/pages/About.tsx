@@ -84,12 +84,6 @@ const About = () => {
                   alt="Mittika natural herbal product collection with flowers, herbs and powders"
                   className="w-full h-full object-cover"
                 />
-                {/* Ecovia Watermark */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-5xl sm:text-6xl font-serif font-bold text-white/12 tracking-[0.3em] select-none">
-                    ECOVIA
-                  </span>
-                </div>
                 <div className="absolute bottom-4 right-4 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
                   <span className="text-xs font-medium text-foreground/70">ECOVIA</span>
                 </div>

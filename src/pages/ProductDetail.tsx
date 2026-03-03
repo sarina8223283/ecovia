@@ -143,12 +143,6 @@ const ProductDetail = () => {
                   decoding="async"
                   className="w-full h-full object-cover"
                 />
-                {/* Ecovia Watermark - Centered */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-5xl sm:text-6xl font-serif font-bold text-white/12 tracking-[0.3em] select-none">
-                    ECOVIA
-                  </span>
-                </div>
                 {/* Mittika Brand */}
                 <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
                   <span className="text-xs font-serif font-semibold text-primary">MITTIKA</span>
@@ -380,12 +374,6 @@ const ProductDetail = () => {
                       decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    {/* Ecovia Watermark - Centered */}
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <span className="text-2xl font-serif font-bold text-white/15 tracking-[0.2em] select-none">
-                        ECOVIA
-                      </span>
-                    </div>
                   </div>
                   <div className="p-3">
                     <h3 className="font-medium text-foreground text-sm line-clamp-1">
