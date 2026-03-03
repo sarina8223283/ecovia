@@ -84,8 +84,8 @@ const About = () => {
                   alt="Mittika natural herbal product collection with flowers, herbs and powders"
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute bottom-4 right-4 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                  <span className="text-xs font-medium text-foreground/70">MITTIKA</span>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-2xl sm:text-3xl font-serif font-bold text-white drop-shadow-lg tracking-widest bg-foreground/30 backdrop-blur-sm px-6 py-3 rounded-xl">ECOVIA</span>
                 </div>
               </div>
               {/* Floating Badge */}
