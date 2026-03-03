@@ -85,7 +85,7 @@ const About = () => {
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute bottom-4 right-4 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                  <span className="text-xs font-medium text-foreground/70">ECOVIA</span>
+                  <span className="text-xs font-medium text-foreground/70">MITTIKA</span>
                 </div>
               </div>
               {/* Floating Badge */}
