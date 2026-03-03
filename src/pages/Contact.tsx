@@ -46,7 +46,8 @@ const Contact = () => {
               <h3 className="font-serif text-xl font-bold text-foreground mb-4">Our Office</h3>
               <p className="text-muted-foreground leading-relaxed">
                 Ecovia Enterprises OPC Pvt. Ltd.<br />
-                Pune, Maharashtra, India
+                Rabale, Navi Mumbai,<br />
+                Maharashtra, India
               </p>
             </motion.div>
 
@@ -115,7 +116,7 @@ const Contact = () => {
           <h2 className="font-serif text-3xl font-bold text-foreground mb-6">Visit Us</h2>
           <div className="aspect-video w-full max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-card border border-border/50">
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3783.567073286523!2d73.856743!3d18.520430!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2c06277d3d379%3A0x85f3611804c77c61!2sPune%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1710000000000!5m2!1sen!2sin" 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3768.5!2d73.0!3d19.17!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7bf7a2d8d1b8d%3A0x3d3e3c2b1a0f6f6f!2sRabale%2C%20Navi%20Mumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1710000000000!5m2!1sen!2sin"
               width="100%" 
               height="100%" 
               style={{ border: 0 }} 
