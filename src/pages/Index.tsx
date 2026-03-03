@@ -239,8 +239,8 @@ const Index = () => {
               transition={{ duration: 0.6 }}
               className="relative"
             >
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-6">
+                <div className="flex flex-col gap-6">
                   <Link to={`/product/${products[0].id}`}>
                     <img
                       src={products[0].image}
@@ -260,7 +260,7 @@ const Index = () => {
                     />
                   </Link>
                 </div>
-                <div className="space-y-4 pt-8">
+                <div className="flex flex-col gap-6 pt-8">
                   <Link to={`/product/${products[3].id}`}>
                     <img
                       src={products[3].image}
