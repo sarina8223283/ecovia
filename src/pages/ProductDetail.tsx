@@ -5,6 +5,7 @@ import { ArrowLeft, Plus, MessageCircle, Check, ChevronDown, ChevronUp } from 'l
 import Layout from '@/components/layout/Layout';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import TestimonialsSection from '@/components/ui/TestimonialsSection';
+import ProductFeedback from '@/components/ui/ProductFeedback';
 import { getProductById, products } from '@/data/products';
 import { productPricing } from '@/data/pricing';
 import { useCart } from '@/contexts/CartContext';
@@ -314,6 +315,9 @@ const ProductDetail = () => {
 
       {/* Customer Testimonials */}
       <TestimonialsSection productId={product.id} themeColor={product.themeColor} />
+
+      {/* Customer Feedback */}
+      <ProductFeedback productId={product.id} themeColor={product.themeColor} />
 
       {/* FAQ Section */}
       <section className="py-12 bg-card">

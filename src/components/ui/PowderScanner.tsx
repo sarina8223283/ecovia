@@ -100,20 +100,42 @@ const PowderScanner = () => {
               {/* Content */}
               <div className="p-6 space-y-4">
                 {!preview ? (
-                  <label className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-border rounded-xl p-10 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors">
-                    <Camera size={40} className="text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground text-center">
-                      Tap to take a photo or upload an image of any herbal powder
-                    </span>
-                    <input
-                      ref={fileRef}
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
-                  </label>
+                  <div className="space-y-3">
+                    {/* Camera capture */}
+                    <label className="flex items-center gap-3 border border-border rounded-xl p-4 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Camera size={20} className="text-primary" />
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-foreground block">Take a Photo</span>
+                        <span className="text-xs text-muted-foreground">Use your camera to capture powder</span>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                    {/* Gallery / Device */}
+                    <label className="flex items-center gap-3 border border-border rounded-xl p-4 cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors">
+                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-foreground"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-foreground block">Upload from Device</span>
+                        <span className="text-xs text-muted-foreground">Choose from gallery or files</span>
+                      </div>
+                      <input
+                        ref={fileRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
                 ) : (
                   <div className="space-y-4">
                     <div className="relative rounded-xl overflow-hidden">

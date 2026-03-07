@@ -97,6 +97,45 @@ export type Database = {
         }
         Relationships: []
       }
+      product_feedback: {
+        Row: {
+          created_at: string
+          delivery_rating: number | null
+          id: string
+          packaging_rating: number | null
+          product_id: string
+          product_quality: number | null
+          rating: number
+          review: string
+          reviewer_location: string | null
+          reviewer_name: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_rating?: number | null
+          id?: string
+          packaging_rating?: number | null
+          product_id: string
+          product_quality?: number | null
+          rating: number
+          review: string
+          reviewer_location?: string | null
+          reviewer_name: string
+        }
+        Update: {
+          created_at?: string
+          delivery_rating?: number | null
+          id?: string
+          packaging_rating?: number | null
+          product_id?: string
+          product_quality?: number | null
+          rating?: number
+          review?: string
+          reviewer_location?: string | null
+          reviewer_name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null

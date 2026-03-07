@@ -4,6 +4,7 @@ import { Menu, X, User, Instagram, Facebook } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CartDrawer from '@/components/ui/CartDrawer';
 import PowderScanner from '@/components/ui/PowderScanner';
+import LanguageSelector from '@/components/ui/LanguageSelector';
 import { useAuth } from '@/contexts/AuthContext';
 import ecoviaLogoIcon from '@/assets/ecovia-logo-icon.png';
 
@@ -72,9 +73,10 @@ const Navbar = () => {
 
           {/* Right Actions */}
           <div className="hidden md:flex items-center gap-2">
-            {/* Scanner & Social Links */}
+            {/* Scanner, Language & Social Links */}
             <div className="flex items-center gap-1">
               <PowderScanner />
+              <LanguageSelector />
               <a
                 href="https://instagram.com/info.ecovia"
                 target="_blank"
@@ -110,6 +112,8 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="flex xl:hidden items-center gap-2">
+            <PowderScanner />
+            <LanguageSelector />
             <CartDrawer />
             <button
               onClick={() => setIsOpen(!isOpen)}
