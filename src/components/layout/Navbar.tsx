@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, User, Instagram, Facebook } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CartDrawer from '@/components/ui/CartDrawer';
+import PowderScanner from '@/components/ui/PowderScanner';
 import { useAuth } from '@/contexts/AuthContext';
 import ecoviaLogoIcon from '@/assets/ecovia-logo-icon.png';
 
