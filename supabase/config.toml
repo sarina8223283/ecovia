@@ -1,1 +1,7 @@
 project_id = "pjatluevclfybnxouyvr"
+
+[functions.sarina-chat]
+verify_jwt = false
+
+[functions.identify-powder]
+verify_jwt = false

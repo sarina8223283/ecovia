@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Phone, Instagram, Facebook, ExternalLink, Sparkles } from 'lucide-react';
+import { X, Send, Phone, Instagram, Facebook, ExternalLink, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { products } from '@/data/products';
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   id: string;
@@ -11,57 +12,14 @@ interface Message {
   links?: { label: string; action: () => void }[];
 }
 
-const qualityTests = [
-  {
-    product: 'turmeric',
-    test: 'Water Test: Add a pinch of turmeric to warm water. Pure turmeric settles at the bottom, while adulterated turmeric leaves a yellow color and floats.',
-  },
-  {
-    product: 'multani',
-    test: 'Touch Test: Pure Multani Mitti feels smooth and silky. It should dissolve completely in water without leaving any grit.',
-  },
-  {
-    product: 'amla',
-    test: 'Taste Test: Pure Amla powder has a sour, slightly bitter taste. It should not have any added sweetness or unusual flavors.',
-  },
-  {
-    product: 'neem',
-    test: 'Smell Test: Pure Neem powder has a strong, bitter, and earthy smell. Lack of smell indicates poor quality or old stock.',
-  },
-  {
-    product: 'rose',
-    test: 'Color Test: Pure rose petal powder should be a natural pinkish-brown, not bright pink (which indicates artificial color).',
-  },
-  {
-    product: 'henna',
-    test: 'Release Test: Mix with water and let sit. Pure henna releases color slowly (2-4 hours). Quick color release means chemical additives.',
-  },
-];
-
-const productResponses: Record<string, string> = {
-  amla: 'Amla Powder is our vitamin C powerhouse! Great for hair strengthening and immunity boost. Mix with water for hair mask or consume with warm water for internal benefits.',
-  shikakai: 'Shikakai is nature\'s shampoo! It gently cleanses without stripping natural oils. Mix with water to form paste and use as a chemical-free hair wash.',
-  ritha: 'Ritha (Soapnut) creates natural lather for gentle cleansing. Perfect for sensitive scalps. Soak in warm water, strain, and use the liquid as shampoo.',
-  bhringraj: 'Bhringraj is the "King of Hair" - excellent for hair fall and premature greying. Mix with coconut oil for best results. Leave overnight and wash.',
-  hibiscus: 'Hibiscus adds natural color and conditions beautifully. Mix with yogurt for a luxurious hair mask that promotes growth and adds shine.',
-  rose: 'Rose Petal Powder is perfect for glowing skin! Mix with rose water for a luxurious face pack. Also great for lip care mixed with honey.',
-  multani: 'Multani Mitti is your go-to for oily skin! Mix with rose water, apply for 15 mins, and rinse for clean, refreshed skin. Use 2-3 times weekly.',
-  neem: 'Neem is antibacterial and antifungal. Great for acne-prone skin and scalp issues. Mix with aloe or rose water for gentler application.',
-  moringa: 'Moringa is a superfood! Contains 90+ nutrients. Add 1 tsp to smoothies or warm water daily. Also great as a face mask for antioxidant benefits.',
-  brahmi: 'Brahmi enhances memory and reduces stress. Take 1/2 tsp with warm milk daily. Also apply with oil on scalp for hair growth benefits.',
-  coconut: 'Coconut Powder deeply moisturizes dry hair and skin. Mix with water or milk for a conditioning mask. Also edible for smoothies!',
-  onion: 'Onion Powder boosts hair growth with sulfur. Mix with oil, apply to scalp. Yes, it has a smell but washes away with good shampoo!',
-  orange: 'Orange Peel Powder brightens and removes tan. Mix with yogurt, apply for 15-20 mins. Use sunscreen after as citrus increases sun sensitivity.',
-  kasturi: 'Kasturi Haldi (Wild Turmeric) brightens WITHOUT staining yellow! Perfect for face packs. Mix with gram flour and milk for bridal glow.',
-  rosemary: 'Rosemary is clinically proven to stimulate hair growth! Infuse in warm oil for a week, then massage daily. Results in 3-6 months.',
-};
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sarina-chat`;
 
 const SarinaBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hello! I\'m Sarina, your Mittika wellness assistant 🌿 I\'m here to help you with product questions, quality verification, and home-based purity tests. How can I assist you today?',
+      text: "Hello! I'm Sarina, your Mittika wellness assistant 🌿 Ask me anything about our herbal powders — ingredients, chemical composition, usage, alternative uses, pricing, or quality testing. How can I help?",
       isBot: true,
       links: [
         { label: 'Browse Products', action: () => {} },
@@ -79,149 +37,113 @@ const SarinaBot = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const addBotMessage = (text: string, links?: Message['links']) => {
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      text,
-      isBot: true,
-      links,
-    };
-    setMessages(prev => [...prev, newMessage]);
-  };
-
   const handleSend = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || isTyping) return;
 
+    const userText = input.trim();
     const userMessage: Message = {
       id: Date.now().toString(),
-      text: input,
+      text: userText,
       isBot: false,
     };
     setMessages(prev => [...prev, userMessage]);
-    const query = input.toLowerCase();
     setInput('');
     setIsTyping(true);
 
-    // Simulate thinking time
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsTyping(false);
+    // Build conversation history for AI (last 10 messages for context)
+    const conversationHistory = messages
+      .slice(-10)
+      .map(m => ({ role: m.isBot ? 'assistant' as const : 'user' as const, content: m.text }));
+    conversationHistory.push({ role: 'user', content: userText });
 
-    // Product queries
-    for (const [key, response] of Object.entries(productResponses)) {
-      if (query.includes(key)) {
-        addBotMessage(response, [
-          { label: `View ${key.charAt(0).toUpperCase() + key.slice(1)} Product`, action: () => {
-            const product = products.find(p => p.id.includes(key) || p.name.toLowerCase().includes(key));
-            if (product) {
-              navigate(`/product/${product.id}`);
-              setIsOpen(false);
-            }
-          }},
-        ]);
-        return;
-      }
-    }
+    let assistantText = '';
 
-    // Quality test queries
-    if (query.includes('test') || query.includes('quality') || query.includes('pure') || query.includes('check') || query.includes('verify')) {
-      let testResponse = 'Here are some home-based purity tests you can try:\n\n';
-      qualityTests.forEach(t => {
-        testResponse += `🧪 ${t.product.toUpperCase()}: ${t.test}\n\n`;
+    try {
+      const resp = await fetch(CHAT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ messages: conversationHistory }),
       });
-      testResponse += 'For official test certificates, I can connect you with our team!';
-      addBotMessage(testResponse, [
-        { label: 'Request Test Certificates', action: () => {
-          window.open('https://wa.me/918758808684?text=Hi! I would like to request the test certificates for Mittika products.', '_blank');
-        }},
-        { label: 'View Purity Verification', action: () => {
-          navigate('/purity');
-          setIsOpen(false);
-        }},
-      ]);
-      return;
-    }
 
-    // Certificate request
-    if (query.includes('certificate') || query.includes('nabl') || query.includes('lab')) {
-      addBotMessage('We test all our products with NABL approved laboratories. You can request test certificates anytime! Would you like me to connect you with our team?', [
-        { label: 'Request Certificates via WhatsApp', action: () => {
-          window.open('https://wa.me/918758808684?text=Hi! I would like to request the NABL lab test certificates for Mittika products.', '_blank');
-        }},
-      ]);
-      return;
-    }
+      if (!resp.ok || !resp.body) {
+        throw new Error('Stream failed');
+      }
 
-    // Navigation queries
-    if (query.includes('product') || query.includes('shop') || query.includes('buy')) {
-      addBotMessage('I\'d love to help you explore our products! We have 15 pure herbal powders across Skin Care, Hair Care, and Wellness categories.', [
-        { label: 'View All Products', action: () => { navigate('/products'); setIsOpen(false); }},
-        { label: 'Shop by Category', action: () => { navigate('/shop-by-category'); setIsOpen(false); }},
-      ]);
-      return;
-    }
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = '';
+      let streamDone = false;
+      const botMsgId = (Date.now() + 1).toString();
 
-    if (query.includes('bulk') || query.includes('wholesale')) {
-      addBotMessage('For bulk orders, we offer special discounts starting from 10% off. Let me take you to our bulk orders page!', [
-        { label: 'View Bulk Order Options', action: () => { navigate('/bulk-orders'); setIsOpen(false); }},
-        { label: 'Contact for Custom Quote', action: () => {
-          window.open('https://wa.me/918758808684?text=Hi! I\'m interested in bulk orders for Mittika products.', '_blank');
-        }},
-      ]);
-      return;
-    }
+      // Add initial empty bot message
+      setMessages(prev => [...prev, { id: botMsgId, text: '', isBot: true }]);
+      setIsTyping(false);
 
-    if (query.includes('export') || query.includes('international')) {
-      addBotMessage('Yes! We export to multiple countries. Our products meet international quality standards with full documentation.', [
-        { label: 'View Export Details', action: () => { navigate('/export'); setIsOpen(false); }},
-      ]);
-      return;
-    }
+      while (!streamDone) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        textBuffer += decoder.decode(value, { stream: true });
 
-    if (query.includes('about') || query.includes('company') || query.includes('story')) {
-      addBotMessage('Mittika by Ecovia Enterprises is dedicated to bringing the luxury of earthly purity. Our vision is to serve natural essence directly from earth!', [
-        { label: 'Read Our Story', action: () => { navigate('/about'); setIsOpen(false); }},
-      ]);
-      return;
-    }
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf('\n')) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
 
-    // Call/contact queries
-    if (query.includes('call') || query.includes('speak') || query.includes('talk') || query.includes('contact') || query.includes('human')) {
-      addBotMessage('I\'d be happy to connect you with our Director, Sagar Jadhav! You can reach us through these channels:', [
-        { label: '📞 Call Now', action: () => { window.open('tel:+918758808684'); }},
-        { label: '💬 WhatsApp', action: () => { window.open('https://wa.me/918758808684'); }},
-      ]);
-      return;
-    }
+          if (line.endsWith('\r')) line = line.slice(0, -1);
+          if (line.startsWith(':') || line.trim() === '') continue;
+          if (!line.startsWith('data: ')) continue;
 
-    // Social media
-    if (query.includes('social') || query.includes('instagram') || query.includes('facebook') || query.includes('follow')) {
-      addBotMessage('Connect with us on social media for updates, tips, and more! 📱', [
-        { label: 'Instagram', action: () => { window.open('https://instagram.com/info.ecovia', '_blank'); }},
-        { label: 'Facebook', action: () => { window.open('https://www.facebook.com/share/1Bm5epz5C2/', '_blank'); }},
-      ]);
-      return;
-    }
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === '[DONE]') { streamDone = true; break; }
 
-    // Price queries
-    if (query.includes('price') || query.includes('cost') || query.includes('rate')) {
-      addBotMessage('Our prices vary by product and quantity. We offer great discounts - up to 63% off on some items! Check product pages for specific pricing with strikethrough original prices.', [
-        { label: 'View Products & Prices', action: () => { navigate('/products'); setIsOpen(false); }},
-      ]);
-      return;
-    }
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantText += content;
+              const currentText = assistantText;
+              setMessages(prev =>
+                prev.map(m => m.id === botMsgId ? { ...m, text: currentText } : m)
+              );
+            }
+          } catch {
+            textBuffer = line + '\n' + textBuffer;
+            break;
+          }
+        }
+      }
 
-    // Usage/how to use
-    if (query.includes('use') || query.includes('how') || query.includes('apply')) {
-      addBotMessage('Each product has specific usage instructions. Generally:\n\n🌿 Hair: Mix powder with water/oil, apply to scalp, leave 30-45 mins\n✨ Skin: Mix with rose water/milk, apply as face pack for 15-20 mins\n💪 Wellness: Add to warm water or smoothies\n\nWhich product would you like specific instructions for?');
-      return;
-    }
+      // Add product links if a product is mentioned
+      const lowerText = assistantText.toLowerCase();
+      const matchedProducts = products.filter(p =>
+        lowerText.includes(p.name.toLowerCase()) || lowerText.includes(p.id.replace('-', ' '))
+      );
 
-    // Default response
-    addBotMessage('I\'m here to help with product questions, purity tests, and connecting you with our team. Could you tell me more about what you\'re looking for?', [
-      { label: 'Browse Products', action: () => { navigate('/products'); setIsOpen(false); }},
-      { label: 'Quality Verification', action: () => { navigate('/purity'); setIsOpen(false); }},
-      { label: 'Talk to Expert', action: () => { window.open('https://wa.me/918758808684'); }},
-    ]);
+      if (matchedProducts.length > 0) {
+        const links = matchedProducts.slice(0, 3).map(p => ({
+          label: `View ${p.name}`,
+          action: () => { navigate(`/product/${p.id}`); setIsOpen(false); },
+        }));
+        setMessages(prev =>
+          prev.map(m => m.id === botMsgId ? { ...m, links } : m)
+        );
+      }
+
+    } catch {
+      setIsTyping(false);
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 2).toString(),
+        text: "I'm having trouble connecting right now. Let me connect you with our team directly!",
+        isBot: true,
+        links: [
+          { label: '📞 Call Now', action: () => window.open('tel:+918758808684') },
+          { label: '💬 WhatsApp', action: () => window.open('https://wa.me/918758808684') },
+        ],
+      }]);
+    }
   };
 
   return (
@@ -259,10 +181,10 @@ const SarinaBot = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold">Sarina</h3>
-                  <p className="text-xs text-primary-foreground/80">Mittika Wellness Assistant</p>
+                  <p className="text-xs text-primary-foreground/80">AI Wellness Assistant</p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setIsOpen(false)}
                 className="p-2 hover:bg-primary-foreground/10 rounded-full transition-colors"
               >
@@ -284,7 +206,13 @@ const SarinaBot = () => {
                         : 'bg-primary text-primary-foreground rounded-tr-md'
                     }`}
                   >
-                    <p className="text-sm whitespace-pre-line">{message.text}</p>
+                    {message.isBot ? (
+                      <div className="text-sm prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0 prose-strong:text-foreground">
+                        <ReactMarkdown>{message.text}</ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="text-sm whitespace-pre-line">{message.text}</p>
+                    )}
                     {message.links && (
                       <div className="mt-3 flex flex-wrap gap-2">
                         {message.links.map((link, i) => (
@@ -349,12 +277,12 @@ const SarinaBot = () => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                  placeholder="Ask about products, quality tests..."
+                  placeholder="Ask anything about our products..."
                   className="flex-1 px-4 py-2.5 rounded-full bg-secondary border-0 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                 />
                 <button
                   onClick={handleSend}
-                  disabled={!input.trim()}
+                  disabled={!input.trim() || isTyping}
                   className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-50 hover:bg-primary/90 transition-colors"
                 >
                   <Send size={18} />
