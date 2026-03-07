@@ -316,6 +316,9 @@ const ProductDetail = () => {
       {/* Customer Testimonials */}
       <TestimonialsSection productId={product.id} themeColor={product.themeColor} />
 
+      {/* Customer Feedback */}
+      <ProductFeedback productId={product.id} themeColor={product.themeColor} />
+
       {/* FAQ Section */}
       <section className="py-12 bg-card">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
