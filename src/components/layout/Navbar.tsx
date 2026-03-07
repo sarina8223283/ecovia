@@ -16,6 +16,7 @@ const navLinks = [
   { name: 'Export', path: '/export' },
   { name: 'About Us', path: '/about' },
   { name: 'Purity', path: '/purity' },
+  { name: 'Visitors', path: '/visitors' },
   { name: 'Contact', path: '/contact' },
 ];
 
