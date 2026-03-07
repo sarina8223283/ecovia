@@ -111,6 +111,8 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="flex xl:hidden items-center gap-2">
+            <PowderScanner />
+            <LanguageSelector />
             <CartDrawer />
             <button
               onClick={() => setIsOpen(!isOpen)}
