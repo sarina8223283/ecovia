@@ -19,6 +19,7 @@ import Export from "./pages/Export";
 import ShopByCategory from "./pages/ShopByCategory";
 import PurityVerification from "./pages/PurityVerification";
 import DirectionsOfUse from "./pages/DirectionsOfUse";
+import Visitors from "./pages/Visitors";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
