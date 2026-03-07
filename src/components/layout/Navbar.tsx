@@ -4,6 +4,7 @@ import { Menu, X, User, Instagram, Facebook } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CartDrawer from '@/components/ui/CartDrawer';
 import PowderScanner from '@/components/ui/PowderScanner';
+import LanguageSelector from '@/components/ui/LanguageSelector';
 import { useAuth } from '@/contexts/AuthContext';
 import ecoviaLogoIcon from '@/assets/ecovia-logo-icon.png';
 
