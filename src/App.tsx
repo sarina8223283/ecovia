@@ -47,6 +47,7 @@ const App = () => (
                 <Route path="/shop-by-category" element={<ShopByCategory />} />
                 <Route path="/purity" element={<PurityVerification />} />
                 <Route path="/directions" element={<DirectionsOfUse />} />
+                <Route path="/visitors" element={<Visitors />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

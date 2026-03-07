@@ -72,8 +72,9 @@ const Navbar = () => {
 
           {/* Right Actions */}
           <div className="hidden md:flex items-center gap-2">
-            {/* Social Links */}
+            {/* Scanner & Social Links */}
             <div className="flex items-center gap-1">
+              <PowderScanner />
               <a
                 href="https://instagram.com/info.ecovia"
                 target="_blank"
