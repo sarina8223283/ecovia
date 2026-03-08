@@ -202,6 +202,14 @@ const LanguageSelector = () => {
     const cache = readCache();
     cache[langCode] = cache[langCode] || {};
 
+    // Seed manual overrides into cache (always override)
+    const overrides = MANUAL_OVERRIDES[langCode];
+    if (overrides) {
+      Object.entries(overrides).forEach(([key, val]) => {
+        cache[langCode][key] = val;
+      });
+    }
+
     nodes.forEach((node) => {
       if (!originalTextsRef.current.has(node)) {
         originalTextsRef.current.set(node, node.textContent || '');
