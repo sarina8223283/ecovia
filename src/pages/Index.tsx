@@ -6,10 +6,12 @@ import ProductCard from '@/components/ui/ProductCard';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import HeroProductStrip from '@/components/home/HeroProductStrip';
 import { products } from '@/data/products';
+import { useSiteContent, getContent } from '@/hooks/useSiteContent';
 import heroBanner from '@/assets/hero-banner.jpg';
 
 const Index = () => {
   const featuredProducts = products.slice(0, 4);
+  const { data: content } = useSiteContent();
 
   return (
     <Layout>
