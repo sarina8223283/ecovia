@@ -267,6 +267,13 @@ const SarinaBot = () => {
                 <Facebook size={12} />
                 Facebook
               </button>
+              <button
+                onClick={() => { navigate('/sarina-admin'); setIsOpen(false); }}
+                className="flex-shrink-0 text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 flex items-center gap-1 font-medium"
+              >
+                <LayoutDashboard size={12} />
+                Admin Dashboard
+              </button>
             </div>
 
             {/* Input */}
