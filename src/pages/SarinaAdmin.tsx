@@ -741,10 +741,10 @@ const AIChat = () => {
           toolResults.push(`**${fn.name}**: ${toolResult}`);
           try {
             const parsed = JSON.parse(toolResult);
-            if (parsed.image_url) allImages.push(parsed.image_url);
-            if (parsed.images?.length) allImages.push(...parsed.images);
+            if (parsed.image_url) allImages.push({ url: parsed.image_url, model: parsed.model_used, contentKey: params.content_key });
+            if (parsed.images?.length) allImages.push(...parsed.images.map((u: string) => ({ url: u })));
             if (parsed.results?.length) {
-              parsed.results.forEach((r: any) => { if (r.image_url) allImages.push(r.image_url); });
+              parsed.results.forEach((r: any) => { if (r.image_url) allImages.push({ url: r.image_url, model: r.model_used }); });
             }
             if (parsed.deployed) {
               toast({ title: '🚀 Deployed Live', description: parsed.message || 'Change is live on the website!' });
@@ -758,17 +758,17 @@ const AIChat = () => {
           messages: [
             ...aiMessages,
             { role: 'assistant', content: result.message || 'Executing...' },
-            { role: 'user', content: `Tool results:\n${toolResults.join('\n')}\n\nSummarize what was done and confirm it's live.` },
+            { role: 'user', content: `Tool results:\n${toolResults.join('\n')}\n\nSummarize what was done and confirm it's live. Mention which AI model was used for any generated images.` },
           ],
         });
 
         setMessages(prev => [...prev, {
-          role: 'assistant',
+          role: 'assistant' as const,
           content: followUp.message || 'Changes applied and live!',
           images: allImages.length > 0 ? allImages.slice(0, 8) : undefined,
         }]);
       } else {
-        setMessages(prev => [...prev, { role: 'assistant', content: result.message || 'Done.' }]);
+        setMessages(prev => [...prev, { role: 'assistant' as const, content: result.message || 'Done.' }]);
       }
     } catch (err: any) {
       setMessages(prev => [...prev, { role: 'assistant', content: `❌ Error: ${err.message}\n\nPlease try again or simplify your request.` }]);
