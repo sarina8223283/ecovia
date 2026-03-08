@@ -264,7 +264,7 @@ serve(async (req) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "google/gemini-2.5-flash-image",
+            model: "google/gemini-3-pro-image-preview",
             messages: [{ role: "user", content: prompt }],
             modalities: ["image", "text"],
           }),
@@ -339,7 +339,7 @@ serve(async (req) => {
             const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
               method: "POST",
               headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-              body: JSON.stringify({ model: "google/gemini-2.5-flash-image", messages: [{ role: "user", content: prompt }], modalities: ["image", "text"] }),
+              body: JSON.stringify({ model: "google/gemini-3-pro-image-preview", messages: [{ role: "user", content: prompt }], modalities: ["image", "text"] }),
             });
 
             if (!aiResp.ok) { errors.push(`${name}: API error ${aiResp.status}`); continue; }
@@ -362,7 +362,7 @@ serve(async (req) => {
             results.push({ product: name, image_url: uData.publicUrl, content_key: key });
 
             // Small delay to avoid rate limits
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, 3000));
           } catch (e: any) {
             errors.push(`${name}: ${e.message}`);
           }
