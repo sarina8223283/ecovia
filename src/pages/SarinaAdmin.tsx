@@ -15,6 +15,7 @@ interface Message {
   content: string;
   images?: { url: string; model?: string; contentKey?: string }[];
   pendingDeploy?: boolean;
+  changePreview?: { key: string; current_value: string; new_value: string; is_new: boolean }[];
 }
 
 interface ContentItem {
