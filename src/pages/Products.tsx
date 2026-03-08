@@ -4,6 +4,7 @@ import Layout from '@/components/layout/Layout';
 import ProductCard from '@/components/ui/ProductCard';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { products } from '@/data/products';
+import { useSiteContent, getContent } from '@/hooks/useSiteContent';
 
 type Category = 'all' | 'skin' | 'hair' | 'wellness';
 
@@ -16,6 +17,7 @@ const categories: { value: Category; label: string }[] = [
 
 const Products = () => {
   const [activeCategory, setActiveCategory] = useState<Category>('all');
+  const { data: content } = useSiteContent();
 
   const filteredProducts = activeCategory === 'all'
     ? products
@@ -31,7 +33,7 @@ const Products = () => {
             animate={{ opacity: 1, y: 0 }}
             className="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6"
           >
-            Mittika Collection
+            {getContent(content, 'products_badge', 'Mittika Collection')}
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -39,7 +41,7 @@ const Products = () => {
             transition={{ delay: 0.1 }}
             className="font-serif text-4xl sm:text-5xl font-bold text-foreground mb-4"
           >
-            Our Products
+            {getContent(content, 'products_heading', 'Our Products')}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -47,8 +49,7 @@ const Products = () => {
             transition={{ delay: 0.2 }}
             className="text-muted-foreground max-w-2xl mx-auto text-lg"
           >
-            Explore our complete range of 100% pure, natural, and chemical-free 
-            ayurvedic herbal powders for skin, hair, and wellness.
+            {getContent(content, 'products_description', 'Explore our complete range of 100% pure, natural, and chemical-free ayurvedic herbal powders for skin, hair, and wellness.')}
           </motion.p>
         </div>
       </section>
@@ -56,7 +57,6 @@ const Products = () => {
       {/* Products Grid */}
       <section className="py-16 sm:py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Category Filter */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -78,7 +78,6 @@ const Products = () => {
             ))}
           </motion.div>
 
-          {/* Products Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product, index) => (
               <motion.div
@@ -88,7 +87,7 @@ const Products = () => {
                 transition={{ delay: 0.1 * index }}
               >
                 <ProductCard
-                   id={product.id}
+                  id={product.id}
                   name={product.name}
                   description={product.description}
                   image={product.image}
@@ -98,12 +97,9 @@ const Products = () => {
             ))}
           </div>
 
-          {/* Empty State */}
           {filteredProducts.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">
-                No products found in this category.
-              </p>
+              <p className="text-muted-foreground">No products found in this category.</p>
             </div>
           )}
         </div>
@@ -113,11 +109,10 @@ const Products = () => {
       <section className="py-16 bg-card">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mb-4">
-            Interested in Our Products?
+            {getContent(content, 'products_cta_heading', 'Interested in Our Products?')}
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
-            Contact us for wholesale inquiries, bulk orders, or to learn more 
-            about our product range. We're here to help you embrace natural wellness.
+            {getContent(content, 'products_cta_text', 'Contact us for wholesale inquiries, bulk orders, or to learn more about our product range. We\'re here to help you embrace natural wellness.')}
           </p>
           <a
             href="https://wa.me/918758808684"

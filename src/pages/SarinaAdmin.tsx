@@ -302,12 +302,18 @@ const ThemeEditor = () => {
 
 // ─── Image Gallery Tab ───
 const ImageGallery = () => {
+  const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [copyMsg, setCopyMsg] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
+
   const { data: images = [], isLoading } = useQuery({
     queryKey: ['admin-images'],
     queryFn: async () => {
-      const { data, error } = await supabase.storage.from('site-images').list('', { limit: 50, sortBy: { column: 'created_at', order: 'desc' } });
+      const { data, error } = await supabase.storage.from('site-images').list('', { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
       if (error) throw error;
-      return (data || []).map(file => ({
+      return (data || []).filter(f => f.name !== '.emptyFolderPlaceholder').map(file => ({
         name: file.name,
         url: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/site-images/${file.name}`,
         created: file.created_at,
@@ -315,21 +321,86 @@ const ImageGallery = () => {
     },
   });
 
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        const ext = file.name.split('.').pop() || 'png';
+        const fileName = `upload-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const { error } = await supabase.storage.from('site-images').upload(fileName, file, { contentType: file.type, upsert: true });
+        if (error) throw error;
+      }
+      queryClient.invalidateQueries({ queryKey: ['admin-images'] });
+      toast({ title: '✅ Uploaded', description: `${files.length} image(s) uploaded successfully` });
+    } catch (err: any) {
+      toast({ title: 'Upload Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDelete = async (name: string) => {
+    if (!confirm(`Delete "${name}"?`)) return;
+    setDeleting(name);
+    try {
+      const { error } = await supabase.storage.from('site-images').remove([name]);
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ['admin-images'] });
+      toast({ title: '🗑️ Deleted', description: `"${name}" removed` });
+    } catch (err: any) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setDeleting(null);
+    }
+  };
+
+  const copyUrl = (url: string) => {
+    navigator.clipboard.writeText(url);
+    setCopyMsg(url);
+    setTimeout(() => setCopyMsg(null), 2000);
+    toast({ title: '📋 Copied', description: 'Image URL copied to clipboard' });
+  };
+
   if (isLoading) return <div className="flex items-center justify-center p-8"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
 
   return (
     <div className="p-4">
-      <h2 className="font-serif text-lg font-bold text-foreground mb-4">Image Gallery</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-serif text-lg font-bold text-foreground">Image Gallery</h2>
+        <div className="flex items-center gap-2">
+          <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleUpload} className="hidden" />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center gap-1.5 text-sm bg-primary text-primary-foreground px-3 py-1.5 rounded-lg hover:bg-primary/90 disabled:opacity-50"
+          >
+            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+            {uploading ? 'Uploading...' : 'Upload'}
+          </button>
+        </div>
+      </div>
+
       {images.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
           <ImageIcon className="w-12 h-12 mx-auto mb-3 opacity-30" />
-          <p className="text-sm">No images yet. Ask Sarina to generate one!</p>
+          <p className="text-sm">No images yet. Upload photos or ask Sarina to generate one!</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3">
           {images.map(img => (
-            <div key={img.name} className="bg-card border border-border rounded-xl overflow-hidden">
+            <div key={img.name} className="bg-card border border-border rounded-xl overflow-hidden group relative">
               <img src={img.url} alt={img.name} className="w-full h-32 object-cover" />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                <button onClick={() => copyUrl(img.url)} className="p-2 bg-white/90 rounded-lg hover:bg-white text-foreground" title="Copy URL">
+                  <Eye className="w-4 h-4" />
+                </button>
+                <button onClick={() => handleDelete(img.name)} disabled={deleting === img.name} className="p-2 bg-white/90 rounded-lg hover:bg-white text-destructive" title="Delete">
+                  {deleting === img.name ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                </button>
+              </div>
               <div className="p-2">
                 <p className="text-xs text-muted-foreground truncate">{img.name}</p>
               </div>

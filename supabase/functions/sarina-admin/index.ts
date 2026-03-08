@@ -50,6 +50,29 @@ const WEBSITE_STRUCTURE = `
 - **Auth (/auth)** - Login/Signup
 - **Account (/account)** - User profile & orders
 
+## Editable Content Keys by Page:
+
+### Home Page (already connected):
+hero_badge, hero_heading_1, hero_heading_highlight, hero_heading_2, hero_heading_3, hero_description, hero_cta_1, hero_cta_2
+
+### About Page:
+about_hero_badge, about_hero_heading, about_hero_description, about_hero_image (image type),
+about_story_label, about_story_heading, about_story_p1, about_story_p2, about_story_p3, about_story_p4,
+about_vision_heading, about_vision_text,
+about_ecovia_heading, about_ecovia_p1, about_ecovia_p2,
+about_company_name, about_brand_name, about_director_name,
+about_values_heading, about_value_1_title, about_value_1_desc, about_value_2_title, about_value_2_desc, about_value_3_title, about_value_3_desc, about_value_4_title, about_value_4_desc,
+about_promise_heading, about_promise_text, about_promise_quote,
+about_cta_heading, about_cta_text
+
+### Products Page:
+products_badge, products_heading, products_description,
+products_cta_heading, products_cta_text
+
+### Footer (appears on all pages):
+footer_brand_name, footer_brand_subtitle, footer_brand_description,
+footer_phone, footer_email, footer_address, footer_copyright
+
 ## Company Info:
 - **Brand**: Mittika by Ecovia Enterprises OPC Pvt. Ltd.
 - **Director**: Sagar Jadhav
