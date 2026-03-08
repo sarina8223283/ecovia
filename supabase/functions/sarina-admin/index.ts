@@ -438,6 +438,27 @@ serve(async (req) => {
             },
           },
         },
+        {
+          type: "function",
+          function: {
+            name: "generate_product_images",
+            description: "Batch generate benefit or comparison images for multiple products at once. Use this when asked to create images for all products or specific product sets. Image types: 'benefits' (shows top benefits infographic) or 'comparison' (Mittika vs generic market alternative).",
+            parameters: {
+              type: "object",
+              properties: {
+                product_ids: {
+                  oneOf: [
+                    { type: "string", enum: ["all"] },
+                    { type: "array", items: { type: "string" } }
+                  ],
+                  description: "Array of product IDs or 'all' for all 15 products. IDs: amla-powder, shikakai-powder, ritha-powder, bhringraj-powder, hibiscus-powder, onion-powder, coconut-powder, rosemary-powder, rose-petals-powder, multani-mitti, neem-powder, kasturi-haldi, orange-peel-powder, brahmi-powder, moringa-powder",
+                },
+                image_type: { type: "string", enum: ["benefits", "comparison"], description: "Type of image: 'benefits' for product benefits infographic, 'comparison' for Mittika vs others comparison" },
+              },
+              required: ["product_ids", "image_type"],
+            },
+          },
+        },
       ];
 
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
