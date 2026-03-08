@@ -803,6 +803,11 @@ const AIChat = () => {
           content: followUp.message || 'Changes applied and live!',
           images: allImages.length > 0 ? allImages.slice(0, 8) : undefined,
         }]);
+
+        // Show deploy confirmation for generated images
+        if (allImages.length > 0) {
+          setPendingDeploy(allImages.slice(0, 8));
+        }
       } else {
         setMessages(prev => [...prev, { role: 'assistant' as const, content: result.message || 'Done.' }]);
       }
