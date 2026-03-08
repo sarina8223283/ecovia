@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Phone, Instagram, Facebook, ExternalLink, Sparkles } from 'lucide-react';
+import { X, Send, Phone, Instagram, Facebook, ExternalLink, Sparkles, LayoutDashboard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { products } from '@/data/products';
 import ReactMarkdown from 'react-markdown';
