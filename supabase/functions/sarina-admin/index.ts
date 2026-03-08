@@ -97,6 +97,7 @@ const ADMIN_SYSTEM_PROMPT = `You are **Sarina**, the most advanced AI website ed
 7. **Smart Context** - You know every product, page, and content key
 8. **File Understanding** - Users can upload PDFs, documents, images as reference material. You can read and understand uploaded content to apply changes.
 9. **Image Preview** - Generated images are shown in chat for user review before confirming deployment
+10. **Live Analytics** - You have FULL access to real-time website traffic data. You can answer questions about total visitors, page-wise traffic, referral sources, device types, daily/weekly/monthly trends, and more. Use the get_analytics tool to query live data.
 
 ${PRODUCT_CATALOG}
 ${WEBSITE_STRUCTURE}
@@ -351,6 +352,73 @@ serve(async (req) => {
           all: PRODUCT_CATALOG + "\n" + WEBSITE_STRUCTURE,
         };
         return new Response(JSON.stringify({ success: true, info: info[topic.toLowerCase()] || `Topics: products, pages, pricing, company, features, all` }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // ─── get_analytics ───
+      if (tool_name === "get_analytics") {
+        const { period, group_by } = parameters;
+        const now = new Date();
+        let since: string;
+        switch (period) {
+          case "today": since = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString(); break;
+          case "yesterday": { const d = new Date(now); d.setDate(d.getDate() - 1); since = new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString(); break; }
+          case "7days": { const d = new Date(now); d.setDate(d.getDate() - 7); since = d.toISOString(); break; }
+          case "30days": { const d = new Date(now); d.setDate(d.getDate() - 30); since = d.toISOString(); break; }
+          case "90days": { const d = new Date(now); d.setDate(d.getDate() - 90); since = d.toISOString(); break; }
+          default: since = "2020-01-01T00:00:00Z"; // all time
+        }
+
+        const { data: views, error } = await supabase
+          .from("page_views")
+          .select("*")
+          .gte("created_at", since)
+          .order("created_at", { ascending: false })
+          .limit(1000);
+
+        if (error) throw error;
+        const allViews = views || [];
+        const totalVisitors = allViews.length;
+
+        // Page breakdown
+        const pageMap: Record<string, number> = {};
+        allViews.forEach((v: any) => { pageMap[v.page_path] = (pageMap[v.page_path] || 0) + 1; });
+        const topPages = Object.entries(pageMap).sort((a, b) => b[1] - a[1]).slice(0, 20);
+
+        // Referral sources
+        const refMap: Record<string, number> = {};
+        allViews.forEach((v: any) => { 
+          const src = v.referrer_source || "direct"; 
+          refMap[src] = (refMap[src] || 0) + 1; 
+        });
+        const topReferrers = Object.entries(refMap).sort((a, b) => b[1] - a[1]);
+
+        // Daily breakdown
+        const dailyMap: Record<string, number> = {};
+        allViews.forEach((v: any) => {
+          const day = v.created_at.slice(0, 10);
+          dailyMap[day] = (dailyMap[day] || 0) + 1;
+        });
+        const dailyTrend = Object.entries(dailyMap).sort((a, b) => a[0].localeCompare(b[0]));
+
+        // Device breakdown (from user_agent)
+        let mobile = 0, desktop = 0;
+        allViews.forEach((v: any) => {
+          if (v.user_agent && /mobile|android|iphone/i.test(v.user_agent)) mobile++;
+          else desktop++;
+        });
+
+        const analytics = {
+          period: period || "all_time",
+          total_page_views: totalVisitors,
+          top_pages: topPages.map(([page, count]) => ({ page, views: count })),
+          referral_sources: topReferrers.map(([source, count]) => ({ source, views: count })),
+          daily_trend: dailyTrend.map(([date, count]) => ({ date, views: count })),
+          devices: { mobile, desktop },
+        };
+
+        return new Response(JSON.stringify({ success: true, analytics, message: `📊 Analytics loaded: ${totalVisitors} page views (${period || "all time"})` }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -620,6 +688,21 @@ serve(async (req) => {
               type: "object",
               properties: { topic: { type: "string" } },
               required: ["topic"],
+            },
+          },
+        },
+        {
+          type: "function",
+          function: {
+            name: "get_analytics",
+            description: "Get LIVE website traffic analytics. Returns total visitors, page-wise breakdown, referral sources (Instagram, WhatsApp, Facebook, etc.), daily trends, and device breakdown (mobile vs desktop). Use this whenever the user asks about visitors, traffic, analytics, or performance.",
+            parameters: {
+              type: "object",
+              properties: {
+                period: { type: "string", enum: ["today", "yesterday", "7days", "30days", "90days", "all"], description: "Time period for analytics" },
+                group_by: { type: "string", enum: ["page", "referrer", "day", "device"], description: "Primary grouping dimension" },
+              },
+              required: ["period"],
             },
           },
         },
