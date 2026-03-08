@@ -6,38 +6,103 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const ADMIN_SYSTEM_PROMPT = `You are Sarina Admin, the AI website editor for Mittika (by Ecovia Enterprises). You can manage the website content, generate images, and update theme settings.
+const PRODUCT_CATALOG = `
+## Full Product Catalog (15 products):
 
-## Your Capabilities:
-You have access to these tools:
+### Hair Care:
+1. **Amla Powder** (amla-powder) - ₹0.50/g - Vitamin C rich, strengthens hair, boosts immunity
+2. **Shikakai Powder** (shikakai-powder) - ₹0.45/g - Natural shampoo, conditions hair
+3. **Ritha Powder** (ritha-powder) - ₹0.40/g - Natural soapnut cleanser
+4. **Bhringraj Powder** (bhringraj-powder) - ₹0.55/g - King of herbs for hair fall
+5. **Hibiscus Powder** (hibiscus-powder) - ₹0.48/g - Hair growth, natural color
+6. **Onion Powder** (onion-powder) - ₹0.35/g - Sulfur-rich hair regrowth
+7. **Coconut Powder** (coconut-powder) - ₹0.38/g - Deep moisturizer
+8. **Rosemary Powder** (rosemary-powder) - ₹0.65/g - Hair growth stimulant
 
-1. **update_content** - Update any text content on the website
+### Skin Care:
+9. **Rose Petals Powder** (rose-petals-powder) - ₹0.60/g - Skin toning, natural fragrance
+10. **Multani Mitti** (multani-mitti) - ₹0.30/g - Oil absorption, deep cleansing
+11. **Neem Powder** (neem-powder) - ₹0.40/g - Acne treatment, antibacterial
+12. **Kasturi Haldi** (kasturi-haldi) - ₹0.55/g - Skin brightening (no staining)
+13. **Orange Peel Powder** (orange-peel-powder) - ₹0.35/g - Tan removal, vitamin C
+
+### Wellness:
+14. **Brahmi Powder** (brahmi-powder) - ₹0.55/g - Brain tonic, memory enhancer
+15. **Moringa Powder** (moringa-powder) - ₹0.50/g - Nutritional superfood
+
+### Pricing:
+- Available sizes: 50g, 100g, 250g, 500g, 1kg, 5kg, 10kg
+- Bulk discounts up to 63% off
+`;
+
+const WEBSITE_STRUCTURE = `
+## Website Structure & Pages:
+- **Home (/)** - Hero banner, featured products strip, about section, CTA
+- **Products (/products)** - All 15 products grid with category filters
+- **Product Detail (/product/:id)** - Individual product with benefits, directions, FAQs
+- **About (/about)** - Company story, mission, values
+- **Contact (/contact)** - Contact form, phone, email, social links
+- **Bulk Orders (/bulk-orders)** - B2B inquiries
+- **Export (/export)** - International trade info
+- **Purity Verification (/purity-verification)** - Lab testing & quality assurance
+- **Directions of Use (/directions)** - How to use products
+- **Shop by Category (/categories)** - Hair/Skin/Wellness filters
+- **Auth (/auth)** - Login/Signup
+- **Account (/account)** - User profile & orders
+
+## Company Info:
+- **Brand**: Mittika by Ecovia Enterprises OPC Pvt. Ltd.
+- **Director**: Sagar Jadhav
+- **Phone/WhatsApp**: +91 8758808684
+- **Email**: info@mittika.com
+- **Instagram**: @info.ecovia
+- **Website**: ecovia.co.in
+- **Features**: NABL lab testing, Export capabilities, AI chatbot (Sarina)
+`;
+
+const ADMIN_SYSTEM_PROMPT = `You are Sarina Admin, the intelligent AI website editor and knowledge base for Mittika (by Ecovia Enterprises). You manage website content, generate images, update theme settings, AND answer any questions about the website, products, company, or changes.
+
+## Your Dual Role:
+1. **Website Editor** - Make live changes to the website content, theme, and images
+2. **Knowledge Expert** - Answer questions about products, website structure, pricing, company info, and explain any changes made
+
+${PRODUCT_CATALOG}
+
+${WEBSITE_STRUCTURE}
+
+## Your Tools:
+
+1. **update_content** - Update any text/content on the LIVE website instantly
    - Parameters: content_key (string), content_value (string)
-   - Available keys: hero_badge, hero_heading_1, hero_heading_highlight, hero_heading_2, hero_heading_3, hero_description, hero_cta_1, hero_cta_2
-   - You can also create NEW content keys for other sections
+   - Content keys for Hero: hero_badge, hero_heading_1, hero_heading_highlight, hero_heading_2, hero_heading_3, hero_description, hero_cta_1, hero_cta_2
+   - You can create ANY new content key for other sections
+   - ⚡ Changes go LIVE immediately on the published website
 
-2. **generate_image** - Generate an image using AI
-   - Parameters: prompt (string), content_key (string, optional - to associate with a content slot)
-   - The image will be uploaded to storage and URL saved
+2. **generate_image** - Generate AI images for the website
+   - Parameters: prompt (string), content_key (string, optional)
+   - Image is uploaded to storage and URL saved
 
-3. **update_theme** - Update theme/style settings
+3. **update_theme** - Update theme/style settings live
    - Parameters: theme_key (string), theme_value (string)
-   - Example keys: primary_color, accent_color, font_heading, font_body
+   - Keys: primary_color, accent_color, font_heading, font_body, or custom
 
-4. **list_content** - List all current website content
+4. **list_content** - List all current website content entries
    - No parameters needed
 
-5. **delete_content** - Delete a content entry
+5. **delete_content** - Remove a content entry
    - Parameters: content_key (string)
 
+6. **get_website_info** - Get detailed info about a specific aspect of the website
+   - Parameters: topic (string) - e.g., "products", "pages", "pricing", "company", "features"
+
 ## Guidelines:
-- When users ask to change text, use update_content
-- When users ask to generate/change images, use generate_image
-- When users ask about colors/fonts/theme, use update_theme
-- Always confirm what you changed
-- Be proactive: if someone says "make the hero section about summer", update all relevant hero fields
-- Keep the brand voice: premium, natural, Ayurvedic
-- You can create new content keys for any section of the site`;
+- **LIVE Deployment**: When you update content, it goes live IMMEDIATELY. Always confirm what changed and where it appears.
+- **Explain Changes**: After making changes, explain exactly what was updated, which page it affects, and how users will see it.
+- **Answer Questions**: If someone asks about products, pricing, website pages, features, or the company, answer directly with your knowledge. No need to call a tool for general questions.
+- **Be Proactive**: If someone says "make the hero about summer sale", update ALL relevant hero fields (badge, headings, description, buttons).
+- **Brand Voice**: Keep content premium, natural, Ayurvedic, earthy. Mittika means "from the earth."
+- **Verify Context**: When listing content, always use list_content to show the CURRENT live state.
+- **Multi-step Changes**: For complex requests (e.g., "redesign the hero section"), plan all changes, execute them, then summarize what was deployed.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -63,31 +128,6 @@ serve(async (req) => {
       });
     }
 
-    // Change password
-    if (action === "change_password") {
-      const { current_password, new_password } = await req.json().catch(() => ({ current_password: password, new_password: "" }));
-      const { data } = await supabase
-        .from("admin_settings")
-        .select("setting_value")
-        .eq("setting_key", "admin_password")
-        .single();
-      
-      if (data?.setting_value !== current_password) {
-        return new Response(JSON.stringify({ error: "Invalid current password" }), {
-          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      await supabase
-        .from("admin_settings")
-        .update({ setting_value: new_password, updated_at: new Date().toISOString() })
-        .eq("setting_key", "admin_password");
-
-      return new Response(JSON.stringify({ success: true }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
     // Execute tool calls from AI
     if (action === "execute_tool") {
       const { tool_name, parameters } = tool_call;
@@ -101,7 +141,7 @@ serve(async (req) => {
             { onConflict: "content_key" }
           );
         if (error) throw error;
-        return new Response(JSON.stringify({ success: true, message: `Updated "${content_key}" to "${content_value}"` }), {
+        return new Response(JSON.stringify({ success: true, message: `✅ DEPLOYED LIVE: "${content_key}" → "${content_value}"`, deployed: true }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -109,7 +149,7 @@ serve(async (req) => {
       if (tool_name === "list_content") {
         const { data, error } = await supabase.from("site_content").select("*").order("content_key");
         if (error) throw error;
-        return new Response(JSON.stringify({ success: true, data }), {
+        return new Response(JSON.stringify({ success: true, data, count: data?.length || 0 }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -118,7 +158,7 @@ serve(async (req) => {
         const { content_key } = parameters;
         const { error } = await supabase.from("site_content").delete().eq("content_key", content_key);
         if (error) throw error;
-        return new Response(JSON.stringify({ success: true, message: `Deleted "${content_key}"` }), {
+        return new Response(JSON.stringify({ success: true, message: `🗑️ REMOVED from live site: "${content_key}"`, deployed: true }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -132,7 +172,22 @@ serve(async (req) => {
             { onConflict: "theme_key" }
           );
         if (error) throw error;
-        return new Response(JSON.stringify({ success: true, message: `Theme "${theme_key}" set to "${theme_value}"` }), {
+        return new Response(JSON.stringify({ success: true, message: `🎨 DEPLOYED LIVE: Theme "${theme_key}" → "${theme_value}"`, deployed: true }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (tool_name === "get_website_info") {
+        const { topic } = parameters;
+        const info: Record<string, string> = {
+          products: PRODUCT_CATALOG,
+          pages: WEBSITE_STRUCTURE,
+          pricing: "Products range from ₹0.30/g (Multani Mitti) to ₹0.65/g (Rosemary). Sizes: 50g to 10kg. Bulk discounts up to 63%.",
+          company: "Mittika by Ecovia Enterprises OPC Pvt. Ltd. Director: Sagar Jadhav. Phone: +91 8758808684. Email: info@mittika.com. NABL approved lab testing.",
+          features: "AI chatbot (Sarina), Powder Scanner (AI identification), Multi-language support, Cart system, Order management, Product feedback, Purity verification, Export capabilities.",
+        };
+        const result = info[topic.toLowerCase()] || `Available topics: products, pages, pricing, company, features. You asked about: ${topic}`;
+        return new Response(JSON.stringify({ success: true, info: result }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -170,7 +225,6 @@ serve(async (req) => {
           });
         }
 
-        // Upload to storage
         const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
         const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
         const fileName = `sarina-${Date.now()}.png`;
@@ -184,7 +238,6 @@ serve(async (req) => {
         const { data: urlData } = supabase.storage.from("site-images").getPublicUrl(fileName);
         const publicUrl = urlData.publicUrl;
 
-        // If content_key provided, save the URL
         if (content_key) {
           await supabase
             .from("site_content")
@@ -194,7 +247,7 @@ serve(async (req) => {
             );
         }
 
-        return new Response(JSON.stringify({ success: true, message: `Image generated and uploaded`, image_url: publicUrl }), {
+        return new Response(JSON.stringify({ success: true, message: `🖼️ Image generated and deployed to live site`, image_url: publicUrl, deployed: true }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -213,19 +266,19 @@ serve(async (req) => {
       const { data: contentData } = await supabase.from("site_content").select("content_key, content_value, content_type, image_url");
       const { data: themeData } = await supabase.from("site_theme").select("theme_key, theme_value");
 
-      const contextPrompt = `\n\n## Current Website Content:\n${JSON.stringify(contentData || [], null, 2)}\n\n## Current Theme Settings:\n${JSON.stringify(themeData || [], null, 2)}`;
+      const contextPrompt = `\n\n## Current LIVE Website Content (${contentData?.length || 0} entries):\n${JSON.stringify(contentData || [], null, 2)}\n\n## Current LIVE Theme Settings:\n${JSON.stringify(themeData || [], null, 2)}\n\nRemember: Any update_content or update_theme call deploys IMMEDIATELY to the live website at ecovia.co.in`;
 
       const tools = [
         {
           type: "function",
           function: {
             name: "update_content",
-            description: "Update text content on the website. Use this to change hero text, descriptions, button labels, etc.",
+            description: "Update text content on the LIVE website. Changes deploy immediately. Use for hero text, descriptions, button labels, any section.",
             parameters: {
               type: "object",
               properties: {
-                content_key: { type: "string", description: "The content key to update (e.g., hero_heading_1, hero_description)" },
-                content_value: { type: "string", description: "The new text content" },
+                content_key: { type: "string", description: "The content key (e.g., hero_heading_1, hero_description, about_heading, cta_text)" },
+                content_value: { type: "string", description: "The new text content to display on the live site" },
               },
               required: ["content_key", "content_value"],
             },
@@ -235,12 +288,12 @@ serve(async (req) => {
           type: "function",
           function: {
             name: "generate_image",
-            description: "Generate an image using AI. Use descriptive prompts for best results.",
+            description: "Generate an AI image and deploy it to the live website.",
             parameters: {
               type: "object",
               properties: {
                 prompt: { type: "string", description: "Detailed description of the image to generate" },
-                content_key: { type: "string", description: "Optional content key to associate the image with a section" },
+                content_key: { type: "string", description: "Optional content key to associate the image with a website section" },
               },
               required: ["prompt"],
             },
@@ -250,12 +303,12 @@ serve(async (req) => {
           type: "function",
           function: {
             name: "update_theme",
-            description: "Update theme/style settings like colors, fonts, etc.",
+            description: "Update theme/style settings on the live website. Changes deploy immediately.",
             parameters: {
               type: "object",
               properties: {
-                theme_key: { type: "string", description: "The theme setting key (e.g., primary_color, font_heading)" },
-                theme_value: { type: "string", description: "The new value for this theme setting" },
+                theme_key: { type: "string", description: "The theme setting key (primary_color, accent_color, font_heading, font_body)" },
+                theme_value: { type: "string", description: "The new value" },
               },
               required: ["theme_key", "theme_value"],
             },
@@ -265,7 +318,7 @@ serve(async (req) => {
           type: "function",
           function: {
             name: "list_content",
-            description: "List all current website content entries. Use when user asks to see what's on the site.",
+            description: "List all current LIVE website content entries to see what's deployed.",
             parameters: { type: "object", properties: {} },
           },
         },
@@ -273,13 +326,27 @@ serve(async (req) => {
           type: "function",
           function: {
             name: "delete_content",
-            description: "Delete a content entry from the website.",
+            description: "Delete a content entry from the live website immediately.",
             parameters: {
               type: "object",
               properties: {
                 content_key: { type: "string", description: "The content key to delete" },
               },
               required: ["content_key"],
+            },
+          },
+        },
+        {
+          type: "function",
+          function: {
+            name: "get_website_info",
+            description: "Get detailed information about a specific aspect of the website (products, pages, pricing, company, features).",
+            parameters: {
+              type: "object",
+              properties: {
+                topic: { type: "string", description: "Topic to get info about: products, pages, pricing, company, features" },
+              },
+              required: ["topic"],
             },
           },
         },
