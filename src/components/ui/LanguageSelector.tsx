@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import languageIcon from '@/assets/icons/language-icon.png';
 
@@ -25,9 +25,21 @@ const languages = [
   { code: 'kok', name: 'Konkani', native: 'कोंकणी' },
 ];
 
+const triggerGoogleTranslate = (langCode: string) => {
+  // Try to find the combo box and change language
+  const combo = document.querySelector('.goog-te-combo') as HTMLSelectElement;
+  if (combo) {
+    combo.value = langCode;
+    combo.dispatchEvent(new Event('change'));
+    return true;
+  }
+  return false;
+};
+
 const LanguageSelector = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(languages[0]);
+  const [translating, setTranslating] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -38,19 +50,51 @@ const LanguageSelector = () => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  const handleSelect = (lang: typeof languages[0]) => {
+  // Detect current language from cookie on mount
+  useEffect(() => {
+    const match = document.cookie.match(/googtrans=\/en\/(\w+)/);
+    if (match) {
+      const found = languages.find(l => l.code === match[1]);
+      if (found) setSelected(found);
+    }
+  }, []);
+
+  const handleSelect = useCallback((lang: typeof languages[0]) => {
     setSelected(lang);
     setIsOpen(false);
-    const translateFrame = document.querySelector('.goog-te-combo') as HTMLSelectElement;
-    if (translateFrame) {
-      translateFrame.value = lang.code;
-      translateFrame.dispatchEvent(new Event('change'));
-    } else {
-      document.cookie = `googtrans=/en/${lang.code};path=/;`;
-      document.cookie = `googtrans=/en/${lang.code};path=/;domain=${window.location.hostname}`;
+
+    if (lang.code === 'en') {
+      // Reset to English: clear cookies and reload once
+      document.cookie = 'googtrans=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = `googtrans=;path=/;domain=${window.location.hostname};expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      // Try combo first
+      if (triggerGoogleTranslate('en')) return;
       window.location.reload();
+      return;
     }
-  };
+
+    setTranslating(true);
+
+    // Set cookies for persistence
+    document.cookie = `googtrans=/en/${lang.code};path=/;`;
+    document.cookie = `googtrans=/en/${lang.code};path=/;domain=${window.location.hostname}`;
+
+    // Attempt to trigger translation via combo box with polling
+    let attempts = 0;
+    const maxAttempts = 20;
+    const interval = setInterval(() => {
+      attempts++;
+      const success = triggerGoogleTranslate(lang.code);
+      if (success || attempts >= maxAttempts) {
+        clearInterval(interval);
+        setTranslating(false);
+        // If combo was never found, reload as fallback
+        if (!success && attempts >= maxAttempts) {
+          window.location.reload();
+        }
+      }
+    }, 250);
+  }, []);
 
   return (
     <div ref={ref} className="relative">
@@ -59,9 +103,12 @@ const LanguageSelector = () => {
         className="p-1.5 hover:bg-secondary rounded-lg transition-colors flex items-center gap-1"
         aria-label="Select Language"
         title="Change Language"
+        disabled={translating}
       >
         <img src={languageIcon} alt="Language" className="w-5 h-5 object-contain" />
-        <span className="text-xs font-medium text-muted-foreground hidden sm:inline">{selected.code.toUpperCase()}</span>
+        <span className="text-xs font-medium text-muted-foreground hidden sm:inline">
+          {translating ? '...' : selected.code.toUpperCase()}
+        </span>
       </button>
 
       <AnimatePresence>
