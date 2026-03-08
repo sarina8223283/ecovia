@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import languageIcon from '@/assets/icons/language-icon.png';
 
@@ -39,6 +40,7 @@ const EXCLUDED_TAGS = new Set([
 ]);
 
 const TRANSLATION_CACHE_KEY = 'mittika_translation_cache_v1';
+const PREFERRED_LANGUAGE_KEY = 'preferred_language';
 
 type CacheShape = Record<string, Record<string, string>>;
 
@@ -68,11 +70,13 @@ const translateText = async (text: string, targetLang: string): Promise<string> 
 };
 
 const LanguageSelector = () => {
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(languages[0]);
   const [translating, setTranslating] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const originalTextsRef = useRef<Map<Text, string>>(new Map());
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -83,7 +87,7 @@ const LanguageSelector = () => {
   }, []);
 
   useEffect(() => {
-    const saved = localStorage.getItem('preferred_language');
+    const saved = localStorage.getItem(PREFERRED_LANGUAGE_KEY);
     const found = languages.find((l) => l.code === saved);
     if (found) setSelected(found);
   }, []);
@@ -112,19 +116,18 @@ const LanguageSelector = () => {
 
   const restoreEnglish = useCallback(() => {
     originalTextsRef.current.forEach((original, node) => {
-      if (node.isConnected) {
-        node.textContent = original;
-      }
+      if (node.isConnected) node.textContent = original;
     });
     document.documentElement.lang = 'en';
   }, []);
 
   const applyTranslation = useCallback(async (langCode: string) => {
     const nodes = getTextNodes();
+    if (!nodes.length) return;
+
     const cache = readCache();
     cache[langCode] = cache[langCode] || {};
 
-    // Capture original text once
     nodes.forEach((node) => {
       if (!originalTextsRef.current.has(node)) {
         originalTextsRef.current.set(node, node.textContent || '');
@@ -139,11 +142,10 @@ const LanguageSelector = () => {
       )
     );
 
-    // Translate missing items in small chunks for smoother UI
     const missing = uniqueTexts.filter((t) => !cache[langCode][t]);
 
-    for (let i = 0; i < missing.length; i += 12) {
-      const chunk = missing.slice(i, i + 12);
+    for (let i = 0; i < missing.length; i += 24) {
+      const chunk = missing.slice(i, i + 24);
       const results = await Promise.all(
         chunk.map(async (t) => {
           try {
@@ -158,16 +160,16 @@ const LanguageSelector = () => {
       results.forEach(({ t, translated }) => {
         cache[langCode][t] = translated;
       });
-
-      writeCache(cache);
     }
 
-    // Apply translated strings
+    writeCache(cache);
+
     nodes.forEach((node) => {
       const original = originalTextsRef.current.get(node) || '';
       const trimmed = original.trim();
-      const translated = cache[langCode][trimmed] || trimmed;
       if (!trimmed) return;
+
+      const translated = cache[langCode][trimmed] || trimmed;
       node.textContent = original.replace(trimmed, translated);
     });
 
@@ -177,19 +179,59 @@ const LanguageSelector = () => {
   const handleSelect = useCallback(async (lang: typeof languages[0]) => {
     setSelected(lang);
     setIsOpen(false);
-    localStorage.setItem('preferred_language', lang.code);
+    localStorage.setItem(PREFERRED_LANGUAGE_KEY, lang.code);
 
     setTranslating(true);
     try {
       if (lang.code === 'en') {
         restoreEnglish();
       } else {
+        // Always restore English first so switching between Hindi/Marathi/etc stays accurate.
+        restoreEnglish();
         await applyTranslation(lang.code);
       }
     } finally {
       setTranslating(false);
     }
   }, [applyTranslation, restoreEnglish]);
+
+  useEffect(() => {
+    if (selected.code === 'en') return;
+
+    let isMounted = true;
+    const run = async () => {
+      setTranslating(true);
+      try {
+        await applyTranslation(selected.code);
+      } finally {
+        if (isMounted) setTranslating(false);
+      }
+    };
+
+    const timer = setTimeout(run, 120);
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, [location.pathname, selected.code, applyTranslation]);
+
+  useEffect(() => {
+    if (selected.code === 'en') return;
+
+    const observer = new MutationObserver(() => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        void applyTranslation(selected.code);
+      }, 180);
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [selected.code, applyTranslation]);
 
   return (
     <div ref={ref} className="relative" data-no-translate="true">
@@ -200,7 +242,7 @@ const LanguageSelector = () => {
         title="Change Language"
         disabled={translating}
       >
-        <img src={languageIcon} alt="Language" className="w-8 h-8 object-contain" />
+        <img src={languageIcon} alt="Language" className="w-9 h-9 object-contain" />
         <span className="text-xs font-medium text-muted-foreground hidden sm:inline">
           {translating ? '...' : selected.code.toUpperCase()}
         </span>

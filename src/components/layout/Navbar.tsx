@@ -69,15 +69,15 @@ const Navbar = () => {
               <PowderScanner />
               <LanguageSelector />
               <a href="https://instagram.com/info.ecovia" target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-secondary rounded-lg transition-colors" aria-label="Instagram">
-                <img src={instagramIcon} alt="Instagram" className="w-7 h-7 object-contain" />
+                <img src={instagramIcon} alt="Instagram" className="w-8 h-8 object-contain" />
               </a>
               <a href="https://www.facebook.com/share/1Bm5epz5C2/" target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-secondary rounded-lg transition-colors" aria-label="Facebook">
-                <img src={facebookIcon} alt="Facebook" className="w-7 h-7 object-contain" />
+                <img src={facebookIcon} alt="Facebook" className="w-8 h-8 object-contain" />
               </a>
             </div>
             <CartDrawer />
             <Link to={user ? '/account' : '/auth'} className="p-1 hover:bg-secondary rounded-lg transition-colors" aria-label="Account">
-              <img src={accountIcon} alt="Account" className="w-8 h-8 object-contain" />
+              <img src={accountIcon} alt="Account" className="w-9 h-9 object-contain" />
             </Link>
           </div>
 
