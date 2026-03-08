@@ -716,7 +716,7 @@ const AIChat = () => {
 
       if (result.tool_calls?.length > 0) {
         const toolResults: string[] = [];
-        const allImages: string[] = [];
+        const allImages: { url: string; model?: string; contentKey?: string }[] = [];
 
         for (const tc of result.tool_calls) {
           const fn = tc.function;
