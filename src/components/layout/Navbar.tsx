@@ -23,6 +23,7 @@ const navLinks = [
   { name: 'Purity', path: '/purity' },
   { name: 'Visitors', path: '/visitors' },
   { name: 'Contact', path: '/contact' },
+  { name: 'Admin', path: '/admin' },
 ];
 
 const Navbar = () => {

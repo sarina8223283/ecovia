@@ -84,7 +84,7 @@ const callFunction = async (body: any, retries = 3): Promise<any> => {
 };
 
 // ─── Birth Year Gate ───
-const BIRTH_YEAR_ANSWER = '1997';
+const ADMIN_PASSWORD = '7524';
 
 const PasswordGate = ({ onAuth }: { onAuth: () => void }) => {
   const [answer, setAnswer] = useState('');
@@ -92,7 +92,7 @@ const PasswordGate = ({ onAuth }: { onAuth: () => void }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (answer.trim() === BIRTH_YEAR_ANSWER) {
+    if (answer.trim() === ADMIN_PASSWORD) {
       onAuth();
       toast({ title: '🔓 Access granted', description: 'Welcome to Sarina Admin' });
     } else {
@@ -111,25 +111,25 @@ const PasswordGate = ({ onAuth }: { onAuth: () => void }) => {
               <Lock className="w-8 h-8 text-primary" />
             </div>
             <h1 className="font-serif text-2xl font-bold text-foreground">Sarina Admin</h1>
-            <p className="text-muted-foreground text-sm mt-2">Answer the security question to continue</p>
+            <p className="text-muted-foreground text-sm mt-2">Enter your first car password to continue</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">What is your birth year?</label>
+              <label className="block text-sm font-medium text-foreground mb-2">What is your first car password?</label>
               <input
-                type="text"
+                type="password"
                 inputMode="numeric"
-                maxLength={4}
+                maxLength={10}
                 value={answer}
-                onChange={e => setAnswer(e.target.value.replace(/\D/g, ''))}
-                placeholder="Enter year (e.g., 1990)"
+                onChange={e => setAnswer(e.target.value)}
+                placeholder="Enter password"
                 className={`w-full px-4 py-3 rounded-xl border ${error ? 'border-destructive ring-2 ring-destructive/30' : 'border-border'} bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors`}
                 autoFocus
               />
             </div>
             <button
               type="submit"
-              disabled={answer.length !== 4}
+              disabled={!answer.trim()}
               className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               <Lock className="w-4 h-4" />
