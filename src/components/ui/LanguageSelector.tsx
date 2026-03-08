@@ -200,7 +200,7 @@ const LanguageSelector = () => {
         title="Change Language"
         disabled={translating}
       >
-        <img src={languageIcon} alt="Language" className="w-5 h-5 object-contain" />
+        <img src={languageIcon} alt="Language" className="w-8 h-8 object-contain" />
         <span className="text-xs font-medium text-muted-foreground hidden sm:inline">
           {translating ? '...' : selected.code.toUpperCase()}
         </span>
