@@ -146,7 +146,7 @@ const ProductDetail = () => {
             >
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-elevated">
                 <img 
-                  src={product.image} 
+                  src={heroImageUrl || product.image} 
                   alt={product.name}
                   loading="eager"
                   decoding="async"
