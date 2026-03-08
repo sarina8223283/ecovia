@@ -1,0 +1,1 @@
+UPDATE site_content SET content_type = 'image', image_url = content_value WHERE content_key IN ('orange-peel-powder_hero_image', 'orange-peel-powder_banner_image') AND content_value LIKE 'https://%';

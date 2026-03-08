@@ -24,6 +24,8 @@ const ProductDetail = () => {
   // Get AI-generated images for this product
   const benefitsImageUrl = siteContent?.[`${id}_benefits_image`]?.image_url;
   const comparisonImageUrl = siteContent?.[`${id}_comparison_image`]?.image_url;
+  const heroImageUrl = siteContent?.[`${id}_hero_image`]?.image_url || siteContent?.[`${id}_hero_image`]?.content_value;
+  const bannerImageUrl = siteContent?.[`${id}_banner_image`]?.image_url || siteContent?.[`${id}_banner_image`]?.content_value;
 
   // Get pricing tiers for this product
   const pricingTiers = id ? productPricing[id] || [] : [];
@@ -144,7 +146,7 @@ const ProductDetail = () => {
             >
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-elevated">
                 <img 
-                  src={product.image} 
+                  src={heroImageUrl || product.image} 
                   alt={product.name}
                   loading="eager"
                   decoding="async"

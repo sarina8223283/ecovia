@@ -78,7 +78,7 @@ footer_brand_name, footer_brand_subtitle, footer_brand_description,
 footer_phone, footer_email, footer_address, footer_copyright
 
 ### Product Images:
-{product-id}_benefits_image, {product-id}_comparison_image
+{product-id}_benefits_image, {product-id}_comparison_image, {product-id}_hero_image, {product-id}_banner_image
 
 ## Company Info:
 Brand: Mittika by Ecovia Enterprises. Director: Sagar Jadhav. Phone: +91 8758808684. Email: info@mittika.com.
@@ -263,8 +263,17 @@ serve(async (req) => {
       // ─── update_content ───
       if (tool_name === "update_content") {
         const { content_key, content_value } = parameters;
+        const isImageUrl = /^https?:\/\/.+\.(png|jpg|jpeg|gif|webp|svg)/i.test(content_value) || 
+                           content_value.includes('/storage/v1/object/public/');
+        const upsertData: any = { 
+          content_key, 
+          content_value, 
+          content_type: isImageUrl ? "image" : "text",
+          updated_at: new Date().toISOString() 
+        };
+        if (isImageUrl) upsertData.image_url = content_value;
         const { error } = await supabase.from("site_content")
-          .upsert({ content_key, content_value, updated_at: new Date().toISOString() }, { onConflict: "content_key" });
+          .upsert(upsertData, { onConflict: "content_key" });
         if (error) throw error;
         return new Response(JSON.stringify({ success: true, message: `✅ LIVE: "${content_key}" → "${content_value}"`, deployed: true }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
