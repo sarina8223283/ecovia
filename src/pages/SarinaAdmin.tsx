@@ -536,7 +536,13 @@ const AIChat = () => {
   const executeTool = async (toolName: string, parameters: any): Promise<string> => {
     try {
       const result = await callFunction({ action: 'execute_tool', tool_call: { tool_name: toolName, parameters } });
-      if (['update_content', 'delete_content', 'generate_image', 'update_theme'].includes(toolName)) {
+      
+      // If it's a batch_mode response (generate_product_images), handle client-side
+      if (result.batch_mode) {
+        return await executeBatchImages({ product_ids: result.product_ids, image_type: result.image_type });
+      }
+      
+      if (['update_content', 'delete_content', 'generate_image', 'update_theme', 'bulk_update_content', 'bulk_delete_content'].includes(toolName)) {
         invalidateCaches();
       }
       return JSON.stringify(result);
@@ -548,7 +554,7 @@ const AIChat = () => {
   // Process batch image generation client-side with progress tracking
   const executeBatchImages = async (parameters: any): Promise<string> => {
     const { product_ids, image_type } = parameters;
-    const ids: string[] = product_ids === 'all' ? Object.keys(PRODUCT_NAMES) : product_ids;
+    const ids: string[] = product_ids === 'all' ? Object.keys(PRODUCT_NAMES) : (Array.isArray(product_ids) ? product_ids : [product_ids]);
     const total = ids.length;
 
     const progress: BatchProgress = {
@@ -568,8 +574,8 @@ const AIChat = () => {
       setBatchProgress({ ...progress });
 
       const prompt = image_type === 'comparison'
-        ? `Professional product comparison infographic: Mittika ${name} (premium, natural, lab-tested, pure herbal) vs generic market ${name.toLowerCase()} (artificial, chemical additives, no testing). Clean side-by-side layout, earthy green and gold color scheme, modern minimalist design.`
-        : `Beautiful infographic showing the top 5 benefits of ${name} herbal powder for hair and skin care. Include icons for each benefit. Earthy natural color palette with green and gold tones. Clean, premium, modern design. Mittika branding style.`;
+        ? `Professional clean product comparison infographic: Mittika ${name} (premium, natural, lab-tested, pure herbal) vs generic market ${name.toLowerCase()} (artificial, chemical additives, no testing). Side-by-side layout, earthy green and gold colors, modern minimalist design, professional quality.`
+        : `Professional infographic showing top 5 benefits of ${name} herbal powder. Beautiful icons for each benefit. Earthy natural colors (green, gold, brown). Clean premium modern design. Mittika brand style. High quality.`;
 
       const contentKey = `${pid}_${image_type}_image`;
 
@@ -577,25 +583,29 @@ const AIChat = () => {
         const result = await callFunction({
           action: 'execute_tool',
           tool_call: { tool_name: 'generate_image', parameters: { prompt, content_key: contentKey } },
-        });
+        }, 3); // Extra retries for image generation
 
         if (result.image_url) {
           progress.successes.push(name);
           progress.images.push(result.image_url);
-          toast({ title: `✅ ${name}`, description: `${image_type} image generated` });
+          toast({ title: `✅ ${name}`, description: `${image_type} image generated & deployed` });
+        } else if (result.message) {
+          progress.failures.push(`${name}: ${result.message}`);
+          toast({ title: `⚠️ ${name}`, description: result.message, variant: 'destructive' });
         } else {
           progress.failures.push(name);
         }
-      } catch {
-        progress.failures.push(name);
+      } catch (err: any) {
+        progress.failures.push(`${name}: ${err.message}`);
+        toast({ title: `❌ ${name}`, description: err.message, variant: 'destructive' });
       }
 
       progress.completed = i + 1;
       setBatchProgress({ ...progress });
 
-      // Small delay between requests to avoid rate limits
+      // Delay between requests to avoid rate limits
       if (i < ids.length - 1) {
-        await new Promise(r => setTimeout(r, 2000));
+        await new Promise(r => setTimeout(r, 3000));
       }
     }
 
@@ -605,7 +615,7 @@ const AIChat = () => {
     return JSON.stringify({
       success: true,
       deployed: true,
-      message: `🖼️ Generated ${progress.successes.length}/${total} ${image_type} images. ${progress.failures.length > 0 ? `Failed: ${progress.failures.join(', ')}` : 'All successful!'}`,
+      message: `🖼️ Batch complete: ${progress.successes.length}/${total} ${image_type} images generated & deployed to product pages. ${progress.failures.length > 0 ? `\n\nFailed: ${progress.failures.join(', ')}` : '✨ All successful!'}`,
       results: progress.successes.map(name => ({ product: name })),
       images: progress.images,
     });
@@ -634,21 +644,19 @@ const AIChat = () => {
 
           const toolLabels: Record<string, string> = {
             update_content: '✏️ Updating content...',
+            bulk_update_content: '✏️ Bulk updating content...',
             generate_image: '🖼️ Generating image...',
-            generate_product_images: '🖼️ Generating product images...',
+            generate_product_images: '🖼️ Starting batch image generation...',
             update_theme: '🎨 Updating theme...',
             list_content: '📋 Listing content...',
             delete_content: '🗑️ Deleting content...',
+            bulk_delete_content: '🗑️ Bulk deleting content...',
             get_website_info: '📖 Getting info...',
           };
           setStatusText(toolLabels[fn.name] || `⚙️ Running ${fn.name}...`);
 
-          let toolResult: string;
-          if (fn.name === 'generate_product_images') {
-            toolResult = await executeBatchImages(params);
-          } else {
-            toolResult = await executeTool(fn.name, params);
-          }
+          // All tools go through executeTool now (it handles batch_mode internally)
+          const toolResult = await executeTool(fn.name, params);
 
           toolResults.push(`**${fn.name}**: ${toolResult}`);
           try {
