@@ -264,15 +264,20 @@ const LanguageSelector = () => {
     setIsOpen(false);
     localStorage.setItem(PREFERRED_LANGUAGE_KEY, lang.code);
 
+    if (lang.code === 'en') {
+      setTranslating(true);
+      restoreEnglish();
+      setTranslating(false);
+      toast({ title: '🌐 Language changed', description: 'Switched back to English' });
+      return;
+    }
+
+    toast({ title: '🌐 Translating...', description: `Switching to ${lang.name} (${lang.native})` });
     setTranslating(true);
     try {
-      if (lang.code === 'en') {
-        restoreEnglish();
-      } else {
-        // Always restore English first so switching between Hindi/Marathi/etc stays accurate.
-        restoreEnglish();
-        await applyTranslation(lang.code);
-      }
+      restoreEnglish();
+      await applyTranslation(lang.code);
+      toast({ title: '✅ Translation complete', description: `Now viewing in ${lang.name} (${lang.native})` });
     } finally {
       setTranslating(false);
     }
