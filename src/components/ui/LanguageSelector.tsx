@@ -196,6 +196,16 @@ const LanguageSelector = () => {
     document.documentElement.lang = 'en';
   }, []);
 
+  // Listen for logo-click reset to English
+  useEffect(() => {
+    const handler = () => {
+      setSelected(languages[0]);
+      restoreEnglish();
+    };
+    window.addEventListener('reset-language-english', handler);
+    return () => window.removeEventListener('reset-language-english', handler);
+  }, [restoreEnglish]);
+
   const applyTranslation = useCallback(async (langCode: string) => {
     const nodes = getTextNodes();
     if (!nodes.length) return;
