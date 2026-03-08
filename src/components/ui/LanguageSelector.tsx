@@ -25,15 +25,46 @@ const languages = [
   { code: 'kok', name: 'Konkani', native: 'कोंकणी' },
 ];
 
-const triggerGoogleTranslate = (langCode: string) => {
-  // Try to find the combo box and change language
-  const combo = document.querySelector('.goog-te-combo') as HTMLSelectElement;
-  if (combo) {
-    combo.value = langCode;
-    combo.dispatchEvent(new Event('change'));
-    return true;
+const EXCLUDED_TAGS = new Set([
+  'SCRIPT',
+  'STYLE',
+  'NOSCRIPT',
+  'TEXTAREA',
+  'INPUT',
+  'SELECT',
+  'OPTION',
+  'CODE',
+  'PRE',
+  'SVG',
+]);
+
+const TRANSLATION_CACHE_KEY = 'mittika_translation_cache_v1';
+
+type CacheShape = Record<string, Record<string, string>>;
+
+const readCache = (): CacheShape => {
+  try {
+    return JSON.parse(localStorage.getItem(TRANSLATION_CACHE_KEY) || '{}');
+  } catch {
+    return {};
   }
-  return false;
+};
+
+const writeCache = (cache: CacheShape) => {
+  localStorage.setItem(TRANSLATION_CACHE_KEY, JSON.stringify(cache));
+};
+
+const translateText = async (text: string, targetLang: string): Promise<string> => {
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+  const res = await fetch(url);
+  if (!res.ok) return text;
+
+  const data = await res.json();
+  const translated = Array.isArray(data?.[0])
+    ? data[0].map((part: any[]) => part?.[0] || '').join('')
+    : text;
+
+  return translated || text;
 };
 
 const LanguageSelector = () => {
@@ -41,6 +72,7 @@ const LanguageSelector = () => {
   const [selected, setSelected] = useState(languages[0]);
   const [translating, setTranslating] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const originalTextsRef = useRef<Map<Text, string>>(new Map());
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -50,54 +82,117 @@ const LanguageSelector = () => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  // Detect current language from cookie on mount
   useEffect(() => {
-    const match = document.cookie.match(/googtrans=\/en\/(\w+)/);
-    if (match) {
-      const found = languages.find(l => l.code === match[1]);
-      if (found) setSelected(found);
-    }
+    const saved = localStorage.getItem('preferred_language');
+    const found = languages.find((l) => l.code === saved);
+    if (found) setSelected(found);
   }, []);
 
-  const handleSelect = useCallback((lang: typeof languages[0]) => {
+  const getTextNodes = useCallback(() => {
+    const nodes: Text[] = [];
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+
+    while (walker.nextNode()) {
+      const textNode = walker.currentNode as Text;
+      const parent = textNode.parentElement;
+      if (!parent) continue;
+
+      if (EXCLUDED_TAGS.has(parent.tagName)) continue;
+      if (parent.closest('[data-no-translate="true"]')) continue;
+
+      const raw = textNode.textContent || '';
+      const trimmed = raw.trim();
+      if (!trimmed || trimmed.length < 2) continue;
+
+      nodes.push(textNode);
+    }
+
+    return nodes;
+  }, []);
+
+  const restoreEnglish = useCallback(() => {
+    originalTextsRef.current.forEach((original, node) => {
+      if (node.isConnected) {
+        node.textContent = original;
+      }
+    });
+    document.documentElement.lang = 'en';
+  }, []);
+
+  const applyTranslation = useCallback(async (langCode: string) => {
+    const nodes = getTextNodes();
+    const cache = readCache();
+    cache[langCode] = cache[langCode] || {};
+
+    // Capture original text once
+    nodes.forEach((node) => {
+      if (!originalTextsRef.current.has(node)) {
+        originalTextsRef.current.set(node, node.textContent || '');
+      }
+    });
+
+    const uniqueTexts = Array.from(
+      new Set(
+        nodes
+          .map((n) => (originalTextsRef.current.get(n) || '').trim())
+          .filter(Boolean)
+      )
+    );
+
+    // Translate missing items in small chunks for smoother UI
+    const missing = uniqueTexts.filter((t) => !cache[langCode][t]);
+
+    for (let i = 0; i < missing.length; i += 12) {
+      const chunk = missing.slice(i, i + 12);
+      const results = await Promise.all(
+        chunk.map(async (t) => {
+          try {
+            const translated = await translateText(t, langCode);
+            return { t, translated };
+          } catch {
+            return { t, translated: t };
+          }
+        })
+      );
+
+      results.forEach(({ t, translated }) => {
+        cache[langCode][t] = translated;
+      });
+
+      writeCache(cache);
+    }
+
+    // Apply translated strings
+    nodes.forEach((node) => {
+      const original = originalTextsRef.current.get(node) || '';
+      const trimmed = original.trim();
+      const translated = cache[langCode][trimmed] || trimmed;
+      if (!trimmed) return;
+      node.textContent = original.replace(trimmed, translated);
+    });
+
+    document.documentElement.lang = langCode;
+  }, [getTextNodes]);
+
+  const handleSelect = useCallback(async (lang: typeof languages[0]) => {
     setSelected(lang);
     setIsOpen(false);
-
-    if (lang.code === 'en') {
-      // Reset to English: clear cookies and reload once
-      document.cookie = 'googtrans=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT';
-      document.cookie = `googtrans=;path=/;domain=${window.location.hostname};expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-      // Try combo first
-      if (triggerGoogleTranslate('en')) return;
-      window.location.reload();
-      return;
-    }
+    localStorage.setItem('preferred_language', lang.code);
 
     setTranslating(true);
-
-    // Set cookies for persistence
-    document.cookie = `googtrans=/en/${lang.code};path=/;`;
-    document.cookie = `googtrans=/en/${lang.code};path=/;domain=${window.location.hostname}`;
-
-    // Attempt to trigger translation via combo box with polling
-    let attempts = 0;
-    const maxAttempts = 20;
-    const interval = setInterval(() => {
-      attempts++;
-      const success = triggerGoogleTranslate(lang.code);
-      if (success || attempts >= maxAttempts) {
-        clearInterval(interval);
-        setTranslating(false);
-        // If combo was never found, reload as fallback
-        if (!success && attempts >= maxAttempts) {
-          window.location.reload();
-        }
+    try {
+      if (lang.code === 'en') {
+        restoreEnglish();
+      } else {
+        await applyTranslation(lang.code);
       }
-    }, 250);
-  }, []);
+    } finally {
+      setTranslating(false);
+    }
+  }, [applyTranslation, restoreEnglish]);
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative" data-no-translate="true">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="p-1.5 hover:bg-secondary rounded-lg transition-colors flex items-center gap-1"
@@ -120,7 +215,7 @@ const LanguageSelector = () => {
             transition={{ duration: 0.15 }}
             className="absolute right-0 top-full mt-2 w-56 max-h-80 overflow-y-auto bg-card rounded-xl shadow-elevated border border-border z-[100] py-1"
           >
-            {languages.map(lang => (
+            {languages.map((lang) => (
               <button
                 key={lang.code}
                 onClick={() => handleSelect(lang)}
