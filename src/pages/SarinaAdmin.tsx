@@ -92,7 +92,7 @@ const PasswordGate = ({ onAuth }: { onAuth: () => void }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (answer.trim() === BIRTH_YEAR_ANSWER) {
+    if (answer.trim() === ADMIN_PASSWORD) {
       onAuth();
       toast({ title: '🔓 Access granted', description: 'Welcome to Sarina Admin' });
     } else {
