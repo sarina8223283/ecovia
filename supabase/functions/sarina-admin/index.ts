@@ -719,6 +719,30 @@ serve(async (req) => {
         {
           type: "function",
           function: {
+            name: "preview_changes",
+            description: "Preview content changes BEFORE deploying. Shows current vs proposed values. Use when user wants to review changes first, or when making significant updates. Returns a preview that the user can approve or reject.",
+            parameters: {
+              type: "object",
+              properties: {
+                changes: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      key: { type: "string" },
+                      value: { type: "string" },
+                    },
+                    required: ["key", "value"],
+                  },
+                },
+              },
+              required: ["changes"],
+            },
+          },
+        },
+        {
+          type: "function",
+          function: {
             name: "get_analytics",
             description: "Get LIVE website traffic analytics. Returns total visitors, page-wise breakdown, referral sources (Instagram, WhatsApp, Facebook, etc.), daily trends, and device breakdown (mobile vs desktop). Use this whenever the user asks about visitors, traffic, analytics, or performance.",
             parameters: {
