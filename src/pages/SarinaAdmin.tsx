@@ -27,20 +27,46 @@ interface ContentItem {
 
 type Tab = 'chat' | 'content' | 'theme' | 'images';
 
-const callFunction = async (body: any) => {
-  const resp = await fetch(FUNC_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${ANON_KEY}`,
-    },
-    body: JSON.stringify(body),
-  });
-  if (!resp.ok) {
-    const err = await resp.json().catch(() => ({ error: 'Request failed' }));
-    throw new Error(err.error || `Error ${resp.status}`);
+const callFunction = async (body: any, retries = 2): Promise<any> => {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 120000); // 2 min timeout
+
+      const resp = await fetch(FUNC_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${ANON_KEY}`,
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+
+      if (resp.status === 429) {
+        if (attempt < retries) {
+          await new Promise(r => setTimeout(r, 3000 * (attempt + 1)));
+          continue;
+        }
+        throw new Error('Rate limited. Please wait a moment and try again.');
+      }
+      if (resp.status === 402) {
+        throw new Error('AI credits exhausted. Please add credits in workspace settings.');
+      }
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ error: 'Request failed' }));
+        throw new Error(err.error || `Error ${resp.status}`);
+      }
+      return resp.json();
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        throw new Error('Request timed out. The operation took too long.');
+      }
+      if (attempt === retries) throw err;
+      await new Promise(r => setTimeout(r, 2000));
+    }
   }
-  return resp.json();
 };
 
 // ─── Birth Year Gate ───
@@ -465,7 +491,7 @@ const BatchProgressUI = ({ progress }: { progress: BatchProgress }) => {
       {/* Success/fail counts */}
       <div className="flex gap-3 text-xs">
         {progress.successes.length > 0 && (
-          <span className="text-green-600">✅ {progress.successes.length} done</span>
+          <span className="text-primary">✅ {progress.successes.length} done</span>
         )}
         {progress.failures.length > 0 && (
           <span className="text-destructive">❌ {progress.failures.length} failed</span>
@@ -487,10 +513,11 @@ const BatchProgressUI = ({ progress }: { progress: BatchProgress }) => {
 // ─── AI Chat Tab ───
 const AIChat = () => {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website and answer any questions. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika" → *deploys instantly*\n- 🖼️ "Generate a banner of herbal powders" → *creates & deploys*\n- 🖼️ "Generate benefit images for all 15 products" → *batch with progress*\n- ❓ "What products do we sell?" → *answers from knowledge*\n- 📋 "Show me all live content" → *lists what\'s deployed*\n- 🎨 "Set primary color to dark green" → *theme update live*' },
+    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website — changes appear **instantly** in real-time. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika"\n- 🖼️ "Generate a banner of herbal powders"\n- 🖼️ "Generate benefit images for all 15 products"\n- 📋 "Show me all live content"\n- 🎨 "Set primary color to dark green"\n- ❓ "What products do we sell?"' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [statusText, setStatusText] = useState('');
   const [batchProgress, setBatchProgress] = useState<BatchProgress | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
@@ -593,6 +620,7 @@ const AIChat = () => {
     setLoading(true);
 
     try {
+      setStatusText('🤔 Sarina is thinking...');
       const aiMessages = newMessages.map(m => ({ role: m.role, content: m.content }));
       const result = await callFunction({ action: 'chat', messages: aiMessages });
 
@@ -604,9 +632,19 @@ const AIChat = () => {
           const fn = tc.function;
           const params = typeof fn.arguments === 'string' ? JSON.parse(fn.arguments) : fn.arguments;
 
+          const toolLabels: Record<string, string> = {
+            update_content: '✏️ Updating content...',
+            generate_image: '🖼️ Generating image...',
+            generate_product_images: '🖼️ Generating product images...',
+            update_theme: '🎨 Updating theme...',
+            list_content: '📋 Listing content...',
+            delete_content: '🗑️ Deleting content...',
+            get_website_info: '📖 Getting info...',
+          };
+          setStatusText(toolLabels[fn.name] || `⚙️ Running ${fn.name}...`);
+
           let toolResult: string;
           if (fn.name === 'generate_product_images') {
-            // Handle batch images client-side with progress
             toolResult = await executeBatchImages(params);
           } else {
             toolResult = await executeTool(fn.name, params);
@@ -626,27 +664,29 @@ const AIChat = () => {
           } catch {}
         }
 
+        setStatusText('📝 Summarizing changes...');
         const followUp = await callFunction({
           action: 'chat',
           messages: [
             ...aiMessages,
             { role: 'assistant', content: result.message || 'Executing...' },
-            { role: 'user', content: `Tool results:\n${toolResults.join('\n')}\n\nSummarize what was done.` },
+            { role: 'user', content: `Tool results:\n${toolResults.join('\n')}\n\nSummarize what was done and confirm it's live.` },
           ],
         });
 
         setMessages(prev => [...prev, {
           role: 'assistant',
-          content: followUp.message || 'Changes applied!',
+          content: followUp.message || 'Changes applied and live!',
           images: allImages.length > 0 ? allImages.slice(0, 8) : undefined,
         }]);
       } else {
         setMessages(prev => [...prev, { role: 'assistant', content: result.message || 'Done.' }]);
       }
     } catch (err: any) {
-      setMessages(prev => [...prev, { role: 'assistant', content: `❌ Error: ${err.message}` }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: `❌ Error: ${err.message}\n\nPlease try again or simplify your request.` }]);
     } finally {
       setLoading(false);
+      setStatusText('');
       setBatchProgress(null);
     }
   }, [input, loading, messages]);
@@ -681,9 +721,9 @@ const AIChat = () => {
         {/* Simple loading indicator (non-batch) */}
         {loading && !batchProgress && (
           <div className="flex justify-start">
-            <div className="bg-card border border-border rounded-2xl px-4 py-3 flex items-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-primary" />
-              <span className="text-sm text-muted-foreground">Sarina is working...</span>
+            <div className="bg-card border border-border rounded-2xl px-4 py-3 flex items-center gap-2 max-w-[85%]">
+              <Loader2 className="w-4 h-4 animate-spin text-primary flex-shrink-0" />
+              <span className="text-sm text-muted-foreground">{statusText || 'Sarina is working...'}</span>
             </div>
           </div>
         )}

@@ -387,11 +387,15 @@ serve(async (req) => {
       const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
       if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-      // Get current content for context
-      const { data: contentData } = await supabase.from("site_content").select("content_key, content_value, content_type, image_url");
+      // Get current content for context (summarized to reduce token usage)
+      const { data: contentData } = await supabase.from("site_content").select("content_key, content_value, content_type");
       const { data: themeData } = await supabase.from("site_theme").select("theme_key, theme_value");
 
-      const contextPrompt = `\n\n## Current LIVE Website Content (${contentData?.length || 0} entries):\n${JSON.stringify(contentData || [], null, 2)}\n\n## Current LIVE Theme Settings:\n${JSON.stringify(themeData || [], null, 2)}\n\nRemember: Any update_content or update_theme call deploys IMMEDIATELY to the live website at ecovia.co.in`;
+      // Only include text content keys for context (skip image entries to save tokens)
+      const textContent = (contentData || []).filter((c: any) => c.content_type === 'text');
+      const imageKeys = (contentData || []).filter((c: any) => c.content_type === 'image').map((c: any) => c.content_key);
+
+      const contextPrompt = `\n\n## Current LIVE Text Content (${textContent.length} entries):\n${JSON.stringify(textContent, null, 1)}\n\n## Deployed Image Keys (${imageKeys.length}):\n${imageKeys.join(', ')}\n\n## Current Theme:\n${JSON.stringify(themeData || [])}\n\nAny update_content or update_theme call deploys IMMEDIATELY to the live website.`;
 
       const tools = [
         {
