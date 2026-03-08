@@ -13,7 +13,8 @@ const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
-  images?: string[];
+  images?: { url: string; model?: string; contentKey?: string }[];
+  pendingDeploy?: boolean;
 }
 
 interface ContentItem {
@@ -535,8 +536,43 @@ const ImageZoomModal = ({ src, onClose }: { src: string; onClose: () => void }) 
     </motion.div>
   </AnimatePresence>
 );
+// ─── Deploy Confirmation Banner ───
+const DeployConfirmBanner = ({ images, onConfirm, onReject }: {
+  images: { url: string; model?: string; contentKey?: string }[];
+  onConfirm: () => void;
+  onReject: () => void;
+}) => (
+  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-accent/10 border border-accent rounded-2xl p-4 space-y-3">
+    <p className="text-sm font-medium text-foreground">📋 Review before deploying:</p>
+    <div className="grid grid-cols-2 gap-2">
+      {images.map((img, i) => (
+        <div key={i} className="relative">
+          <img src={img.url} alt="Preview" className="rounded-xl w-full h-28 object-cover border border-border" />
+          {img.model && (
+            <span className="absolute bottom-1 left-1 text-[9px] bg-black/60 text-white px-1.5 py-0.5 rounded-full">
+              🤖 {img.model.split('/').pop()}
+            </span>
+          )}
+          {img.contentKey && (
+            <span className="absolute top-1 left-1 text-[9px] bg-primary/80 text-primary-foreground px-1.5 py-0.5 rounded-full">
+              {img.contentKey}
+            </span>
+          )}
+        </div>
+      ))}
+    </div>
+    <div className="flex gap-2">
+      <button onClick={onConfirm} className="flex-1 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors">
+        ✅ Deploy to Website
+      </button>
+      <button onClick={onReject} className="flex-1 py-2 bg-secondary text-secondary-foreground rounded-xl text-sm font-medium hover:bg-secondary/80 transition-colors">
+        ❌ Discard
+      </button>
+    </div>
+  </motion.div>
+);
 
-// ─── AI Chat Tab ───
+
 const AIChat = () => {
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website — changes appear **instantly** in real-time. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika"\n- 🖼️ "Generate a high-quality banner of herbal powders"\n- 🖼️ "Generate benefit images for all 15 products"\n- 📎 Upload PDFs, images, or documents as reference\n- 📋 "Show me all live content"\n- 🎨 "Set primary color to dark green"' },
@@ -548,6 +584,7 @@ const AIChat = () => {
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const [attachedFiles, setAttachedFiles] = useState<{ name: string; url: string; type: string }[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [pendingDeploy, setPendingDeploy] = useState<{ url: string; model?: string; contentKey?: string }[] | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
@@ -715,7 +752,7 @@ const AIChat = () => {
 
       if (result.tool_calls?.length > 0) {
         const toolResults: string[] = [];
-        const allImages: string[] = [];
+        const allImages: { url: string; model?: string; contentKey?: string }[] = [];
 
         for (const tc of result.tool_calls) {
           const fn = tc.function;
@@ -740,10 +777,10 @@ const AIChat = () => {
           toolResults.push(`**${fn.name}**: ${toolResult}`);
           try {
             const parsed = JSON.parse(toolResult);
-            if (parsed.image_url) allImages.push(parsed.image_url);
-            if (parsed.images?.length) allImages.push(...parsed.images);
+            if (parsed.image_url) allImages.push({ url: parsed.image_url, model: parsed.model_used, contentKey: params.content_key });
+            if (parsed.images?.length) allImages.push(...parsed.images.map((u: string) => ({ url: u })));
             if (parsed.results?.length) {
-              parsed.results.forEach((r: any) => { if (r.image_url) allImages.push(r.image_url); });
+              parsed.results.forEach((r: any) => { if (r.image_url) allImages.push({ url: r.image_url, model: r.model_used }); });
             }
             if (parsed.deployed) {
               toast({ title: '🚀 Deployed Live', description: parsed.message || 'Change is live on the website!' });
@@ -757,17 +794,22 @@ const AIChat = () => {
           messages: [
             ...aiMessages,
             { role: 'assistant', content: result.message || 'Executing...' },
-            { role: 'user', content: `Tool results:\n${toolResults.join('\n')}\n\nSummarize what was done and confirm it's live.` },
+            { role: 'user', content: `Tool results:\n${toolResults.join('\n')}\n\nSummarize what was done and confirm it's live. Mention which AI model was used for any generated images.` },
           ],
         });
 
         setMessages(prev => [...prev, {
-          role: 'assistant',
+          role: 'assistant' as const,
           content: followUp.message || 'Changes applied and live!',
           images: allImages.length > 0 ? allImages.slice(0, 8) : undefined,
         }]);
+
+        // Show deploy confirmation for generated images
+        if (allImages.length > 0) {
+          setPendingDeploy(allImages.slice(0, 8));
+        }
       } else {
-        setMessages(prev => [...prev, { role: 'assistant', content: result.message || 'Done.' }]);
+        setMessages(prev => [...prev, { role: 'assistant' as const, content: result.message || 'Done.' }]);
       }
     } catch (err: any) {
       setMessages(prev => [...prev, { role: 'assistant', content: `❌ Error: ${err.message}\n\nPlease try again or simplify your request.` }]);
@@ -791,15 +833,22 @@ const AIChat = () => {
                 <ReactMarkdown>{msg.content}</ReactMarkdown>
               </div>
               {msg.images && msg.images.length > 0 && (
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  {msg.images.map((img, j) => (
-                    <div key={j} className="relative group cursor-pointer" onClick={() => setZoomedImage(img)}>
-                      <img src={img} alt="Generated" className="rounded-xl w-full h-32 object-cover border border-border" />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
-                        <ZoomIn className="w-6 h-6 text-white drop-shadow-lg" />
+                <div className="mt-3 space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    {msg.images.map((img, j) => (
+                      <div key={j} className="relative group cursor-pointer" onClick={() => setZoomedImage(img.url)}>
+                        <img src={img.url} alt="Generated" className="rounded-xl w-full h-32 object-cover border border-border" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
+                          <ZoomIn className="w-6 h-6 text-white drop-shadow-lg" />
+                        </div>
+                        {img.model && (
+                          <span className="absolute bottom-1 left-1 text-[9px] bg-black/60 text-white px-1.5 py-0.5 rounded-full">
+                            🤖 {img.model.split('/').pop()}
+                          </span>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -810,6 +859,24 @@ const AIChat = () => {
         {batchProgress && (
           <div className="flex justify-start">
             <BatchProgressUI progress={batchProgress} />
+          </div>
+        )}
+
+        {/* Deploy confirmation */}
+        {pendingDeploy && pendingDeploy.length > 0 && (
+          <div className="flex justify-start max-w-[85%]">
+            <DeployConfirmBanner
+              images={pendingDeploy}
+              onConfirm={() => {
+                setPendingDeploy(null);
+                toast({ title: '✅ Images already deployed', description: 'Images are live on the website!' });
+                invalidateCaches();
+              }}
+              onReject={() => {
+                setPendingDeploy(null);
+                setMessages(prev => [...prev, { role: 'assistant', content: '🗑️ Images discarded. Ask me to generate new ones with a different style!' }]);
+              }}
+            />
           </div>
         )}
 
