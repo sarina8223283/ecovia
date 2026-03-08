@@ -413,33 +413,175 @@ const ImageGallery = () => {
   );
 };
 
+// ─── Progress Tracker ───
+interface BatchProgress {
+  total: number;
+  completed: number;
+  current: string;
+  successes: string[];
+  failures: string[];
+  images: string[];
+}
+
+const PRODUCT_NAMES: Record<string, string> = {
+  "amla-powder": "Amla Powder", "shikakai-powder": "Shikakai Powder", "ritha-powder": "Ritha Powder",
+  "bhringraj-powder": "Bhringraj Powder", "hibiscus-powder": "Hibiscus Powder", "onion-powder": "Onion Powder",
+  "coconut-powder": "Coconut Powder", "rosemary-powder": "Rosemary Powder", "rose-petals-powder": "Rose Petals Powder",
+  "multani-mitti": "Multani Mitti", "neem-powder": "Neem Powder", "kasturi-haldi": "Kasturi Haldi",
+  "orange-peel-powder": "Orange Peel Powder", "brahmi-powder": "Brahmi Powder", "moringa-powder": "Moringa Powder",
+};
+
+const BatchProgressUI = ({ progress }: { progress: BatchProgress }) => {
+  const pct = Math.round((progress.completed / progress.total) * 100);
+  return (
+    <div className="bg-card border border-border rounded-2xl px-4 py-3 max-w-[85%] space-y-3">
+      <div className="flex items-center gap-2">
+        <Loader2 className="w-4 h-4 animate-spin text-primary flex-shrink-0" />
+        <span className="text-sm font-medium text-foreground">Generating images...</span>
+      </div>
+
+      {/* Progress bar */}
+      <div className="space-y-1">
+        <div className="flex justify-between text-xs text-muted-foreground">
+          <span>{progress.completed}/{progress.total} completed</span>
+          <span className="font-semibold text-primary">{pct}%</span>
+        </div>
+        <div className="w-full h-2.5 bg-secondary rounded-full overflow-hidden">
+          <motion.div
+            className="h-full bg-primary rounded-full"
+            initial={{ width: 0 }}
+            animate={{ width: `${pct}%` }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          />
+        </div>
+      </div>
+
+      {/* Current item */}
+      <div className="flex items-center gap-2 text-xs">
+        <span className="text-muted-foreground">Currently generating:</span>
+        <span className="font-medium text-foreground bg-primary/10 px-2 py-0.5 rounded-full">{progress.current}</span>
+      </div>
+
+      {/* Success/fail counts */}
+      <div className="flex gap-3 text-xs">
+        {progress.successes.length > 0 && (
+          <span className="text-green-600">✅ {progress.successes.length} done</span>
+        )}
+        {progress.failures.length > 0 && (
+          <span className="text-destructive">❌ {progress.failures.length} failed</span>
+        )}
+      </div>
+
+      {/* Recent successes preview */}
+      {progress.images.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {progress.images.slice(-4).map((img, i) => (
+            <img key={i} src={img} alt="Generated" className="w-16 h-16 rounded-lg object-cover flex-shrink-0 border border-border" />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ─── AI Chat Tab ───
 const AIChat = () => {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website and answer any questions. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika" → *deploys instantly*\n- 🖼️ "Generate a banner of herbal powders" → *creates & deploys*\n- ❓ "What products do we sell?" → *answers from knowledge*\n- 📋 "Show me all live content" → *lists what\'s deployed*\n- 🎨 "Set primary color to dark green" → *theme update live*\n- 🌐 "What pages does our website have?" → *explains structure*' },
+    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website and answer any questions. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika" → *deploys instantly*\n- 🖼️ "Generate a banner of herbal powders" → *creates & deploys*\n- 🖼️ "Generate benefit images for all 15 products" → *batch with progress*\n- ❓ "What products do we sell?" → *answers from knowledge*\n- 📋 "Show me all live content" → *lists what\'s deployed*\n- 🎨 "Set primary color to dark green" → *theme update live*' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [batchProgress, setBatchProgress] = useState<BatchProgress | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, batchProgress]);
+
+  const invalidateCaches = () => {
+    queryClient.invalidateQueries({ queryKey: ['site-content'] });
+    queryClient.invalidateQueries({ queryKey: ['admin-content'] });
+    queryClient.invalidateQueries({ queryKey: ['admin-theme'] });
+    queryClient.invalidateQueries({ queryKey: ['admin-images'] });
+  };
 
   const executeTool = async (toolName: string, parameters: any): Promise<string> => {
     try {
       const result = await callFunction({ action: 'execute_tool', tool_call: { tool_name: toolName, parameters } });
-      if (['update_content', 'delete_content', 'generate_image', 'update_theme', 'generate_product_images'].includes(toolName)) {
-        queryClient.invalidateQueries({ queryKey: ['site-content'] });
-        queryClient.invalidateQueries({ queryKey: ['admin-content'] });
-        queryClient.invalidateQueries({ queryKey: ['admin-theme'] });
-        queryClient.invalidateQueries({ queryKey: ['admin-images'] });
+      if (['update_content', 'delete_content', 'generate_image', 'update_theme'].includes(toolName)) {
+        invalidateCaches();
       }
       return JSON.stringify(result);
     } catch (err: any) {
       return JSON.stringify({ error: err.message });
     }
+  };
+
+  // Process batch image generation client-side with progress tracking
+  const executeBatchImages = async (parameters: any): Promise<string> => {
+    const { product_ids, image_type } = parameters;
+    const ids: string[] = product_ids === 'all' ? Object.keys(PRODUCT_NAMES) : product_ids;
+    const total = ids.length;
+
+    const progress: BatchProgress = {
+      total,
+      completed: 0,
+      current: PRODUCT_NAMES[ids[0]] || ids[0],
+      successes: [],
+      failures: [],
+      images: [],
+    };
+    setBatchProgress({ ...progress });
+
+    for (let i = 0; i < ids.length; i++) {
+      const pid = ids[i];
+      const name = PRODUCT_NAMES[pid] || pid;
+      progress.current = name;
+      setBatchProgress({ ...progress });
+
+      const prompt = image_type === 'comparison'
+        ? `Professional product comparison infographic: Mittika ${name} (premium, natural, lab-tested, pure herbal) vs generic market ${name.toLowerCase()} (artificial, chemical additives, no testing). Clean side-by-side layout, earthy green and gold color scheme, modern minimalist design.`
+        : `Beautiful infographic showing the top 5 benefits of ${name} herbal powder for hair and skin care. Include icons for each benefit. Earthy natural color palette with green and gold tones. Clean, premium, modern design. Mittika branding style.`;
+
+      const contentKey = `${pid}_${image_type}_image`;
+
+      try {
+        const result = await callFunction({
+          action: 'execute_tool',
+          tool_call: { tool_name: 'generate_image', parameters: { prompt, content_key: contentKey } },
+        });
+
+        if (result.image_url) {
+          progress.successes.push(name);
+          progress.images.push(result.image_url);
+          toast({ title: `✅ ${name}`, description: `${image_type} image generated` });
+        } else {
+          progress.failures.push(name);
+        }
+      } catch {
+        progress.failures.push(name);
+      }
+
+      progress.completed = i + 1;
+      setBatchProgress({ ...progress });
+
+      // Small delay between requests to avoid rate limits
+      if (i < ids.length - 1) {
+        await new Promise(r => setTimeout(r, 2000));
+      }
+    }
+
+    invalidateCaches();
+    setBatchProgress(null);
+
+    return JSON.stringify({
+      success: true,
+      deployed: true,
+      message: `🖼️ Generated ${progress.successes.length}/${total} ${image_type} images. ${progress.failures.length > 0 ? `Failed: ${progress.failures.join(', ')}` : 'All successful!'}`,
+      results: progress.successes.map(name => ({ product: name })),
+      images: progress.images,
+    });
   };
 
   const handleSend = useCallback(async () => {
@@ -456,18 +598,27 @@ const AIChat = () => {
 
       if (result.tool_calls?.length > 0) {
         const toolResults: string[] = [];
-        const images: string[] = [];
+        const allImages: string[] = [];
 
         for (const tc of result.tool_calls) {
           const fn = tc.function;
           const params = typeof fn.arguments === 'string' ? JSON.parse(fn.arguments) : fn.arguments;
-          const toolResult = await executeTool(fn.name, params);
+
+          let toolResult: string;
+          if (fn.name === 'generate_product_images') {
+            // Handle batch images client-side with progress
+            toolResult = await executeBatchImages(params);
+          } else {
+            toolResult = await executeTool(fn.name, params);
+          }
+
           toolResults.push(`**${fn.name}**: ${toolResult}`);
           try {
             const parsed = JSON.parse(toolResult);
-            if (parsed.image_url) images.push(parsed.image_url);
+            if (parsed.image_url) allImages.push(parsed.image_url);
+            if (parsed.images?.length) allImages.push(...parsed.images);
             if (parsed.results?.length) {
-              parsed.results.forEach((r: any) => { if (r.image_url) images.push(r.image_url); });
+              parsed.results.forEach((r: any) => { if (r.image_url) allImages.push(r.image_url); });
             }
             if (parsed.deployed) {
               toast({ title: '🚀 Deployed Live', description: parsed.message || 'Change is live on the website!' });
@@ -487,7 +638,7 @@ const AIChat = () => {
         setMessages(prev => [...prev, {
           role: 'assistant',
           content: followUp.message || 'Changes applied!',
-          images: images.length > 0 ? images : undefined,
+          images: allImages.length > 0 ? allImages.slice(0, 8) : undefined,
         }]);
       } else {
         setMessages(prev => [...prev, { role: 'assistant', content: result.message || 'Done.' }]);
@@ -496,6 +647,7 @@ const AIChat = () => {
       setMessages(prev => [...prev, { role: 'assistant', content: `❌ Error: ${err.message}` }]);
     } finally {
       setLoading(false);
+      setBatchProgress(null);
     }
   }, [input, loading, messages]);
 
@@ -508,15 +660,26 @@ const AIChat = () => {
               <div className="prose prose-sm max-w-none dark:prose-invert">
                 <ReactMarkdown>{msg.content}</ReactMarkdown>
               </div>
-              {msg.images?.map((img, j) => (
-                <div key={j} className="mt-3">
-                  <img src={img} alt="Generated" className="rounded-xl max-w-full max-h-48 object-contain" />
+              {msg.images && msg.images.length > 0 && (
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  {msg.images.map((img, j) => (
+                    <img key={j} src={img} alt="Generated" className="rounded-xl w-full h-32 object-cover border border-border" />
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           </motion.div>
         ))}
-        {loading && (
+
+        {/* Batch progress indicator */}
+        {batchProgress && (
+          <div className="flex justify-start">
+            <BatchProgressUI progress={batchProgress} />
+          </div>
+        )}
+
+        {/* Simple loading indicator (non-batch) */}
+        {loading && !batchProgress && (
           <div className="flex justify-start">
             <div className="bg-card border border-border rounded-2xl px-4 py-3 flex items-center gap-2">
               <Loader2 className="w-4 h-4 animate-spin text-primary" />
