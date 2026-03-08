@@ -15,10 +15,10 @@ const WhatsAppButton = () => {
       animate={{ scale: 1 }}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
-      className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-elevated hover:shadow-2xl transition-shadow cursor-pointer flex items-center justify-center bg-[#25D366]"
+      className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full shadow-elevated hover:shadow-2xl transition-shadow cursor-pointer flex items-center justify-center bg-[#25D366]"
       aria-label="Contact us on WhatsApp"
     >
-      <img src={whatsappIcon} alt="WhatsApp" className="w-9 h-9 object-contain" />
+      <img src={whatsappIcon} alt="WhatsApp" className="w-11 h-11 object-contain" />
     </motion.a>
   );
 };
