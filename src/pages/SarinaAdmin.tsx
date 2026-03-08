@@ -954,6 +954,10 @@ const AIChat = () => {
                 }
               }
               if (parsed.images?.length) deployedImages.push(...parsed.images.map((u: string) => ({ url: u })));
+              if (parsed.preview && parsed.changes) {
+                // Content change preview
+                setPendingChanges(parsed.changes);
+              }
               if (parsed.deployed && !parsed.preview) {
                 toast({ title: '🚀 Deployed Live', description: parsed.message || 'Change is live!' });
               }
