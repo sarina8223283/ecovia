@@ -131,27 +131,34 @@
 }
 
 @layer components {
-  /* Hide Google Translate UI elements */
+  /* Hide Google Translate UI chrome but keep combo box functional */
   .goog-te-banner-frame,
-  .skiptranslate,
   #goog-gt-tt,
   .goog-te-balloon-frame,
   .goog-tooltip,
   .goog-tooltip:hover,
   .goog-text-highlight,
-  .goog-te-gadget,
   .goog-te-ftab-frame {
     display: none !important;
-    visibility: hidden !important;
   }
+  /* Hide the top bar Google injects */
   body {
     top: 0 !important;
     position: static !important;
   }
+  /* Hide Google's visual overlays */
   .VIpgJd-ZVi9od-ORHb-OEVmcd,
   .VIpgJd-ZVi9od-SmKAyb,
   .VIpgJd-ZVi9od-xl07Ob-OEVmcd {
     display: none !important;
+  }
+  /* Keep skiptranslate off-screen but functional for the combo to work */
+  .skiptranslate {
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    height: 0 !important;
+    overflow: hidden !important;
   }
   .text-gradient {
     @apply bg-clip-text text-transparent;
