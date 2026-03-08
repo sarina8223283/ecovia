@@ -78,7 +78,7 @@ footer_brand_name, footer_brand_subtitle, footer_brand_description,
 footer_phone, footer_email, footer_address, footer_copyright
 
 ### Product Images:
-{product-id}_benefits_image, {product-id}_comparison_image
+{product-id}_benefits_image, {product-id}_comparison_image, {product-id}_hero_image, {product-id}_banner_image
 
 ## Company Info:
 Brand: Mittika by Ecovia Enterprises. Director: Sagar Jadhav. Phone: +91 8758808684. Email: info@mittika.com.
