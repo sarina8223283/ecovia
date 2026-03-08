@@ -521,6 +521,96 @@ const ImageZoomModal = ({ src, onClose }: { src: string; onClose: () => void }) 
   </AnimatePresence>
 );
 
+// ─── Image Thumbnail with loading skeleton ───
+const ImageThumbnail = ({ src, alt, onClick, model, contentKey }: { src: string; alt: string; onClick: () => void; model?: string; contentKey?: string }) => {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  return (
+    <div className="relative group cursor-pointer" onClick={onClick}>
+      {!loaded && !error && (
+        <div className="w-full h-32 rounded-xl bg-muted animate-pulse flex items-center justify-center">
+          <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+        </div>
+      )}
+      {error && (
+        <div className="w-full h-32 rounded-xl bg-destructive/10 flex items-center justify-center border border-destructive/20">
+          <span className="text-xs text-destructive">Failed to load</span>
+        </div>
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className={`rounded-xl w-full h-32 object-cover border border-border transition-opacity ${loaded ? 'opacity-100' : 'opacity-0 absolute inset-0'}`}
+        onLoad={() => setLoaded(true)}
+        onError={() => setError(true)}
+      />
+      {loaded && (
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <ZoomIn className="w-6 h-6 text-white drop-shadow-lg" />
+        </div>
+      )}
+      {model && loaded && (
+        <span className="absolute bottom-1 left-1 text-[9px] bg-black/60 text-white px-1.5 py-0.5 rounded-full">
+          🤖 {model.split('/').pop()}
+        </span>
+      )}
+      {contentKey && loaded && (
+        <span className="absolute top-1 left-1 text-[9px] bg-primary/80 text-primary-foreground px-1.5 py-0.5 rounded-full">
+          {contentKey}
+        </span>
+      )}
+    </div>
+  );
+};
+
+// ─── Content Change Preview ───
+const ContentChangePreview = ({ changes, onApprove, onReject, deploying }: {
+  changes: { key: string; current_value: string; new_value: string; is_new: boolean }[];
+  onApprove: () => void;
+  onReject: () => void;
+  deploying?: boolean;
+}) => (
+  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-accent/10 border border-accent rounded-2xl p-4 space-y-3 max-w-[85%]">
+    <div className="flex items-center gap-2">
+      <Activity className="w-4 h-4 text-primary" />
+      <p className="text-sm font-medium text-foreground">📋 Preview {changes.length} change(s):</p>
+    </div>
+    <div className="space-y-2 max-h-60 overflow-y-auto">
+      {changes.map((c, i) => (
+        <div key={i} className="bg-card border border-border rounded-xl p-2.5 text-xs space-y-1">
+          <div className="flex items-center gap-1.5">
+            <span className="font-mono text-primary font-medium">{c.key}</span>
+            {c.is_new && <span className="bg-primary/20 text-primary px-1.5 py-0.5 rounded-full text-[10px]">NEW</span>}
+          </div>
+          {!c.is_new && (
+            <div className="flex items-start gap-1.5 text-destructive/70">
+              <span className="flex-shrink-0 mt-0.5">−</span>
+              <span className="line-through break-words">{c.current_value.slice(0, 100)}{c.current_value.length > 100 ? '...' : ''}</span>
+            </div>
+          )}
+          <div className="flex items-start gap-1.5 text-primary">
+            <span className="flex-shrink-0 mt-0.5">+</span>
+            <span className="font-medium break-words">{c.new_value.slice(0, 100)}{c.new_value.length > 100 ? '...' : ''}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+    <div className="flex gap-2">
+      <button onClick={onApprove} disabled={deploying}
+        className="flex-1 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5">
+        {deploying ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+        {deploying ? 'Deploying...' : 'Deploy Changes'}
+      </button>
+      <button onClick={onReject} disabled={deploying}
+        className="flex-1 py-2 bg-secondary text-secondary-foreground rounded-xl text-sm font-medium hover:bg-secondary/80 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5">
+        <XCircle className="w-4 h-4" />
+        Discard
+      </button>
+    </div>
+  </motion.div>
+);
+
 // ─── Deploy Confirmation Banner ───
 const DeployConfirmBanner = ({ images, onConfirm, onReject, deploying }: {
   images: { url: string; model?: string; contentKey?: string }[];
