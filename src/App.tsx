@@ -22,6 +22,7 @@ import DirectionsOfUse from "./pages/DirectionsOfUse";
 import Visitors from "./pages/Visitors";
 import NotFound from "./pages/NotFound";
 import SarinaAdmin from "./pages/SarinaAdmin";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
