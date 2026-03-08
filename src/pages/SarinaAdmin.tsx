@@ -466,6 +466,9 @@ const AIChat = () => {
           try {
             const parsed = JSON.parse(toolResult);
             if (parsed.image_url) images.push(parsed.image_url);
+            if (parsed.results?.length) {
+              parsed.results.forEach((r: any) => { if (r.image_url) images.push(r.image_url); });
+            }
             if (parsed.deployed) {
               toast({ title: '🚀 Deployed Live', description: parsed.message || 'Change is live on the website!' });
             }
