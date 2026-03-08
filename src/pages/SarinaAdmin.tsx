@@ -111,18 +111,18 @@ const PasswordGate = ({ onAuth }: { onAuth: () => void }) => {
               <Lock className="w-8 h-8 text-primary" />
             </div>
             <h1 className="font-serif text-2xl font-bold text-foreground">Sarina Admin</h1>
-            <p className="text-muted-foreground text-sm mt-2">Answer the security question to continue</p>
+            <p className="text-muted-foreground text-sm mt-2">Enter your first car password to continue</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">What is your birth year?</label>
+              <label className="block text-sm font-medium text-foreground mb-2">What is your first car password?</label>
               <input
-                type="text"
+                type="password"
                 inputMode="numeric"
-                maxLength={4}
+                maxLength={10}
                 value={answer}
-                onChange={e => setAnswer(e.target.value.replace(/\D/g, ''))}
-                placeholder="Enter year (e.g., 1990)"
+                onChange={e => setAnswer(e.target.value)}
+                placeholder="Enter password"
                 className={`w-full px-4 py-3 rounded-xl border ${error ? 'border-destructive ring-2 ring-destructive/30' : 'border-border'} bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors`}
                 autoFocus
               />
