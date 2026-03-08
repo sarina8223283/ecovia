@@ -27,20 +27,46 @@ interface ContentItem {
 
 type Tab = 'chat' | 'content' | 'theme' | 'images';
 
-const callFunction = async (body: any) => {
-  const resp = await fetch(FUNC_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${ANON_KEY}`,
-    },
-    body: JSON.stringify(body),
-  });
-  if (!resp.ok) {
-    const err = await resp.json().catch(() => ({ error: 'Request failed' }));
-    throw new Error(err.error || `Error ${resp.status}`);
+const callFunction = async (body: any, retries = 2): Promise<any> => {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 120000); // 2 min timeout
+
+      const resp = await fetch(FUNC_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${ANON_KEY}`,
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+
+      if (resp.status === 429) {
+        if (attempt < retries) {
+          await new Promise(r => setTimeout(r, 3000 * (attempt + 1)));
+          continue;
+        }
+        throw new Error('Rate limited. Please wait a moment and try again.');
+      }
+      if (resp.status === 402) {
+        throw new Error('AI credits exhausted. Please add credits in workspace settings.');
+      }
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ error: 'Request failed' }));
+        throw new Error(err.error || `Error ${resp.status}`);
+      }
+      return resp.json();
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        throw new Error('Request timed out. The operation took too long.');
+      }
+      if (attempt === retries) throw err;
+      await new Promise(r => setTimeout(r, 2000));
+    }
   }
-  return resp.json();
 };
 
 // ─── Birth Year Gate ───
