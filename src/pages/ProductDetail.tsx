@@ -24,8 +24,7 @@ const ProductDetail = () => {
   // Get AI-generated images for this product
   const benefitsImageUrl = siteContent?.[`${id}_benefits_image`]?.image_url;
   const comparisonImageUrl = siteContent?.[`${id}_comparison_image`]?.image_url;
-  const heroImageUrl = siteContent?.[`${id}_hero_image`]?.image_url || siteContent?.[`${id}_hero_image`]?.content_value;
-  const bannerImageUrl = siteContent?.[`${id}_banner_image`]?.image_url || siteContent?.[`${id}_banner_image`]?.content_value;
+  const midPageBannerUrl = siteContent?.[`${id}_mid_page_banner`]?.image_url || siteContent?.[`${id}_mid_page_banner`]?.content_value;
 
   // Get pricing tiers for this product
   const pricingTiers = id ? productPricing[id] || [] : [];
@@ -146,7 +145,7 @@ const ProductDetail = () => {
             >
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-elevated">
                 <img 
-                  src={heroImageUrl || product.image} 
+                  src={product.image} 
                   alt={product.name}
                   loading="eager"
                   decoding="async"
@@ -332,6 +331,27 @@ const ProductDetail = () => {
               <img
                 src={comparisonImageUrl}
                 alt={`${product.name} - Mittika vs generic comparison`}
+                loading="lazy"
+                className="w-full rounded-2xl shadow-elevated border border-border"
+              />
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* Mid-Page Banner (Sarina-manageable via {product_id}_mid_page_banner) */}
+      {midPageBannerUrl && (
+        <section className="py-8">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-4xl mx-auto"
+            >
+              <img
+                src={midPageBannerUrl}
+                alt={`${product.name} promotional banner`}
                 loading="lazy"
                 className="w-full rounded-2xl shadow-elevated border border-border"
               />
