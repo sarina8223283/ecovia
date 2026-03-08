@@ -43,26 +43,22 @@ const callFunction = async (body: any) => {
   return resp.json();
 };
 
-// ─── Password Gate ───
-const PasswordGate = ({ onAuth }: { onAuth: () => void }) => {
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+// ─── Birth Year Gate ───
+const BIRTH_YEAR_ANSWER = '1997';
 
-  const handleLogin = async (e: React.FormEvent) => {
+const PasswordGate = ({ onAuth }: { onAuth: () => void }) => {
+  const [answer, setAnswer] = useState('');
+  const [error, setError] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      const result = await callFunction({ action: 'verify_password', password });
-      if (result.valid) {
-        onAuth();
-        toast({ title: '🔓 Access granted', description: 'Welcome to Sarina Admin' });
-      } else {
-        toast({ title: '❌ Invalid password', description: 'Please try again', variant: 'destructive' });
-      }
-    } catch (err: any) {
-      toast({ title: 'Error', description: err.message, variant: 'destructive' });
-    } finally {
-      setLoading(false);
+    if (answer.trim() === BIRTH_YEAR_ANSWER) {
+      onAuth();
+      toast({ title: '🔓 Access granted', description: 'Welcome to Sarina Admin' });
+    } else {
+      setError(true);
+      toast({ title: '❌ Incorrect answer', description: 'Please try again', variant: 'destructive' });
+      setTimeout(() => setError(false), 1500);
     }
   };
 
@@ -75,23 +71,28 @@ const PasswordGate = ({ onAuth }: { onAuth: () => void }) => {
               <Lock className="w-8 h-8 text-primary" />
             </div>
             <h1 className="font-serif text-2xl font-bold text-foreground">Sarina Admin</h1>
-            <p className="text-muted-foreground text-sm mt-2">Enter password to access website editor</p>
+            <p className="text-muted-foreground text-sm mt-2">Answer the security question to continue</p>
           </div>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="Admin password"
-              className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-primary outline-none"
-              autoFocus
-            />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">What is your birth year?</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={4}
+                value={answer}
+                onChange={e => setAnswer(e.target.value.replace(/\D/g, ''))}
+                placeholder="Enter year (e.g., 1990)"
+                className={`w-full px-4 py-3 rounded-xl border ${error ? 'border-destructive ring-2 ring-destructive/30' : 'border-border'} bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-colors`}
+                autoFocus
+              />
+            </div>
             <button
               type="submit"
-              disabled={loading || !password}
+              disabled={answer.length !== 4}
               className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+              <Lock className="w-4 h-4" />
               Unlock Sarina Admin
             </button>
           </form>

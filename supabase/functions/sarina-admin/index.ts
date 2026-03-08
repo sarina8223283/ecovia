@@ -275,6 +275,71 @@ serve(async (req) => {
         });
       }
 
+      if (tool_name === "generate_product_images") {
+        const { product_ids, image_type } = parameters;
+        const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+        if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+        const productNames: Record<string, string> = {
+          "amla-powder": "Amla Powder", "shikakai-powder": "Shikakai Powder", "ritha-powder": "Ritha Powder",
+          "bhringraj-powder": "Bhringraj Powder", "hibiscus-powder": "Hibiscus Powder", "onion-powder": "Onion Powder",
+          "coconut-powder": "Coconut Powder", "rosemary-powder": "Rosemary Powder", "rose-petals-powder": "Rose Petals Powder",
+          "multani-mitti": "Multani Mitti", "neem-powder": "Neem Powder", "kasturi-haldi": "Kasturi Haldi",
+          "orange-peel-powder": "Orange Peel Powder", "brahmi-powder": "Brahmi Powder", "moringa-powder": "Moringa Powder",
+        };
+
+        const ids = product_ids === "all" ? Object.keys(productNames) : product_ids;
+        const results: any[] = [];
+        const errors: string[] = [];
+
+        for (const pid of ids) {
+          const name = productNames[pid] || pid;
+          const prompt = image_type === "comparison"
+            ? `Professional product comparison infographic: Mittika ${name} (premium, natural, lab-tested, pure herbal) vs generic market ${name.toLowerCase()} (artificial, chemical additives, no testing). Clean side-by-side layout, earthy green and gold color scheme, modern minimalist design, no text overlays needed.`
+            : `Beautiful infographic showing the top 5 benefits of ${name} herbal powder for hair and skin care. Include icons for each benefit. Earthy natural color palette with green and gold tones. Clean, premium, modern design. Mittika branding style.`;
+
+          try {
+            const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+              method: "POST",
+              headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+              body: JSON.stringify({ model: "google/gemini-2.5-flash-image", messages: [{ role: "user", content: prompt }], modalities: ["image", "text"] }),
+            });
+
+            if (!aiResp.ok) { errors.push(`${name}: API error ${aiResp.status}`); continue; }
+            const aiData = await aiResp.json();
+            const imgUrl = aiData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+            if (!imgUrl) { errors.push(`${name}: No image generated`); continue; }
+
+            const b64 = imgUrl.replace(/^data:image\/\w+;base64,/, "");
+            const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+            const fname = `${pid}-${image_type}-${Date.now()}.png`;
+            const { error: upErr } = await supabase.storage.from("site-images").upload(fname, bin, { contentType: "image/png", upsert: true });
+            if (upErr) { errors.push(`${name}: Upload failed`); continue; }
+
+            const { data: uData } = supabase.storage.from("site-images").getPublicUrl(fname);
+            const key = `${pid}_${image_type}_image`;
+            await supabase.from("site_content").upsert(
+              { content_key: key, content_value: `${name} ${image_type}`, content_type: "image", image_url: uData.publicUrl, updated_at: new Date().toISOString() },
+              { onConflict: "content_key" }
+            );
+            results.push({ product: name, image_url: uData.publicUrl, content_key: key });
+
+            // Small delay to avoid rate limits
+            await new Promise(r => setTimeout(r, 2000));
+          } catch (e: any) {
+            errors.push(`${name}: ${e.message}`);
+          }
+        }
+
+        return new Response(JSON.stringify({
+          success: true,
+          deployed: true,
+          message: `🖼️ Generated ${results.length}/${ids.length} ${image_type} images. ${errors.length > 0 ? `Errors: ${errors.join(', ')}` : 'All successful!'}`,
+          results,
+          errors,
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+
       return new Response(JSON.stringify({ error: `Unknown tool: ${tool_name}` }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -370,6 +435,27 @@ serve(async (req) => {
                 topic: { type: "string", description: "Topic to get info about: products, pages, pricing, company, features" },
               },
               required: ["topic"],
+            },
+          },
+        },
+        {
+          type: "function",
+          function: {
+            name: "generate_product_images",
+            description: "Batch generate benefit or comparison images for multiple products at once. Use this when asked to create images for all products or specific product sets. Image types: 'benefits' (shows top benefits infographic) or 'comparison' (Mittika vs generic market alternative).",
+            parameters: {
+              type: "object",
+              properties: {
+                product_ids: {
+                  oneOf: [
+                    { type: "string", enum: ["all"] },
+                    { type: "array", items: { type: "string" } }
+                  ],
+                  description: "Array of product IDs or 'all' for all 15 products. IDs: amla-powder, shikakai-powder, ritha-powder, bhringraj-powder, hibiscus-powder, onion-powder, coconut-powder, rosemary-powder, rose-petals-powder, multani-mitti, neem-powder, kasturi-haldi, orange-peel-powder, brahmi-powder, moringa-powder",
+                },
+                image_type: { type: "string", enum: ["benefits", "comparison"], description: "Type of image: 'benefits' for product benefits infographic, 'comparison' for Mittika vs others comparison" },
+              },
+              required: ["product_ids", "image_type"],
             },
           },
         },

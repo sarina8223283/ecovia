@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Phone, Instagram, Facebook, ExternalLink, Sparkles } from 'lucide-react';
+import { X, Send, Phone, Instagram, Facebook, ExternalLink, Sparkles, LayoutDashboard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { products } from '@/data/products';
 import ReactMarkdown from 'react-markdown';
@@ -266,6 +266,13 @@ const SarinaBot = () => {
               >
                 <Facebook size={12} />
                 Facebook
+              </button>
+              <button
+                onClick={() => { navigate('/sarina-admin'); setIsOpen(false); }}
+                className="flex-shrink-0 text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 flex items-center gap-1 font-medium"
+              >
+                <LayoutDashboard size={12} />
+                Admin Dashboard
               </button>
             </div>
 
