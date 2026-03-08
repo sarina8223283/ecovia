@@ -21,6 +21,7 @@ import PurityVerification from "./pages/PurityVerification";
 import DirectionsOfUse from "./pages/DirectionsOfUse";
 import Visitors from "./pages/Visitors";
 import NotFound from "./pages/NotFound";
+import SarinaAdmin from "./pages/SarinaAdmin";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => (
                 <Route path="/purity" element={<PurityVerification />} />
                 <Route path="/directions" element={<DirectionsOfUse />} />
                 <Route path="/visitors" element={<Visitors />} />
+                <Route path="/sarina-admin" element={<SarinaAdmin />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
