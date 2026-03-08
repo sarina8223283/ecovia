@@ -290,7 +290,54 @@ const ProductDetail = () => {
         </div>
       </section>
 
-      {/* Directions Section */}
+      {/* AI-Generated Benefits Infographic */}
+      {benefitsImageUrl && (
+        <section className="py-12">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mb-8 text-center">
+              Benefits at a Glance
+            </h2>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-2xl mx-auto"
+            >
+              <img
+                src={benefitsImageUrl}
+                alt={`${product.name} benefits infographic`}
+                loading="lazy"
+                className="w-full rounded-2xl shadow-elevated border border-border"
+              />
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* AI-Generated Comparison Image */}
+      {comparisonImageUrl && (
+        <section className="py-12 bg-card">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mb-8 text-center">
+              Mittika vs Others
+            </h2>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-2xl mx-auto"
+            >
+              <img
+                src={comparisonImageUrl}
+                alt={`${product.name} - Mittika vs generic comparison`}
+                loading="lazy"
+                className="w-full rounded-2xl shadow-elevated border border-border"
+              />
+            </motion.div>
+          </div>
+        </section>
+      )}
+
       <section className="py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mb-8 text-center">
