@@ -1,9 +1,11 @@
  import { useState } from 'react';
  import { Link } from 'react-router-dom';
- import { ShoppingBag, X, Plus, Minus, Trash2, MessageCircle } from 'lucide-react';
+ import { Plus, Minus, Trash2 } from 'lucide-react';
  import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
  import { useCart } from '@/contexts/CartContext';
  import { useAuth } from '@/contexts/AuthContext';
+ import cartIcon from '@/assets/icons/cart-icon.png';
+ import whatsappIcon from '@/assets/icons/whatsapp-icon.png';
  
  const CartDrawer = () => {
    const { items, removeItem, updateQuantity, getTotal, clearCart } = useCart();
