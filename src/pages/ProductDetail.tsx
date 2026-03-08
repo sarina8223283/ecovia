@@ -9,6 +9,7 @@ import ProductFeedback from '@/components/ui/ProductFeedback';
 import { getProductById, products } from '@/data/products';
 import { productPricing } from '@/data/pricing';
 import { useCart } from '@/contexts/CartContext';
+import { useSiteContent } from '@/hooks/useSiteContent';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
 
@@ -16,8 +17,13 @@ const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const product = getProductById(id || '');
   const { addItem } = useCart();
+  const { data: siteContent } = useSiteContent();
   const [selectedQuantity, setSelectedQuantity] = useState(100);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  // Get AI-generated images for this product
+  const benefitsImageUrl = siteContent?.[`${id}_benefits_image`]?.image_url;
+  const comparisonImageUrl = siteContent?.[`${id}_comparison_image`]?.image_url;
 
   // Get pricing tiers for this product
   const pricingTiers = id ? productPricing[id] || [] : [];
@@ -284,7 +290,54 @@ const ProductDetail = () => {
         </div>
       </section>
 
-      {/* Directions Section */}
+      {/* AI-Generated Benefits Infographic */}
+      {benefitsImageUrl && (
+        <section className="py-12">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mb-8 text-center">
+              Benefits at a Glance
+            </h2>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-2xl mx-auto"
+            >
+              <img
+                src={benefitsImageUrl}
+                alt={`${product.name} benefits infographic`}
+                loading="lazy"
+                className="w-full rounded-2xl shadow-elevated border border-border"
+              />
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* AI-Generated Comparison Image */}
+      {comparisonImageUrl && (
+        <section className="py-12 bg-card">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mb-8 text-center">
+              Mittika vs Others
+            </h2>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-2xl mx-auto"
+            >
+              <img
+                src={comparisonImageUrl}
+                alt={`${product.name} - Mittika vs generic comparison`}
+                loading="lazy"
+                className="w-full rounded-2xl shadow-elevated border border-border"
+              />
+            </motion.div>
+          </div>
+        </section>
+      )}
+
       <section className="py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mb-8 text-center">
