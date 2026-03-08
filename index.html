@@ -92,11 +92,22 @@
       function googleTranslateElementInit() {
         new google.translate.TranslateElement({
           pageLanguage: 'en',
-          autoDisplay: false
+          autoDisplay: false,
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE
         }, 'google_translate_element');
       }
+      // Hide Google Translate top bar after it loads
+      function hideGoogleTranslateBar() {
+        var frame = document.querySelector('.goog-te-banner-frame');
+        if (frame) frame.style.display = 'none';
+        document.body.style.top = '0px';
+        var skip = document.querySelectorAll('.skiptranslate');
+        skip.forEach(function(el) { if (el.tagName !== 'DIV' || !el.querySelector('.goog-te-combo')) el.style.display = 'none'; });
+      }
+      var _gtObserver = new MutationObserver(function() { hideGoogleTranslateBar(); });
+      _gtObserver.observe(document.body, { childList: true, subtree: true, attributes: true });
     </script>
-    <div id="google_translate_element" style="display:none"></div>
+    <div id="google_translate_element" style="display:none;visibility:hidden;height:0;overflow:hidden"></div>
     <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   </body>
 </html>
