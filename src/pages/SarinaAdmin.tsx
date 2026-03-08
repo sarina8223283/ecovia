@@ -857,6 +857,24 @@ const AIChat = () => {
           </div>
         )}
 
+        {/* Deploy confirmation */}
+        {pendingDeploy && pendingDeploy.length > 0 && (
+          <div className="flex justify-start max-w-[85%]">
+            <DeployConfirmBanner
+              images={pendingDeploy}
+              onConfirm={() => {
+                setPendingDeploy(null);
+                toast({ title: '✅ Images already deployed', description: 'Images are live on the website!' });
+                invalidateCaches();
+              }}
+              onReject={() => {
+                setPendingDeploy(null);
+                setMessages(prev => [...prev, { role: 'assistant', content: '🗑️ Images discarded. Ask me to generate new ones with a different style!' }]);
+              }}
+            />
+          </div>
+        )}
+
         {/* Simple loading indicator */}
         {loading && !batchProgress && (
           <div className="flex justify-start">
