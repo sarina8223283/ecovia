@@ -513,10 +513,11 @@ const BatchProgressUI = ({ progress }: { progress: BatchProgress }) => {
 // ─── AI Chat Tab ───
 const AIChat = () => {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website and answer any questions. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika" → *deploys instantly*\n- 🖼️ "Generate a banner of herbal powders" → *creates & deploys*\n- 🖼️ "Generate benefit images for all 15 products" → *batch with progress*\n- ❓ "What products do we sell?" → *answers from knowledge*\n- 📋 "Show me all live content" → *lists what\'s deployed*\n- 🎨 "Set primary color to dark green" → *theme update live*' },
+    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website — changes appear **instantly** in real-time. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika"\n- 🖼️ "Generate a banner of herbal powders"\n- 🖼️ "Generate benefit images for all 15 products"\n- 📋 "Show me all live content"\n- 🎨 "Set primary color to dark green"\n- ❓ "What products do we sell?"' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [statusText, setStatusText] = useState('');
   const [batchProgress, setBatchProgress] = useState<BatchProgress | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
