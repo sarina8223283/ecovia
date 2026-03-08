@@ -45,14 +45,14 @@
    return (
      <Sheet open={isOpen} onOpenChange={setIsOpen}>
        <SheetTrigger asChild>
-         <button className="relative p-2 hover:bg-secondary rounded-lg transition-colors">
-           <ShoppingBag size={22} className="text-foreground" />
-           {items.length > 0 && (
-             <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center font-medium">
-               {items.length}
-             </span>
-           )}
-         </button>
+        <button className="relative p-2 hover:bg-secondary rounded-lg transition-colors">
+            <img src={cartIcon} alt="Cart" className="w-6 h-6 object-contain" />
+            {items.length > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center font-medium">
+                {items.length}
+              </span>
+            )}
+          </button>
        </SheetTrigger>
        <SheetContent className="w-full sm:max-w-md flex flex-col">
          <SheetHeader>
