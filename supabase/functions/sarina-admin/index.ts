@@ -362,7 +362,7 @@ serve(async (req) => {
             results.push({ product: name, image_url: uData.publicUrl, content_key: key });
 
             // Small delay to avoid rate limits
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, 3000));
           } catch (e: any) {
             errors.push(`${name}: ${e.message}`);
           }
