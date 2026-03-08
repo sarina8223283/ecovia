@@ -356,6 +356,31 @@ serve(async (req) => {
         });
       }
 
+      // ─── preview_changes ───
+      if (tool_name === "preview_changes") {
+        const { changes } = parameters;
+        const previews: any[] = [];
+        for (const change of changes) {
+          const { data: existing } = await supabase.from("site_content")
+            .select("content_value, content_type, image_url")
+            .eq("content_key", change.key)
+            .single();
+          previews.push({
+            key: change.key,
+            current_value: existing?.content_value || "(empty)",
+            new_value: change.value,
+            content_type: existing?.content_type || "text",
+            is_new: !existing,
+          });
+        }
+        return new Response(JSON.stringify({
+          success: true,
+          preview: true,
+          changes: previews,
+          message: `📋 Preview: ${previews.length} change(s) ready. Approve to deploy.`,
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+
       // ─── get_analytics ───
       if (tool_name === "get_analytics") {
         const { period, group_by } = parameters;
