@@ -1027,22 +1027,14 @@ const AIChat = () => {
                 <div className="mt-3 space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     {msg.images.map((img, j) => (
-                      <div key={j} className="relative group cursor-pointer" onClick={() => setZoomedImage(img.url)}>
-                        <img src={img.url} alt="Generated" className="rounded-xl w-full h-32 object-cover border border-border" />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
-                          <ZoomIn className="w-6 h-6 text-white drop-shadow-lg" />
-                        </div>
-                        {img.model && (
-                          <span className="absolute bottom-1 left-1 text-[9px] bg-black/60 text-white px-1.5 py-0.5 rounded-full">
-                            🤖 {img.model.split('/').pop()}
-                          </span>
-                        )}
-                        {img.contentKey && (
-                          <span className="absolute top-1 left-1 text-[9px] bg-primary/80 text-primary-foreground px-1.5 py-0.5 rounded-full">
-                            {img.contentKey}
-                          </span>
-                        )}
-                      </div>
+                      <ImageThumbnail
+                        key={j}
+                        src={img.url}
+                        alt="Generated"
+                        onClick={() => setZoomedImage(img.url)}
+                        model={img.model}
+                        contentKey={img.contentKey}
+                      />
                     ))}
                   </div>
                 </div>
