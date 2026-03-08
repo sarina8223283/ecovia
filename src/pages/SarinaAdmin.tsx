@@ -655,7 +655,7 @@ const DeployConfirmBanner = ({ images, onConfirm, onReject, deploying }: {
 
 const AIChat = () => {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website — changes appear **instantly** in real-time. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika"\n- 🖼️ "Generate a high-quality banner of herbal powders"\n- 🖼️ "Generate benefit images for all 15 products"\n- 📎 Upload PDFs, images, or documents as reference\n- 📋 "Show me all live content"\n- 🎨 "Set primary color to dark green"\n\n💡 **Images are previewed first** — you approve before they go live!' },
+    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website — changes appear **instantly** in real-time. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika"\n- 🖼️ "Generate a high-quality banner of herbal powders"\n- 🖼️ "Generate benefit images for all 15 products"\n- 📎 Upload PDFs, images, or documents as reference\n- 📋 "Show me all live content"\n- 📊 "Show me today\'s traffic analytics"\n- 🎨 "Set primary color to dark green"\n\n💡 **Preview mode** — I\'ll show you before/after changes for approval!\n💡 **Image thumbnails** load with smooth animations!' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
