@@ -536,8 +536,43 @@ const ImageZoomModal = ({ src, onClose }: { src: string; onClose: () => void }) 
     </motion.div>
   </AnimatePresence>
 );
+// ─── Deploy Confirmation Banner ───
+const DeployConfirmBanner = ({ images, onConfirm, onReject }: {
+  images: { url: string; model?: string; contentKey?: string }[];
+  onConfirm: () => void;
+  onReject: () => void;
+}) => (
+  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-accent/10 border border-accent rounded-2xl p-4 space-y-3">
+    <p className="text-sm font-medium text-foreground">📋 Review before deploying:</p>
+    <div className="grid grid-cols-2 gap-2">
+      {images.map((img, i) => (
+        <div key={i} className="relative">
+          <img src={img.url} alt="Preview" className="rounded-xl w-full h-28 object-cover border border-border" />
+          {img.model && (
+            <span className="absolute bottom-1 left-1 text-[9px] bg-black/60 text-white px-1.5 py-0.5 rounded-full">
+              🤖 {img.model.split('/').pop()}
+            </span>
+          )}
+          {img.contentKey && (
+            <span className="absolute top-1 left-1 text-[9px] bg-primary/80 text-primary-foreground px-1.5 py-0.5 rounded-full">
+              {img.contentKey}
+            </span>
+          )}
+        </div>
+      ))}
+    </div>
+    <div className="flex gap-2">
+      <button onClick={onConfirm} className="flex-1 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors">
+        ✅ Deploy to Website
+      </button>
+      <button onClick={onReject} className="flex-1 py-2 bg-secondary text-secondary-foreground rounded-xl text-sm font-medium hover:bg-secondary/80 transition-colors">
+        ❌ Discard
+      </button>
+    </div>
+  </motion.div>
+);
 
-// ─── AI Chat Tab ───
+
 const AIChat = () => {
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website — changes appear **instantly** in real-time. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika"\n- 🖼️ "Generate a high-quality banner of herbal powders"\n- 🖼️ "Generate benefit images for all 15 products"\n- 📎 Upload PDFs, images, or documents as reference\n- 📋 "Show me all live content"\n- 🎨 "Set primary color to dark green"' },
