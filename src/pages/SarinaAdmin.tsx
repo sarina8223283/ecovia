@@ -344,7 +344,7 @@ const ImageGallery = () => {
 // ─── AI Chat Tab ───
 const AIChat = () => {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nTell me what to change on the website:\n\n- ✏️ "Change hero heading to Welcome to Mittika"\n- 🖼️ "Generate a banner of herbal powders"\n- 📋 "Show me all content"\n- 🎨 "Set primary color to dark green"' },
+    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website and answer any questions. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika" → *deploys instantly*\n- 🖼️ "Generate a banner of herbal powders" → *creates & deploys*\n- ❓ "What products do we sell?" → *answers from knowledge*\n- 📋 "Show me all live content" → *lists what\'s deployed*\n- 🎨 "Set primary color to dark green" → *theme update live*\n- 🌐 "What pages does our website have?" → *explains structure*' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -394,6 +394,9 @@ const AIChat = () => {
           try {
             const parsed = JSON.parse(toolResult);
             if (parsed.image_url) images.push(parsed.image_url);
+            if (parsed.deployed) {
+              toast({ title: '🚀 Deployed Live', description: parsed.message || 'Change is live on the website!' });
+            }
           } catch {}
         }
 
