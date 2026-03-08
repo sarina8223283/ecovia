@@ -22,8 +22,8 @@ const ProductDetail = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   // Get AI-generated images for this product
-  const benefitsImageUrl = siteContent?.find(c => c.content_key === `${id}_benefits_image`)?.image_url;
-  const comparisonImageUrl = siteContent?.find(c => c.content_key === `${id}_comparison_image`)?.image_url;
+  const benefitsImageUrl = siteContent?.[`${id}_benefits_image`]?.image_url;
+  const comparisonImageUrl = siteContent?.[`${id}_comparison_image`]?.image_url;
 
   // Get pricing tiers for this product
   const pricingTiers = id ? productPricing[id] || [] : [];
