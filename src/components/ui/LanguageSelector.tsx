@@ -39,8 +39,82 @@ const EXCLUDED_TAGS = new Set([
   'SVG',
 ]);
 
-const TRANSLATION_CACHE_KEY = 'mittika_translation_cache_v1';
+const TRANSLATION_CACHE_KEY = 'mittika_translation_cache_v2';
 const PREFERRED_LANGUAGE_KEY = 'preferred_language';
+
+// Manual overrides for key brand phrases where Google Translate is inaccurate
+const MANUAL_OVERRIDES: Record<string, Record<string, string>> = {
+  mr: {
+    'Experience the': 'अनुभव घ्या',
+    'Luxury': 'लक्जरी',
+    'of': 'चा',
+    'Earthly Purity': 'पृथ्वीच्या शुद्धतेचा',
+    'The Luxury of Earthly Purity': 'अनुभव घ्या पृथ्वीच्या लक्जरी शुद्धतेचा',
+    '100% Pure & Natural': '१००% शुद्ध आणि नैसर्गिक',
+    'Mittika brings you authentic, chemical-free herbal powders rooted in ancient Ayurvedic traditions. Elevate your wellness journey naturally.':
+      'मिटिका तुम्हाला प्राचीन आयुर्वेदिक परंपरांवर आधारित अस्सल, रसायनमुक्त हर्बल पावडर देते. तुमचा निरोगीपणाचा प्रवास नैसर्गिकरित्या उंचावा.',
+    'Explore Products': 'उत्पादने एक्सप्लोर करा',
+    'Contact Us': 'आमच्याशी संपर्क साधा',
+    'Our Products': 'आमची उत्पादने',
+    'Mittika Collection': 'मिटिका संग्रह',
+    'Quick Links': 'द्रुत दुवे',
+    'Home': 'मुख्यपृष्ठ',
+    'Products': 'उत्पादने',
+    'About Us': 'आमच्याबद्दल',
+    'Contact': 'संपर्क',
+    'Shop by Category': 'श्रेणीनुसार खरेदी करा',
+    'Directions of Use': 'वापरण्याचे मार्गदर्शन',
+    'Bulk Orders': 'मोठ्या प्रमाणात ऑर्डर',
+    'Export': 'निर्यात',
+    'Purity': 'शुद्धता',
+    'Visitors': 'अभ्यागत',
+    'Delivering authentic, pure, and natural ayurvedic powders crafted from traditional wisdom. Experience the power of nature with every product.':
+      'पारंपरिक ज्ञानातून तयार केलेले अस्सल, शुद्ध आणि नैसर्गिक आयुर्वेदिक पावडर. प्रत्येक उत्पादनासह निसर्गाच्या शक्तीचा अनुभव घ्या.',
+    'Skin Care': 'त्वचा काळजी',
+    'Hair Care': 'केसांची काळजी',
+    'Wellness': 'निरोगीपणा',
+    'All Products': 'सर्व उत्पादने',
+    'Most Loved': 'सर्वाधिक आवडते',
+    'Add to Cart': 'कार्टमध्ये जोडा',
+    'Explore our range of pure, natural herbal powders and experience the luxury of earthly purity.':
+      'आमच्या शुद्ध, नैसर्गिक हर्बल पावडरची श्रेणी एक्सप्लोर करा आणि पृथ्वीच्या शुद्धतेच्या लक्जरीचा अनुभव घ्या.',
+  },
+  hi: {
+    'Experience the': 'अनुभव करें',
+    'Luxury': 'विलासिता',
+    'of': 'का',
+    'Earthly Purity': 'पृथ्वी की शुद्धता',
+    'The Luxury of Earthly Purity': 'पृथ्वी की शुद्धता की विलासिता का अनुभव करें',
+    '100% Pure & Natural': '100% शुद्ध और प्राकृतिक',
+    'Mittika brings you authentic, chemical-free herbal powders rooted in ancient Ayurvedic traditions. Elevate your wellness journey naturally.':
+      'मिट्टिका आपके लिए प्राचीन आयुर्वेदिक परंपराओं पर आधारित प्रामाणिक, रसायन-मुक्त हर्बल पाउडर लाता है। अपनी स्वास्थ्य यात्रा को स्वाभाविक रूप से ऊंचा उठाएं।',
+    'Explore Products': 'उत्पाद देखें',
+    'Contact Us': 'संपर्क करें',
+    'Our Products': 'हमारे उत्पाद',
+    'Mittika Collection': 'मिट्टिका संग्रह',
+    'Quick Links': 'त्वरित लिंक',
+    'Home': 'होम',
+    'Products': 'उत्पाद',
+    'About Us': 'हमारे बारे में',
+    'Contact': 'संपर्क',
+    'Shop by Category': 'श्रेणी के अनुसार खरीदें',
+    'Directions of Use': 'उपयोग के निर्देश',
+    'Bulk Orders': 'थोक ऑर्डर',
+    'Export': 'निर्यात',
+    'Purity': 'शुद्धता',
+    'Visitors': 'आगंतुक',
+    'Delivering authentic, pure, and natural ayurvedic powders crafted from traditional wisdom. Experience the power of nature with every product.':
+      'पारंपरिक ज्ञान से तैयार प्रामाणिक, शुद्ध और प्राकृतिक आयुर्वेदिक पाउडर। हर उत्पाद के साथ प्रकृति की शक्ति का अनुभव करें।',
+    'Skin Care': 'त्वचा की देखभाल',
+    'Hair Care': 'बालों की देखभाल',
+    'Wellness': 'कल्याण',
+    'All Products': 'सभी उत्पाद',
+    'Most Loved': 'सबसे ज्यादा पसंद',
+    'Add to Cart': 'कार्ट में जोड़ें',
+    'Explore our range of pure, natural herbal powders and experience the luxury of earthly purity.':
+      'हमारे शुद्ध, प्राकृतिक हर्बल पाउडर की श्रृंखला देखें और पृथ्वी की शुद्धता की विलासिता का अनुभव करें।',
+  },
+};
 
 type CacheShape = Record<string, Record<string, string>>;
 
