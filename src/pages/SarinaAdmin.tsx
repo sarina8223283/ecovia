@@ -937,6 +937,8 @@ const AIChat = () => {
               bulk_delete_content: '🗑️ Bulk deleting content...',
               get_website_info: '📖 Getting info...',
               analyze_file: '📄 Analyzing uploaded file...',
+              preview_changes: '👁️ Preparing change preview...',
+              get_analytics: '📊 Fetching live analytics...',
             };
             setStatusText(toolLabels[fn.name] || `⚙️ Running ${fn.name}...`);
 
