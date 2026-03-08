@@ -89,11 +89,13 @@ const ADMIN_SYSTEM_PROMPT = `You are **Sarina**, the most advanced AI website ed
 ## Your Superpowers:
 1. **Instant Live Deployment** - Every change goes live IMMEDIATELY
 2. **Full Page Editing** - Edit every word on every page
-3. **AI Image Generation** - Create stunning product images, banners, infographics
+3. **AI Image Generation** - Create stunning product images using multiple AI models with automatic fallback (Pro quality → Fast quality)
 4. **Bulk Operations** - Update entire pages or all products at once
 5. **Theme Control** - Colors, fonts, spacing
 6. **Brand Transformation** - Can rebrand the entire website for a new brand
 7. **Smart Context** - You know every product, page, and content key
+8. **File Understanding** - Users can upload PDFs, documents, images as reference material. You can read and understand uploaded content to apply changes.
+9. **Image Preview** - Generated images are shown in chat for user review before confirming deployment
 
 ${PRODUCT_CATALOG}
 ${WEBSITE_STRUCTURE}
@@ -102,54 +104,107 @@ ${WEBSITE_STRUCTURE}
 1. When asked to update a page, update ALL relevant content keys for that page
 2. When asked to "redesign" or "rebuild", update every key for the target page
 3. For batch image requests, use generate_product_images tool
-4. For single images, use generate_image tool
+4. For single high-quality images, use generate_image tool (auto-selects best model)
 5. Always confirm what was deployed and where it appears
 6. Keep Mittika's brand voice: premium, natural, Ayurvedic, earthy
 7. When rebranding for a new brand, update ALL content keys across ALL pages
 8. You can create NEW content keys for any new section needed
 9. For complex multi-step tasks, execute ALL tool calls needed, don't hold back
+10. When user uploads files (PDF, images, documents), analyze the content and use it as reference for website updates
+11. When showing generated images, describe what was created so user can verify before it goes live
 
 ## Brand Voice:
 Mittika = "from the earth." Premium natural herbal powders. Ayurvedic heritage. Lab-tested purity. Chemical-free.`;
 
-// Helper: generate image with retry
-async function generateImageWithRetry(prompt: string, apiKey: string, maxRetries = 2): Promise<string | null> {
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+// Image generation models in priority order (highest quality first)
+const IMAGE_MODELS = [
+  "google/gemini-3-pro-image-preview",   // Highest quality
+  "google/gemini-2.5-flash-image",       // Fast fallback
+];
+
+// Chat models in priority order
+const CHAT_MODELS = [
+  "google/gemini-3-flash-preview",
+  "google/gemini-2.5-flash",
+];
+
+// Helper: generate image with multi-model fallback + retry
+async function generateImageWithRetry(prompt: string, apiKey: string, quality: string = "auto"): Promise<{ imageUrl: string | null; modelUsed: string }> {
+  const models = quality === "fast" ? [IMAGE_MODELS[1]] : IMAGE_MODELS;
+  
+  for (const model of models) {
+    for (let attempt = 0; attempt <= 2; attempt++) {
+      try {
+        console.log(`Image gen: model=${model}, attempt=${attempt}`);
+        const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model,
+            messages: [{ role: "user", content: prompt }],
+            modalities: ["image", "text"],
+          }),
+        });
+
+        if (aiResp.status === 429) {
+          console.log(`Rate limited on ${model} attempt ${attempt}, waiting...`);
+          await new Promise(r => setTimeout(r, 5000 * (attempt + 1)));
+          continue;
+        }
+
+        if (aiResp.status === 402) {
+          return { imageUrl: null, modelUsed: model };
+        }
+
+        if (!aiResp.ok) {
+          const errText = await aiResp.text();
+          console.error(`Image gen error ${model} (attempt ${attempt}):`, aiResp.status, errText);
+          if (attempt < 2) { await new Promise(r => setTimeout(r, 3000)); continue; }
+          break; // Try next model
+        }
+
+        const aiData = await aiResp.json();
+        const url = aiData.choices?.[0]?.message?.images?.[0]?.image_url?.url || null;
+        if (url) return { imageUrl: url, modelUsed: model };
+        break;
+      } catch (e: any) {
+        console.error(`Image gen exception ${model} (attempt ${attempt}):`, e.message);
+        if (attempt < 2) await new Promise(r => setTimeout(r, 3000));
+      }
+    }
+    console.log(`Model ${model} exhausted, trying next...`);
+  }
+  return { imageUrl: null, modelUsed: "none" };
+}
+
+// Helper: chat completion with model fallback
+async function chatWithFallback(apiKey: string, body: any): Promise<Response> {
+  for (const model of CHAT_MODELS) {
     try {
-      const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash-image",
-          messages: [{ role: "user", content: prompt }],
-          modalities: ["image", "text"],
-        }),
+        body: JSON.stringify({ ...body, model }),
       });
 
-      if (aiResp.status === 429) {
-        console.log(`Rate limited on attempt ${attempt}, waiting...`);
-        await new Promise(r => setTimeout(r, 5000 * (attempt + 1)));
+      if (response.status === 429) {
+        console.log(`Chat rate limited on ${model}, trying next...`);
+        await new Promise(r => setTimeout(r, 2000));
         continue;
       }
-
-      if (!aiResp.ok) {
-        const errText = await aiResp.text();
-        console.error(`Image gen error (attempt ${attempt}):`, aiResp.status, errText);
-        if (attempt < maxRetries) { await new Promise(r => setTimeout(r, 3000)); continue; }
-        return null;
-      }
-
-      const aiData = await aiResp.json();
-      return aiData.choices?.[0]?.message?.images?.[0]?.image_url?.url || null;
+      return response;
     } catch (e: any) {
-      console.error(`Image gen exception (attempt ${attempt}):`, e.message);
-      if (attempt < maxRetries) await new Promise(r => setTimeout(r, 3000));
+      console.error(`Chat error on ${model}:`, e.message);
+      continue;
     }
   }
-  return null;
+  throw new Error("All AI models unavailable. Please try again later.");
 }
 
 serve(async (req) => {
@@ -259,15 +314,15 @@ serve(async (req) => {
         });
       }
 
-      // ─── generate_image (with retry) ───
+      // ─── generate_image (multi-model fallback) ───
       if (tool_name === "generate_image") {
-        const { prompt, content_key } = parameters;
+        const { prompt, content_key, quality } = parameters;
         const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
         if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-        const imageData = await generateImageWithRetry(prompt, LOVABLE_API_KEY);
+        const { imageUrl: imageData, modelUsed } = await generateImageWithRetry(prompt, LOVABLE_API_KEY, quality || "auto");
         if (!imageData) {
-          return new Response(JSON.stringify({ success: false, message: "⚠️ Image generation failed after retries. Try a simpler prompt or try again later." }), {
+          return new Response(JSON.stringify({ success: false, message: "⚠️ Image generation failed after trying all models. Try a simpler prompt or try again later." }), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
@@ -291,14 +346,19 @@ serve(async (req) => {
           );
         }
 
-        return new Response(JSON.stringify({ success: true, message: `🖼️ Image generated & deployed`, image_url: publicUrl, deployed: true }), {
+        return new Response(JSON.stringify({ 
+          success: true, 
+          message: `🖼️ Image generated & deployed (model: ${modelUsed.split('/').pop()})`, 
+          image_url: publicUrl, 
+          model_used: modelUsed,
+          deployed: !!content_key,
+        }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
-      // ─── generate_product_images (kept for AI tool call, but client handles batch) ───
+      // ─── generate_product_images ───
       if (tool_name === "generate_product_images") {
-        // Return instruction for client-side batch processing
         return new Response(JSON.stringify({
           success: true,
           batch_mode: true,
@@ -308,9 +368,42 @@ serve(async (req) => {
         }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
+      // ─── analyze_file ───
+      if (tool_name === "analyze_file") {
+        const { file_url, file_type, instructions } = parameters;
+        const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+        if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+        // For images, send to vision model
+        const messageContent: any[] = [
+          { type: "text", text: instructions || "Analyze this file and extract useful content for the website." }
+        ];
+
+        if (file_type?.startsWith("image/") || file_url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
+          messageContent.push({ type: "image_url", image_url: { url: file_url } });
+        } else {
+          messageContent.push({ type: "text", text: `[File uploaded: ${file_url}]\nFile type: ${file_type || 'unknown'}` });
+        }
+
+        const response = await chatWithFallback(LOVABLE_API_KEY, {
+          messages: [
+            { role: "system", content: "You are Sarina, an AI that analyzes uploaded files (images, PDFs, documents) and extracts useful content for the Mittika herbal products website. Describe what you see and suggest how it can be used on the website." },
+            { role: "user", content: messageContent },
+          ],
+          stream: false,
+        });
+
+        if (!response.ok) throw new Error(`Analysis failed: ${response.status}`);
+        const data = await response.json();
+        const analysis = data.choices?.[0]?.message?.content || "Could not analyze file.";
+
+        return new Response(JSON.stringify({ success: true, analysis, message: analysis }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       // ─── redesign_page ───
       if (tool_name === "redesign_page") {
-        // This is handled by AI making multiple update_content calls
         return new Response(JSON.stringify({ success: true, message: "Use bulk_update_content with all the content keys for this page to redesign it." }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
@@ -354,7 +447,7 @@ serve(async (req) => {
           type: "function",
           function: {
             name: "bulk_update_content",
-            description: "Update MULTIPLE content entries at once. Use for page redesigns, rebranding, or any multi-field update. MUCH more efficient than multiple update_content calls. ALWAYS use this when updating 2+ fields.",
+            description: "Update MULTIPLE content entries at once. Use for page redesigns, rebranding, or any multi-field update. ALWAYS use this when updating 2+ fields.",
             parameters: {
               type: "object",
               properties: {
@@ -363,12 +456,11 @@ serve(async (req) => {
                   items: {
                     type: "object",
                     properties: {
-                      key: { type: "string", description: "Content key" },
-                      value: { type: "string", description: "New value" },
+                      key: { type: "string" },
+                      value: { type: "string" },
                     },
                     required: ["key", "value"],
                   },
-                  description: "Array of {key, value} pairs to update",
                 },
               },
               required: ["updates"],
@@ -379,12 +471,13 @@ serve(async (req) => {
           type: "function",
           function: {
             name: "generate_image",
-            description: "Generate a single AI image. Image is uploaded to storage and optionally linked to a content key.",
+            description: "Generate a high-quality AI image. Uses pro model with automatic fallback. Image is uploaded to storage and optionally linked to a content key.",
             parameters: {
               type: "object",
               properties: {
                 prompt: { type: "string", description: "Detailed image description" },
                 content_key: { type: "string", description: "Optional content key to link the image to" },
+                quality: { type: "string", enum: ["auto", "fast"], description: "auto = try pro model first, fast = use fast model only" },
               },
               required: ["prompt"],
             },
@@ -394,7 +487,7 @@ serve(async (req) => {
           type: "function",
           function: {
             name: "generate_product_images",
-            description: "Batch generate images for multiple products. Types: 'benefits' (infographic) or 'comparison' (Mittika vs others). Client handles progress tracking.",
+            description: "Batch generate images for multiple products. Types: 'benefits' or 'comparison'. Client handles progress.",
             parameters: {
               type: "object",
               properties: {
@@ -403,11 +496,26 @@ serve(async (req) => {
                     { type: "string", enum: ["all"] },
                     { type: "array", items: { type: "string" } }
                   ],
-                  description: "Product IDs array or 'all'",
                 },
                 image_type: { type: "string", enum: ["benefits", "comparison"] },
               },
               required: ["product_ids", "image_type"],
+            },
+          },
+        },
+        {
+          type: "function",
+          function: {
+            name: "analyze_file",
+            description: "Analyze an uploaded file (image, PDF, document) and extract content for the website. Use when user uploads reference files.",
+            parameters: {
+              type: "object",
+              properties: {
+                file_url: { type: "string", description: "URL of the uploaded file" },
+                file_type: { type: "string", description: "MIME type of the file" },
+                instructions: { type: "string", description: "What to do with the file content" },
+              },
+              required: ["file_url"],
             },
           },
         },
@@ -450,11 +558,11 @@ serve(async (req) => {
           type: "function",
           function: {
             name: "bulk_delete_content",
-            description: "Delete multiple content entries at once. Use for clearing a page or removing old content.",
+            description: "Delete multiple content entries at once.",
             parameters: {
               type: "object",
               properties: {
-                content_keys: { type: "array", items: { type: "string" }, description: "Array of content keys to delete" },
+                content_keys: { type: "array", items: { type: "string" } },
               },
               required: ["content_keys"],
             },
@@ -464,7 +572,7 @@ serve(async (req) => {
           type: "function",
           function: {
             name: "get_website_info",
-            description: "Get info about products, pages, pricing, company, features, or 'all' for everything.",
+            description: "Get info about products, pages, pricing, company, features, or 'all'.",
             parameters: {
               type: "object",
               properties: { topic: { type: "string" } },
@@ -474,21 +582,13 @@ serve(async (req) => {
         },
       ];
 
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
-          messages: [
-            { role: "system", content: ADMIN_SYSTEM_PROMPT + contextPrompt },
-            ...messages,
-          ],
-          tools,
-          stream: false,
-        }),
+      const response = await chatWithFallback(LOVABLE_API_KEY, {
+        messages: [
+          { role: "system", content: ADMIN_SYSTEM_PROMPT + contextPrompt },
+          ...messages,
+        ],
+        tools,
+        stream: false,
       });
 
       if (!response.ok) {
