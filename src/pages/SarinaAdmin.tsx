@@ -827,7 +827,26 @@ const AIChat = () => {
 
   const handleDeployReject = () => {
     setPendingDeploy(null);
-    setMessages(prev => [...prev, { role: 'assistant', content: '🗑️ Images discarded. Ask me to generate new ones with a different style!' }]);
+    setPendingChanges(null);
+    setMessages(prev => [...prev, { role: 'assistant', content: '🗑️ Changes discarded. Ask me to try a different approach!' }]);
+  };
+
+  // Deploy previewed content changes
+  const handleDeployChanges = async () => {
+    if (!pendingChanges) return;
+    setDeploying(true);
+    try {
+      const updates = pendingChanges.map(c => ({ key: c.key, value: c.new_value }));
+      await callFunction({ action: 'execute_tool', tool_call: { tool_name: 'bulk_update_content', parameters: { updates } } });
+      invalidateCaches();
+      toast({ title: '🚀 Deployed!', description: `${updates.length} change(s) are now live!` });
+      setMessages(prev => [...prev, { role: 'assistant', content: `✅ **${updates.length} change(s) deployed live!** Website updated.` }]);
+    } catch (err: any) {
+      toast({ title: 'Deploy Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setPendingChanges(null);
+      setDeploying(false);
+    }
   };
 
   // File upload handler
