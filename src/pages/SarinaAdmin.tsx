@@ -129,7 +129,7 @@ const PasswordGate = ({ onAuth }: { onAuth: () => void }) => {
             </div>
             <button
               type="submit"
-              disabled={answer.length !== 4}
+              disabled={!answer.trim()}
               className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               <Lock className="w-4 h-4" />
