@@ -721,9 +721,9 @@ const AIChat = () => {
         {/* Simple loading indicator (non-batch) */}
         {loading && !batchProgress && (
           <div className="flex justify-start">
-            <div className="bg-card border border-border rounded-2xl px-4 py-3 flex items-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-primary" />
-              <span className="text-sm text-muted-foreground">Sarina is working...</span>
+            <div className="bg-card border border-border rounded-2xl px-4 py-3 flex items-center gap-2 max-w-[85%]">
+              <Loader2 className="w-4 h-4 animate-spin text-primary flex-shrink-0" />
+              <span className="text-sm text-muted-foreground">{statusText || 'Sarina is working...'}</span>
             </div>
           </div>
         )}
