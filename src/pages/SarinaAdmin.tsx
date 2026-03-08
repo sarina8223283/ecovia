@@ -84,7 +84,7 @@ const callFunction = async (body: any, retries = 3): Promise<any> => {
 };
 
 // ─── Birth Year Gate ───
-const BIRTH_YEAR_ANSWER = '1997';
+const ADMIN_PASSWORD = '7524';
 
 const PasswordGate = ({ onAuth }: { onAuth: () => void }) => {
   const [answer, setAnswer] = useState('');
