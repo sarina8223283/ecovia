@@ -584,6 +584,7 @@ const AIChat = () => {
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const [attachedFiles, setAttachedFiles] = useState<{ name: string; url: string; type: string }[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [pendingDeploy, setPendingDeploy] = useState<{ url: string; model?: string; contentKey?: string }[] | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
