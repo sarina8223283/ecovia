@@ -1,14 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Phone, Instagram, Facebook, ExternalLink, Sparkles, LayoutDashboard } from 'lucide-react';
+import { X, Send, Phone, Instagram, Facebook, ExternalLink, Sparkles, LayoutDashboard, ImagePlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { products } from '@/data/products';
+import { supabase } from '@/integrations/supabase/client';
 import ReactMarkdown from 'react-markdown';
 
 interface Message {
   id: string;
   text: string;
   isBot: boolean;
+  image_url?: string;
   links?: { label: string; action: () => void }[];
 }
 
@@ -19,42 +21,69 @@ const SarinaBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hello! I'm Sarina, your Mittika wellness assistant 🌿 Ask me anything about our herbal powders — ingredients, chemical composition, usage, alternative uses, pricing, or quality testing. How can I help?",
+      text: "Hey there! I'm Sarina, your Mittika bestie 🌿✨ I know everything about herbal powders, but honestly I can chat about anything — wellness, beauty, life, you name it. What's on your mind?",
       isBot: true,
       links: [
         { label: 'Browse Products', action: () => {} },
-        { label: 'Quality Tests', action: () => {} },
+        { label: 'Website Analytics', action: () => {} },
         { label: 'Talk to Expert', action: () => {} },
       ],
     },
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [pendingImage, setPendingImage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim() || isTyping) return;
+  const uploadImage = async (file: File): Promise<string | null> => {
+    const fileName = `chat-upload-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${file.name.split('.').pop()}`;
+    const { error } = await supabase.storage.from('site-images').upload(fileName, file, { contentType: file.type, upsert: true });
+    if (error) { console.error('Upload error:', error); return null; }
+    const { data } = supabase.storage.from('site-images').getPublicUrl(fileName);
+    return data.publicUrl;
+  };
 
-    const userText = input.trim();
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = await uploadImage(file);
+    if (url) setPendingImage(url);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleSend = async () => {
+    if ((!input.trim() && !pendingImage) || isTyping) return;
+
+    const userText = input.trim() || (pendingImage ? "Check this image" : "");
     const userMessage: Message = {
       id: Date.now().toString(),
       text: userText,
       isBot: false,
+      image_url: pendingImage || undefined,
     };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
+    const imageForRequest = pendingImage;
+    setPendingImage(null);
     setIsTyping(true);
 
-    // Build conversation history for AI (last 10 messages for context)
-    const conversationHistory = messages
-      .slice(-10)
-      .map(m => ({ role: m.isBot ? 'assistant' as const : 'user' as const, content: m.text }));
-    conversationHistory.push({ role: 'user', content: userText });
+    // Build conversation history
+    const conversationHistory = messages.slice(-10).map(m => ({
+      role: m.isBot ? 'assistant' as const : 'user' as const,
+      content: m.text,
+      ...(m.image_url ? { image_url: m.image_url } : {}),
+    }));
+    conversationHistory.push({
+      role: 'user',
+      content: userText,
+      ...(imageForRequest ? { image_url: imageForRequest } : {}),
+    });
 
     let assistantText = '';
 
@@ -68,17 +97,21 @@ const SarinaBot = () => {
         body: JSON.stringify({ messages: conversationHistory }),
       });
 
-      if (!resp.ok || !resp.body) {
-        throw new Error('Stream failed');
+      if (!resp.ok) {
+        const errData = await resp.json().catch(() => ({}));
+        throw new Error(errData.error || 'Connection failed');
       }
+
+      if (!resp.body) throw new Error('No response body');
 
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
       let textBuffer = '';
       let streamDone = false;
       const botMsgId = (Date.now() + 1).toString();
+      let hasToolCalls = false;
+      const toolCalls: any[] = [];
 
-      // Add initial empty bot message
       setMessages(prev => [...prev, { id: botMsgId, text: '', isBot: true }]);
       setIsTyping(false);
 
@@ -101,7 +134,20 @@ const SarinaBot = () => {
 
           try {
             const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            const delta = parsed.choices?.[0]?.delta;
+            
+            // Handle tool calls
+            if (delta?.tool_calls) {
+              hasToolCalls = true;
+              for (const tc of delta.tool_calls) {
+                const idx = tc.index ?? 0;
+                if (!toolCalls[idx]) toolCalls[idx] = { id: tc.id || '', function: { name: '', arguments: '' } };
+                if (tc.function?.name) toolCalls[idx].function.name = tc.function.name;
+                if (tc.function?.arguments) toolCalls[idx].function.arguments += tc.function.arguments;
+              }
+            }
+            
+            const content = delta?.content as string | undefined;
             if (content) {
               assistantText += content;
               const currentText = assistantText;
@@ -116,7 +162,100 @@ const SarinaBot = () => {
         }
       }
 
-      // Add product links if a product is mentioned
+      // If AI wants to call tools, execute them and get a follow-up response
+      if (hasToolCalls && toolCalls.length > 0) {
+        setIsTyping(true);
+        // Show a thinking message
+        const thinkText = assistantText || "Let me check that for you... 🔍";
+        setMessages(prev =>
+          prev.map(m => m.id === botMsgId ? { ...m, text: thinkText } : m)
+        );
+
+        // Execute each tool call
+        const toolResults: string[] = [];
+        for (const tc of toolCalls) {
+          try {
+            const params = JSON.parse(tc.function.arguments || '{}');
+            const toolResp = await fetch(CHAT_URL, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+              },
+              body: JSON.stringify({
+                action: 'execute_tool',
+                messages: { tool_name: tc.function.name, parameters: params },
+              }),
+            });
+            const toolData = await toolResp.json();
+            toolResults.push(JSON.stringify(toolData));
+          } catch (err) {
+            toolResults.push(`Error executing ${tc.function.name}: ${err}`);
+          }
+        }
+
+        // Send tool results back to AI for a natural response
+        const followUpMessages = [
+          ...conversationHistory,
+          { role: 'assistant' as const, content: assistantText || '', tool_calls: toolCalls.map((tc, i) => ({
+            id: tc.id || `call_${i}`,
+            type: 'function',
+            function: { name: tc.function.name, arguments: tc.function.arguments },
+          }))},
+          ...toolCalls.map((tc, i) => ({
+            role: 'tool' as const,
+            content: toolResults[i],
+            tool_call_id: tc.id || `call_${i}`,
+          })),
+        ];
+
+        const followResp = await fetch(CHAT_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ messages: followUpMessages }),
+        });
+
+        if (followResp.ok && followResp.body) {
+          const followReader = followResp.body.getReader();
+          let followBuffer = '';
+          let followText = '';
+          let followDone = false;
+
+          while (!followDone) {
+            const { done, value } = await followReader.read();
+            if (done) break;
+            followBuffer += decoder.decode(value, { stream: true });
+
+            let idx: number;
+            while ((idx = followBuffer.indexOf('\n')) !== -1) {
+              let fLine = followBuffer.slice(0, idx);
+              followBuffer = followBuffer.slice(idx + 1);
+              if (fLine.endsWith('\r')) fLine = fLine.slice(0, -1);
+              if (!fLine.startsWith('data: ')) continue;
+              const fJson = fLine.slice(6).trim();
+              if (fJson === '[DONE]') { followDone = true; break; }
+              try {
+                const fp = JSON.parse(fJson);
+                const fc = fp.choices?.[0]?.delta?.content;
+                if (fc) {
+                  followText += fc;
+                  const ft = followText;
+                  setMessages(prev =>
+                    prev.map(m => m.id === botMsgId ? { ...m, text: ft } : m)
+                  );
+                }
+              } catch { followBuffer = fLine + '\n' + followBuffer; break; }
+            }
+          }
+          assistantText = followText;
+        }
+        setIsTyping(false);
+      }
+
+      // Add product links if mentioned
       const lowerText = assistantText.toLowerCase();
       const matchedProducts = products.filter(p =>
         lowerText.includes(p.name.toLowerCase()) || lowerText.includes(p.id.replace('-', ' '))
@@ -132,11 +271,11 @@ const SarinaBot = () => {
         );
       }
 
-    } catch {
+    } catch (err: any) {
       setIsTyping(false);
       setMessages(prev => [...prev, {
         id: (Date.now() + 2).toString(),
-        text: "I'm having trouble connecting right now. Let me connect you with our team directly!",
+        text: err.message || "Oops, something went wrong! Let me connect you with the team 💫",
         isBot: true,
         links: [
           { label: '📞 Call Now', action: () => window.open('tel:+918758808684') },
@@ -181,7 +320,7 @@ const SarinaBot = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold">Sarina</h3>
-                  <p className="text-xs text-primary-foreground/80">AI Wellness Assistant</p>
+                  <p className="text-xs text-primary-foreground/80">Your Smart AI Bestie ✨</p>
                 </div>
               </div>
               <button
@@ -206,6 +345,13 @@ const SarinaBot = () => {
                         : 'bg-primary text-primary-foreground rounded-tr-md'
                     }`}
                   >
+                    {message.image_url && (
+                      <img
+                        src={message.image_url}
+                        alt="Uploaded"
+                        className="w-full max-h-40 object-cover rounded-lg mb-2"
+                      />
+                    )}
                     {message.isBot ? (
                       <div className="text-sm prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0 prose-strong:text-foreground">
                         <ReactMarkdown>{message.text}</ReactMarkdown>
@@ -244,6 +390,21 @@ const SarinaBot = () => {
               <div ref={messagesEndRef} />
             </div>
 
+            {/* Pending Image Preview */}
+            {pendingImage && (
+              <div className="px-4 py-2 border-t border-border">
+                <div className="relative inline-block">
+                  <img src={pendingImage} alt="Upload preview" className="h-16 w-16 object-cover rounded-lg border border-border" />
+                  <button
+                    onClick={() => setPendingImage(null)}
+                    className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center text-xs"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Quick Actions */}
             <div className="px-4 py-2 border-t border-border flex gap-2 overflow-x-auto">
               <button
@@ -272,24 +433,32 @@ const SarinaBot = () => {
                 className="flex-shrink-0 text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 flex items-center gap-1 font-medium"
               >
                 <LayoutDashboard size={12} />
-                Admin Dashboard
+                Admin
               </button>
             </div>
 
             {/* Input */}
             <div className="p-4 border-t border-border">
               <div className="flex gap-2">
+                <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageSelect} />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-10 h-10 rounded-full bg-secondary text-muted-foreground flex items-center justify-center hover:bg-secondary/80 transition-colors flex-shrink-0"
+                  title="Upload image"
+                >
+                  <ImagePlus size={18} />
+                </button>
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                  placeholder="Ask anything about our products..."
+                  placeholder="Ask me anything..."
                   className="flex-1 px-4 py-2.5 rounded-full bg-secondary border-0 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                 />
                 <button
                   onClick={handleSend}
-                  disabled={!input.trim() || isTyping}
+                  disabled={(!input.trim() && !pendingImage) || isTyping}
                   className="w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-50 hover:bg-primary/90 transition-colors"
                 >
                   <Send size={18} />
