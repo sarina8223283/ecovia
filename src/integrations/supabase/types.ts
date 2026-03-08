@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_settings: {
+        Row: {
+          id: string
+          setting_key: string
+          setting_value: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          setting_key: string
+          setting_value: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          setting_key?: string
+          setting_value?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -199,6 +220,60 @@ export type Database = {
           state?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      site_content: {
+        Row: {
+          content_key: string
+          content_type: string
+          content_value: string
+          created_at: string
+          id: string
+          image_url: string | null
+          metadata: Json | null
+          updated_at: string
+        }
+        Insert: {
+          content_key: string
+          content_type?: string
+          content_value?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          metadata?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          content_key?: string
+          content_type?: string
+          content_value?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          metadata?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_theme: {
+        Row: {
+          id: string
+          theme_key: string
+          theme_value: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          theme_key: string
+          theme_value?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          theme_key?: string
+          theme_value?: string
+          updated_at?: string
         }
         Relationships: []
       }
