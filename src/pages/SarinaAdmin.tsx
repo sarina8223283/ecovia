@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Lock, LogOut, Loader2, RefreshCw, LayoutDashboard, MessageSquare, FileText, Palette, Image as ImageIcon, Trash2, Edit3, Plus, Eye, ArrowLeft, Paperclip, X, ZoomIn } from 'lucide-react';
+import { Send, Lock, LogOut, Loader2, RefreshCw, LayoutDashboard, MessageSquare, FileText, Palette, Image as ImageIcon, Trash2, Edit3, Plus, Eye, ArrowLeft, Paperclip, X, ZoomIn, CheckCircle, XCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import ReactMarkdown from 'react-markdown';
@@ -28,11 +28,11 @@ interface ContentItem {
 
 type Tab = 'chat' | 'content' | 'theme' | 'images';
 
-const callFunction = async (body: any, retries = 2): Promise<any> => {
+const callFunction = async (body: any, retries = 3): Promise<any> => {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 120000); // 2 min timeout
+      const timeout = setTimeout(() => controller.abort(), 120000);
 
       const resp = await fetch(FUNC_URL, {
         method: 'POST',
@@ -46,8 +46,10 @@ const callFunction = async (body: any, retries = 2): Promise<any> => {
       clearTimeout(timeout);
 
       if (resp.status === 429) {
+        const wait = Math.min(3000 * Math.pow(2, attempt), 15000);
+        console.log(`Rate limited, waiting ${wait}ms (attempt ${attempt + 1}/${retries + 1})`);
         if (attempt < retries) {
-          await new Promise(r => setTimeout(r, 3000 * (attempt + 1)));
+          await new Promise(r => setTimeout(r, wait));
           continue;
         }
         throw new Error('Rate limited. Please wait a moment and try again.');
@@ -57,15 +59,25 @@ const callFunction = async (body: any, retries = 2): Promise<any> => {
       }
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({ error: 'Request failed' }));
+        // Auto-retry on server errors
+        if (resp.status >= 500 && attempt < retries) {
+          console.log(`Server error ${resp.status}, retrying (attempt ${attempt + 1}/${retries + 1})`);
+          await new Promise(r => setTimeout(r, 2000 * (attempt + 1)));
+          continue;
+        }
         throw new Error(err.error || `Error ${resp.status}`);
       }
       return resp.json();
     } catch (err: any) {
       if (err.name === 'AbortError') {
+        if (attempt < retries) {
+          console.log(`Request timed out, retrying (attempt ${attempt + 1}/${retries + 1})`);
+          continue;
+        }
         throw new Error('Request timed out. The operation took too long.');
       }
       if (attempt === retries) throw err;
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise(r => setTimeout(r, 2000 * (attempt + 1)));
     }
   }
 };
@@ -276,7 +288,7 @@ const ThemeEditor = () => {
   return (
     <div className="p-4 space-y-4">
       <h2 className="font-serif text-lg font-bold text-foreground">Theme Settings</h2>
-      <p className="text-xs text-muted-foreground">Configure colors, fonts, and styling. Changes are stored and can be applied dynamically.</p>
+      <p className="text-xs text-muted-foreground">Configure colors, fonts, and styling.</p>
 
       {presets.map(preset => {
         const current = themes.find((t: any) => t.theme_key === preset.key);
@@ -466,40 +478,23 @@ const BatchProgressUI = ({ progress }: { progress: BatchProgress }) => {
         <Loader2 className="w-4 h-4 animate-spin text-primary flex-shrink-0" />
         <span className="text-sm font-medium text-foreground">Generating images...</span>
       </div>
-
-      {/* Progress bar */}
       <div className="space-y-1">
         <div className="flex justify-between text-xs text-muted-foreground">
           <span>{progress.completed}/{progress.total} completed</span>
           <span className="font-semibold text-primary">{pct}%</span>
         </div>
         <div className="w-full h-2.5 bg-secondary rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-primary rounded-full"
-            initial={{ width: 0 }}
-            animate={{ width: `${pct}%` }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-          />
+          <motion.div className="h-full bg-primary rounded-full" initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.4, ease: 'easeOut' }} />
         </div>
       </div>
-
-      {/* Current item */}
       <div className="flex items-center gap-2 text-xs">
         <span className="text-muted-foreground">Currently generating:</span>
         <span className="font-medium text-foreground bg-primary/10 px-2 py-0.5 rounded-full">{progress.current}</span>
       </div>
-
-      {/* Success/fail counts */}
       <div className="flex gap-3 text-xs">
-        {progress.successes.length > 0 && (
-          <span className="text-primary">✅ {progress.successes.length} done</span>
-        )}
-        {progress.failures.length > 0 && (
-          <span className="text-destructive">❌ {progress.failures.length} failed</span>
-        )}
+        {progress.successes.length > 0 && <span className="text-primary">✅ {progress.successes.length} done</span>}
+        {progress.failures.length > 0 && <span className="text-destructive">❌ {progress.failures.length} failed</span>}
       </div>
-
-      {/* Recent successes preview */}
       {progress.images.length > 0 && (
         <div className="flex gap-2 overflow-x-auto pb-1">
           {progress.images.slice(-4).map((img, i) => (
@@ -514,33 +509,23 @@ const BatchProgressUI = ({ progress }: { progress: BatchProgress }) => {
 // ─── Image Zoom Modal ───
 const ImageZoomModal = ({ src, onClose }: { src: string; onClose: () => void }) => (
   <AnimatePresence>
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4 cursor-pointer"
-      onClick={onClose}
-    >
-      <motion.img
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.8, opacity: 0 }}
-        src={src}
-        alt="Zoomed"
-        className="max-w-[90vw] max-h-[90vh] object-contain rounded-2xl shadow-2xl"
-        onClick={e => e.stopPropagation()}
-      />
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4 cursor-pointer" onClick={onClose}>
+      <motion.img initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }}
+        src={src} alt="Zoomed" className="max-w-[90vw] max-h-[90vh] object-contain rounded-2xl shadow-2xl" onClick={e => e.stopPropagation()} />
       <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-full text-white">
         <X className="w-6 h-6" />
       </button>
     </motion.div>
   </AnimatePresence>
 );
+
 // ─── Deploy Confirmation Banner ───
-const DeployConfirmBanner = ({ images, onConfirm, onReject }: {
+const DeployConfirmBanner = ({ images, onConfirm, onReject, deploying }: {
   images: { url: string; model?: string; contentKey?: string }[];
   onConfirm: () => void;
   onReject: () => void;
+  deploying?: boolean;
 }) => (
   <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-accent/10 border border-accent rounded-2xl p-4 space-y-3">
     <p className="text-sm font-medium text-foreground">📋 Review before deploying:</p>
@@ -562,11 +547,15 @@ const DeployConfirmBanner = ({ images, onConfirm, onReject }: {
       ))}
     </div>
     <div className="flex gap-2">
-      <button onClick={onConfirm} className="flex-1 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors">
-        ✅ Deploy to Website
+      <button onClick={onConfirm} disabled={deploying}
+        className="flex-1 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5">
+        {deploying ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+        {deploying ? 'Deploying...' : 'Deploy to Website'}
       </button>
-      <button onClick={onReject} className="flex-1 py-2 bg-secondary text-secondary-foreground rounded-xl text-sm font-medium hover:bg-secondary/80 transition-colors">
-        ❌ Discard
+      <button onClick={onReject} disabled={deploying}
+        className="flex-1 py-2 bg-secondary text-secondary-foreground rounded-xl text-sm font-medium hover:bg-secondary/80 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5">
+        <XCircle className="w-4 h-4" />
+        Discard
       </button>
     </div>
   </motion.div>
@@ -575,7 +564,7 @@ const DeployConfirmBanner = ({ images, onConfirm, onReject }: {
 
 const AIChat = () => {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website — changes appear **instantly** in real-time. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika"\n- 🖼️ "Generate a high-quality banner of herbal powders"\n- 🖼️ "Generate benefit images for all 15 products"\n- 📎 Upload PDFs, images, or documents as reference\n- 📋 "Show me all live content"\n- 🎨 "Set primary color to dark green"' },
+    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website — changes appear **instantly** in real-time. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika"\n- 🖼️ "Generate a high-quality banner of herbal powders"\n- 🖼️ "Generate benefit images for all 15 products"\n- 📎 Upload PDFs, images, or documents as reference\n- 📋 "Show me all live content"\n- 🎨 "Set primary color to dark green"\n\n💡 **Images are previewed first** — you approve before they go live!' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -585,6 +574,7 @@ const AIChat = () => {
   const [attachedFiles, setAttachedFiles] = useState<{ name: string; url: string; type: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [pendingDeploy, setPendingDeploy] = useState<{ url: string; model?: string; contentKey?: string }[] | null>(null);
+  const [deploying, setDeploying] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
@@ -600,20 +590,42 @@ const AIChat = () => {
     queryClient.invalidateQueries({ queryKey: ['admin-images'] });
   };
 
-  const executeTool = async (toolName: string, parameters: any): Promise<string> => {
+  // Auto-retry wrapper: if a tool fails, retry with simplified approach
+  const executeToolWithRecovery = async (toolName: string, parameters: any, retryCount = 0): Promise<string> => {
     try {
       const result = await callFunction({ action: 'execute_tool', tool_call: { tool_name: toolName, parameters } });
-      
+
       if (result.batch_mode) {
         return await executeBatchImages({ product_ids: result.product_ids, image_type: result.image_type });
       }
-      
-      if (['update_content', 'delete_content', 'generate_image', 'update_theme', 'bulk_update_content', 'bulk_delete_content'].includes(toolName)) {
+
+      // Handle image generation failure with auto-retry
+      if (toolName === 'generate_image' && !result.success && result.error_type === 'generation_failed' && retryCount < 2) {
+        console.log(`Image gen failed, auto-retrying with fast mode (attempt ${retryCount + 1})`);
+        setStatusText('🔄 Auto-retrying with faster model...');
+        await new Promise(r => setTimeout(r, 2000));
+        return executeToolWithRecovery(toolName, { ...parameters, quality: 'fast' }, retryCount + 1);
+      }
+
+      if (['update_content', 'delete_content', 'update_theme', 'bulk_update_content', 'bulk_delete_content'].includes(toolName)) {
         invalidateCaches();
       }
+
+      // For preview images, also invalidate
+      if (toolName === 'generate_image' && result.success) {
+        invalidateCaches();
+      }
+
       return JSON.stringify(result);
     } catch (err: any) {
-      return JSON.stringify({ error: err.message });
+      // Auto-retry on transient errors
+      if (retryCount < 2 && !err.message.includes('credits')) {
+        console.log(`Tool ${toolName} failed: ${err.message}, auto-retrying (attempt ${retryCount + 1})`);
+        setStatusText(`🔄 Auto-recovering from error... (attempt ${retryCount + 1})`);
+        await new Promise(r => setTimeout(r, 3000 * (retryCount + 1)));
+        return executeToolWithRecovery(toolName, parameters, retryCount + 1);
+      }
+      return JSON.stringify({ error: err.message, error_type: 'tool_error' });
     }
   };
 
@@ -622,14 +634,7 @@ const AIChat = () => {
     const ids: string[] = product_ids === 'all' ? Object.keys(PRODUCT_NAMES) : (Array.isArray(product_ids) ? product_ids : [product_ids]);
     const total = ids.length;
 
-    const progress: BatchProgress = {
-      total,
-      completed: 0,
-      current: PRODUCT_NAMES[ids[0]] || ids[0],
-      successes: [],
-      failures: [],
-      images: [],
-    };
+    const progress: BatchProgress = { total, completed: 0, current: PRODUCT_NAMES[ids[0]] || ids[0], successes: [], failures: [], images: [] };
     setBatchProgress({ ...progress });
 
     for (let i = 0; i < ids.length; i++) {
@@ -644,45 +649,93 @@ const AIChat = () => {
 
       const contentKey = `${pid}_${image_type}_image`;
 
-      try {
-        const result = await callFunction({
-          action: 'execute_tool',
-          tool_call: { tool_name: 'generate_image', parameters: { prompt, content_key: contentKey } },
-        }, 3);
+      // Batch mode: auto_deploy = true
+      let success = false;
+      for (let attempt = 0; attempt <= 2 && !success; attempt++) {
+        try {
+          const result = await callFunction({
+            action: 'execute_tool',
+            tool_call: { tool_name: 'generate_image', parameters: { prompt, content_key: contentKey, auto_deploy: true, quality: attempt > 0 ? 'fast' : 'auto' } },
+          }, 3);
 
-        if (result.image_url) {
-          progress.successes.push(name);
-          progress.images.push(result.image_url);
-          toast({ title: `✅ ${name}`, description: `${image_type} image generated (${result.model_used?.split('/').pop() || 'ai'})` });
-        } else if (result.message) {
-          progress.failures.push(`${name}: ${result.message}`);
-          toast({ title: `⚠️ ${name}`, description: result.message, variant: 'destructive' });
-        } else {
-          progress.failures.push(name);
+          if (result.image_url) {
+            progress.successes.push(name);
+            progress.images.push(result.image_url);
+            toast({ title: `✅ ${name}`, description: `${image_type} image generated (${result.model_used?.split('/').pop() || 'ai'})` });
+            success = true;
+          } else if (attempt < 2) {
+            setStatusText(`🔄 Retrying ${name} with faster model...`);
+            await new Promise(r => setTimeout(r, 3000));
+          } else {
+            progress.failures.push(`${name}: ${result.message || 'Failed'}`);
+            toast({ title: `⚠️ ${name}`, description: result.message || 'Failed after retries', variant: 'destructive' });
+          }
+        } catch (err: any) {
+          if (attempt < 2) {
+            setStatusText(`🔄 Recovering error for ${name}...`);
+            await new Promise(r => setTimeout(r, 3000));
+          } else {
+            progress.failures.push(`${name}: ${err.message}`);
+            toast({ title: `❌ ${name}`, description: err.message, variant: 'destructive' });
+          }
         }
-      } catch (err: any) {
-        progress.failures.push(`${name}: ${err.message}`);
-        toast({ title: `❌ ${name}`, description: err.message, variant: 'destructive' });
       }
 
       progress.completed = i + 1;
       setBatchProgress({ ...progress });
 
-      if (i < ids.length - 1) {
-        await new Promise(r => setTimeout(r, 3000));
-      }
+      if (i < ids.length - 1) await new Promise(r => setTimeout(r, 3000));
     }
 
     invalidateCaches();
     setBatchProgress(null);
 
     return JSON.stringify({
-      success: true,
-      deployed: true,
+      success: true, deployed: true,
       message: `🖼️ Batch complete: ${progress.successes.length}/${total} ${image_type} images generated & deployed. ${progress.failures.length > 0 ? `\n\nFailed: ${progress.failures.join(', ')}` : '✨ All successful!'}`,
       results: progress.successes.map(name => ({ product: name })),
       images: progress.images,
     });
+  };
+
+  // Deploy confirmed preview images
+  const handleDeployConfirm = async () => {
+    if (!pendingDeploy) return;
+    setDeploying(true);
+    let deployed = 0;
+    
+    for (const img of pendingDeploy) {
+      if (img.contentKey) {
+        try {
+          await callFunction({ action: 'deploy_image', tool_call: { image_url: img.url, content_key: img.contentKey } });
+          deployed++;
+        } catch (err: any) {
+          console.error('Deploy error:', err);
+          // Auto-retry once
+          try {
+            await new Promise(r => setTimeout(r, 1000));
+            await callFunction({ action: 'deploy_image', tool_call: { image_url: img.url, content_key: img.contentKey } });
+            deployed++;
+          } catch {
+            toast({ title: 'Deploy Error', description: `Failed to deploy ${img.contentKey}: ${err.message}`, variant: 'destructive' });
+          }
+        }
+      }
+    }
+
+    invalidateCaches();
+    setPendingDeploy(null);
+    setDeploying(false);
+    
+    if (deployed > 0) {
+      toast({ title: '🚀 Deployed!', description: `${deployed} image(s) are now live on the website!` });
+      setMessages(prev => [...prev, { role: 'assistant', content: `✅ **${deployed} image(s) deployed live!** Changes are visible on the website now.` }]);
+    }
+  };
+
+  const handleDeployReject = () => {
+    setPendingDeploy(null);
+    setMessages(prev => [...prev, { role: 'assistant', content: '🗑️ Images discarded. Ask me to generate new ones with a different style!' }]);
   };
 
   // File upload handler
@@ -719,7 +772,6 @@ const AIChat = () => {
   const handleSend = useCallback(async () => {
     if ((!input.trim() && attachedFiles.length === 0) || loading) return;
 
-    // Build user message with file references
     let userContent = input.trim();
     const fileUrls: { name: string; url: string; type: string }[] = [...attachedFiles];
     if (fileUrls.length > 0) {
@@ -734,95 +786,119 @@ const AIChat = () => {
     setAttachedFiles([]);
     setLoading(true);
 
-    try {
-      setStatusText('🤔 Sarina is thinking...');
+    // Auto-recovery loop: if the entire chat call fails, retry up to 2 times
+    let chatAttempt = 0;
+    const maxChatAttempts = 3;
 
-      // Include file URLs in the message to AI so it can use analyze_file tool
-      let aiContent = input.trim();
-      if (fileUrls.length > 0) {
-        const fileInfo = fileUrls.map(f => `Uploaded file: ${f.name} (type: ${f.type}, url: ${f.url})`).join('\n');
-        aiContent = aiContent ? `${aiContent}\n\n${fileInfo}` : fileInfo;
-      }
+    while (chatAttempt < maxChatAttempts) {
+      try {
+        setStatusText(chatAttempt > 0 ? `🔄 Auto-recovering (attempt ${chatAttempt + 1})...` : '🤔 Sarina is thinking...');
 
-      const aiMessages = [
-        ...messages.map(m => ({ role: m.role, content: m.content })),
-        { role: 'user', content: aiContent },
-      ];
-      const result = await callFunction({ action: 'chat', messages: aiMessages });
-
-      if (result.tool_calls?.length > 0) {
-        const toolResults: string[] = [];
-        const allImages: { url: string; model?: string; contentKey?: string }[] = [];
-
-        for (const tc of result.tool_calls) {
-          const fn = tc.function;
-          const params = typeof fn.arguments === 'string' ? JSON.parse(fn.arguments) : fn.arguments;
-
-          const toolLabels: Record<string, string> = {
-            update_content: '✏️ Updating content...',
-            bulk_update_content: '✏️ Bulk updating content...',
-            generate_image: '🖼️ Generating image (pro model)...',
-            generate_product_images: '🖼️ Starting batch image generation...',
-            update_theme: '🎨 Updating theme...',
-            list_content: '📋 Listing content...',
-            delete_content: '🗑️ Deleting content...',
-            bulk_delete_content: '🗑️ Bulk deleting content...',
-            get_website_info: '📖 Getting info...',
-            analyze_file: '📄 Analyzing uploaded file...',
-          };
-          setStatusText(toolLabels[fn.name] || `⚙️ Running ${fn.name}...`);
-
-          const toolResult = await executeTool(fn.name, params);
-
-          toolResults.push(`**${fn.name}**: ${toolResult}`);
-          try {
-            const parsed = JSON.parse(toolResult);
-            if (parsed.image_url) allImages.push({ url: parsed.image_url, model: parsed.model_used, contentKey: params.content_key });
-            if (parsed.images?.length) allImages.push(...parsed.images.map((u: string) => ({ url: u })));
-            if (parsed.results?.length) {
-              parsed.results.forEach((r: any) => { if (r.image_url) allImages.push({ url: r.image_url, model: r.model_used }); });
-            }
-            if (parsed.deployed) {
-              toast({ title: '🚀 Deployed Live', description: parsed.message || 'Change is live on the website!' });
-            }
-          } catch {}
+        let aiContent = input.trim();
+        if (fileUrls.length > 0) {
+          const fileInfo = fileUrls.map(f => `Uploaded file: ${f.name} (type: ${f.type}, url: ${f.url})`).join('\n');
+          aiContent = aiContent ? `${aiContent}\n\n${fileInfo}` : fileInfo;
         }
 
-        setStatusText('📝 Summarizing changes...');
-        const followUp = await callFunction({
-          action: 'chat',
-          messages: [
-            ...aiMessages,
-            { role: 'assistant', content: result.message || 'Executing...' },
-            { role: 'user', content: `Tool results:\n${toolResults.join('\n')}\n\nSummarize what was done and confirm it's live. Mention which AI model was used for any generated images.` },
-          ],
-        });
+        const aiMessages = [
+          ...messages.map(m => ({ role: m.role, content: m.content })),
+          { role: 'user', content: aiContent },
+        ];
+        const result = await callFunction({ action: 'chat', messages: aiMessages });
 
-        setMessages(prev => [...prev, {
-          role: 'assistant' as const,
-          content: followUp.message || 'Changes applied and live!',
-          images: allImages.length > 0 ? allImages.slice(0, 8) : undefined,
-        }]);
+        if (result.tool_calls?.length > 0) {
+          const toolResults: string[] = [];
+          const previewImages: { url: string; model?: string; contentKey?: string }[] = [];
+          const deployedImages: { url: string; model?: string }[] = [];
 
-        // Show deploy confirmation for generated images
-        if (allImages.length > 0) {
-          setPendingDeploy(allImages.slice(0, 8));
+          for (const tc of result.tool_calls) {
+            const fn = tc.function;
+            const params = typeof fn.arguments === 'string' ? JSON.parse(fn.arguments) : fn.arguments;
+
+            const toolLabels: Record<string, string> = {
+              update_content: '✏️ Updating content...',
+              bulk_update_content: '✏️ Bulk updating content...',
+              generate_image: '🖼️ Generating image...',
+              generate_product_images: '🖼️ Starting batch image generation...',
+              update_theme: '🎨 Updating theme...',
+              list_content: '📋 Listing content...',
+              delete_content: '🗑️ Deleting content...',
+              bulk_delete_content: '🗑️ Bulk deleting content...',
+              get_website_info: '📖 Getting info...',
+              analyze_file: '📄 Analyzing uploaded file...',
+            };
+            setStatusText(toolLabels[fn.name] || `⚙️ Running ${fn.name}...`);
+
+            const toolResult = await executeToolWithRecovery(fn.name, params);
+            toolResults.push(`**${fn.name}**: ${toolResult}`);
+
+            try {
+              const parsed = JSON.parse(toolResult);
+              if (parsed.image_url) {
+                if (parsed.preview && !parsed.deployed) {
+                  // Preview image — needs confirmation
+                  previewImages.push({ url: parsed.image_url, model: parsed.model_used, contentKey: parsed.content_key });
+                } else if (parsed.deployed) {
+                  deployedImages.push({ url: parsed.image_url, model: parsed.model_used });
+                }
+              }
+              if (parsed.images?.length) deployedImages.push(...parsed.images.map((u: string) => ({ url: u })));
+              if (parsed.deployed && !parsed.preview) {
+                toast({ title: '🚀 Deployed Live', description: parsed.message || 'Change is live!' });
+              }
+            } catch {}
+          }
+
+          setStatusText('📝 Summarizing changes...');
+          const followUp = await callFunction({
+            action: 'chat',
+            messages: [
+              ...aiMessages,
+              { role: 'assistant', content: result.message || 'Executing...' },
+              { role: 'user', content: `Tool results:\n${toolResults.join('\n')}\n\nSummarize what was done. Mention which AI model was used for generated images. If images are in preview mode, tell the user to approve them.` },
+            ],
+          });
+
+          const allImages = [...previewImages, ...deployedImages];
+          setMessages(prev => [...prev, {
+            role: 'assistant' as const,
+            content: followUp.message || 'Changes applied!',
+            images: allImages.length > 0 ? allImages.slice(0, 8) : undefined,
+          }]);
+
+          // Show deploy confirmation only for preview images
+          if (previewImages.length > 0) {
+            setPendingDeploy(previewImages);
+          }
+        } else {
+          setMessages(prev => [...prev, { role: 'assistant' as const, content: result.message || 'Done.' }]);
         }
-      } else {
-        setMessages(prev => [...prev, { role: 'assistant' as const, content: result.message || 'Done.' }]);
+
+        // Success - break out of retry loop
+        break;
+      } catch (err: any) {
+        chatAttempt++;
+        if (chatAttempt < maxChatAttempts && !err.message.includes('credits')) {
+          console.log(`Chat attempt ${chatAttempt} failed: ${err.message}, auto-retrying...`);
+          setStatusText(`🔄 Auto-recovering from error (attempt ${chatAttempt + 1}/${maxChatAttempts})...`);
+          await new Promise(r => setTimeout(r, 3000 * chatAttempt));
+        } else {
+          setMessages(prev => [...prev, { 
+            role: 'assistant', 
+            content: `❌ **Error:** ${err.message}\n\n💡 **Auto-recovery exhausted.** Try:\n- Simplifying your request\n- Breaking it into smaller steps\n- Waiting a moment and trying again` 
+          }]);
+          break;
+        }
       }
-    } catch (err: any) {
-      setMessages(prev => [...prev, { role: 'assistant', content: `❌ Error: ${err.message}\n\nPlease try again or simplify your request.` }]);
-    } finally {
-      setLoading(false);
-      setStatusText('');
-      setBatchProgress(null);
     }
+
+    setLoading(false);
+    setStatusText('');
+    setBatchProgress(null);
   }, [input, loading, messages, attachedFiles]);
 
   return (
     <div className="flex flex-col h-full">
-      {/* Image zoom modal */}
       {zoomedImage && <ImageZoomModal src={zoomedImage} onClose={() => setZoomedImage(null)} />}
 
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
@@ -846,6 +922,11 @@ const AIChat = () => {
                             🤖 {img.model.split('/').pop()}
                           </span>
                         )}
+                        {img.contentKey && (
+                          <span className="absolute top-1 left-1 text-[9px] bg-primary/80 text-primary-foreground px-1.5 py-0.5 rounded-full">
+                            {img.contentKey}
+                          </span>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -855,32 +936,18 @@ const AIChat = () => {
           </motion.div>
         ))}
 
-        {/* Batch progress indicator */}
         {batchProgress && (
           <div className="flex justify-start">
             <BatchProgressUI progress={batchProgress} />
           </div>
         )}
 
-        {/* Deploy confirmation */}
         {pendingDeploy && pendingDeploy.length > 0 && (
           <div className="flex justify-start max-w-[85%]">
-            <DeployConfirmBanner
-              images={pendingDeploy}
-              onConfirm={() => {
-                setPendingDeploy(null);
-                toast({ title: '✅ Images already deployed', description: 'Images are live on the website!' });
-                invalidateCaches();
-              }}
-              onReject={() => {
-                setPendingDeploy(null);
-                setMessages(prev => [...prev, { role: 'assistant', content: '🗑️ Images discarded. Ask me to generate new ones with a different style!' }]);
-              }}
-            />
+            <DeployConfirmBanner images={pendingDeploy} onConfirm={handleDeployConfirm} onReject={handleDeployReject} deploying={deploying} />
           </div>
         )}
 
-        {/* Simple loading indicator */}
         {loading && !batchProgress && (
           <div className="flex justify-start">
             <div className="bg-card border border-border rounded-2xl px-4 py-3 flex items-center gap-2 max-w-[85%]">
@@ -892,7 +959,6 @@ const AIChat = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Attached files preview */}
       {attachedFiles.length > 0 && (
         <div className="px-3 py-2 border-t border-border bg-secondary/30 flex gap-2 overflow-x-auto">
           {attachedFiles.map((file, i) => (
@@ -913,31 +979,13 @@ const AIChat = () => {
 
       <div className="border-t border-border bg-card px-3 py-2">
         <div className="flex items-center gap-2">
-          {/* File upload button */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt"
-            multiple
-            onChange={handleFileUpload}
-            className="hidden"
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={loading || uploading}
-            className="p-2.5 hover:bg-secondary rounded-xl transition-colors text-muted-foreground disabled:opacity-50"
-            title="Attach files (images, PDFs, documents)"
-          >
+          <input ref={fileInputRef} type="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt" multiple onChange={handleFileUpload} className="hidden" />
+          <button onClick={() => fileInputRef.current?.click()} disabled={loading || uploading}
+            className="p-2.5 hover:bg-secondary rounded-xl transition-colors text-muted-foreground disabled:opacity-50" title="Attach files">
             {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Paperclip className="w-4 h-4" />}
           </button>
-          <input
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
-            placeholder="Tell Sarina what to change..."
-            className="flex-1 px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:ring-2 focus:ring-primary outline-none"
-            disabled={loading}
-          />
+          <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
+            placeholder="Tell Sarina what to change..." className="flex-1 px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:ring-2 focus:ring-primary outline-none" disabled={loading} />
           <button onClick={handleSend} disabled={loading || (!input.trim() && attachedFiles.length === 0)} className="p-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 disabled:opacity-50">
             <Send className="w-4 h-4" />
           </button>
@@ -965,7 +1013,6 @@ const SarinaAdmin = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex flex-col">
-      {/* Header */}
       <div className="bg-card border-b border-border px-4 py-2.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link to="/" className="p-1.5 hover:bg-secondary rounded-lg transition-colors text-muted-foreground" title="Back to website">
@@ -976,7 +1023,7 @@ const SarinaAdmin = () => {
           </div>
           <div>
             <h1 className="font-serif text-sm font-bold text-foreground">Sarina Admin</h1>
-            <p className="text-[10px] text-muted-foreground">AI Website Editor</p>
+            <p className="text-[10px] text-muted-foreground">AI Website Editor • Auto-Recovery Enabled</p>
           </div>
         </div>
         <div className="flex items-center gap-1">
@@ -989,42 +1036,23 @@ const SarinaAdmin = () => {
         </div>
       </div>
 
-      {/* Tab Bar */}
       <div className="bg-card border-b border-border px-2 flex gap-1 overflow-x-auto">
         {tabs.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+          <button key={tab.id} onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium whitespace-nowrap transition-colors border-b-2 ${
-              activeTab === tab.id
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-            }`}
-          >
+              activeTab === tab.id ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'
+            }`}>
             {tab.icon}
             {tab.label}
           </button>
         ))}
       </div>
 
-      {/* Tab Content */}
       <div className="flex-1 overflow-hidden flex flex-col">
         {activeTab === 'chat' && <AIChat />}
-        {activeTab === 'content' && (
-          <div className="flex-1 overflow-y-auto">
-            <ContentManager />
-          </div>
-        )}
-        {activeTab === 'theme' && (
-          <div className="flex-1 overflow-y-auto">
-            <ThemeEditor />
-          </div>
-        )}
-        {activeTab === 'images' && (
-          <div className="flex-1 overflow-y-auto">
-            <ImageGallery />
-          </div>
-        )}
+        {activeTab === 'content' && <div className="flex-1 overflow-y-auto"><ContentManager /></div>}
+        {activeTab === 'theme' && <div className="flex-1 overflow-y-auto"><ThemeEditor /></div>}
+        {activeTab === 'images' && <div className="flex-1 overflow-y-auto"><ImageGallery /></div>}
       </div>
     </div>
   );
