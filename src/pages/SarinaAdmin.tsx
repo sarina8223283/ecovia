@@ -665,6 +665,7 @@ const AIChat = () => {
   const [attachedFiles, setAttachedFiles] = useState<{ name: string; url: string; type: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [pendingDeploy, setPendingDeploy] = useState<{ url: string; model?: string; contentKey?: string }[] | null>(null);
+  const [pendingChanges, setPendingChanges] = useState<{ key: string; current_value: string; new_value: string; is_new: boolean }[] | null>(null);
   const [deploying, setDeploying] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
