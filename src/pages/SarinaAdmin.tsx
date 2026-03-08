@@ -644,21 +644,19 @@ const AIChat = () => {
 
           const toolLabels: Record<string, string> = {
             update_content: '✏️ Updating content...',
+            bulk_update_content: '✏️ Bulk updating content...',
             generate_image: '🖼️ Generating image...',
-            generate_product_images: '🖼️ Generating product images...',
+            generate_product_images: '🖼️ Starting batch image generation...',
             update_theme: '🎨 Updating theme...',
             list_content: '📋 Listing content...',
             delete_content: '🗑️ Deleting content...',
+            bulk_delete_content: '🗑️ Bulk deleting content...',
             get_website_info: '📖 Getting info...',
           };
           setStatusText(toolLabels[fn.name] || `⚙️ Running ${fn.name}...`);
 
-          let toolResult: string;
-          if (fn.name === 'generate_product_images') {
-            toolResult = await executeBatchImages(params);
-          } else {
-            toolResult = await executeTool(fn.name, params);
-          }
+          // All tools go through executeTool now (it handles batch_mode internally)
+          const toolResult = await executeTool(fn.name, params);
 
           toolResults.push(`**${fn.name}**: ${toolResult}`);
           try {
