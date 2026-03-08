@@ -126,10 +126,11 @@ const IMAGE_MODELS = [
 const CHAT_MODELS = [
   "google/gemini-3-flash-preview",
   "google/gemini-2.5-flash",
+  "google/gemini-2.5-flash-lite",        // Ultra fallback
 ];
 
 // Helper: generate image with multi-model fallback + retry
-async function generateImageWithRetry(prompt: string, apiKey: string, quality: string = "auto"): Promise<{ imageUrl: string | null; modelUsed: string }> {
+async function generateImageWithRetry(prompt: string, apiKey: string, quality: string = "auto"): Promise<{ imageUrl: string | null; modelUsed: string; error?: string }> {
   const models = quality === "fast" ? [IMAGE_MODELS[1]] : IMAGE_MODELS;
   
   for (const model of models) {
@@ -156,7 +157,7 @@ async function generateImageWithRetry(prompt: string, apiKey: string, quality: s
         }
 
         if (aiResp.status === 402) {
-          return { imageUrl: null, modelUsed: model };
+          return { imageUrl: null, modelUsed: model, error: "credits_exhausted" };
         }
 
         if (!aiResp.ok) {
@@ -177,7 +178,7 @@ async function generateImageWithRetry(prompt: string, apiKey: string, quality: s
     }
     console.log(`Model ${model} exhausted, trying next...`);
   }
-  return { imageUrl: null, modelUsed: "none" };
+  return { imageUrl: null, modelUsed: "none", error: "all_models_failed" };
 }
 
 // Helper: chat completion with model fallback
@@ -207,6 +208,21 @@ async function chatWithFallback(apiKey: string, body: any): Promise<Response> {
   throw new Error("All AI models unavailable. Please try again later.");
 }
 
+// Helper: upload base64 image to storage, return public URL
+async function uploadBase64Image(supabase: any, imageData: string, prefix: string): Promise<string> {
+  const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
+  const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+  const fileName = `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.png`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("site-images")
+    .upload(fileName, binaryData, { contentType: "image/png", upsert: true });
+  if (uploadError) throw uploadError;
+
+  const { data: urlData } = supabase.storage.from("site-images").getPublicUrl(fileName);
+  return urlData.publicUrl;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -221,6 +237,21 @@ serve(async (req) => {
     if (action === "verify_password") {
       const { data } = await supabase.from("admin_settings").select("setting_value").eq("setting_key", "admin_password").single();
       return new Response(JSON.stringify({ valid: data?.setting_value === password }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ─── Deploy a previewed image (confirm step) ───
+    if (action === "deploy_image") {
+      const { image_url, content_key } = tool_call;
+      if (!content_key || !image_url) throw new Error("Missing content_key or image_url");
+
+      await supabase.from("site_content").upsert(
+        { content_key, content_value: content_key, content_type: "image", image_url, updated_at: new Date().toISOString() },
+        { onConflict: "content_key" }
+      );
+
+      return new Response(JSON.stringify({ success: true, deployed: true, message: `✅ Image deployed to "${content_key}"` }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -314,50 +345,52 @@ serve(async (req) => {
         });
       }
 
-      // ─── generate_image (multi-model fallback) ───
+      // ─── generate_image (preview-first flow) ───
       if (tool_name === "generate_image") {
-        const { prompt, content_key, quality } = parameters;
+        const { prompt, content_key, quality, auto_deploy } = parameters;
         const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
         if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-        const { imageUrl: imageData, modelUsed } = await generateImageWithRetry(prompt, LOVABLE_API_KEY, quality || "auto");
+        const { imageUrl: imageData, modelUsed, error: genError } = await generateImageWithRetry(prompt, LOVABLE_API_KEY, quality || "auto");
+        
+        if (genError === "credits_exhausted") {
+          return new Response(JSON.stringify({ success: false, error_type: "credits", message: "⚠️ AI credits exhausted. Please add credits in workspace settings." }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        
         if (!imageData) {
-          return new Response(JSON.stringify({ success: false, message: "⚠️ Image generation failed after trying all models. Try a simpler prompt or try again later." }), {
+          return new Response(JSON.stringify({ success: false, error_type: "generation_failed", message: "⚠️ Image generation failed. Auto-retrying with simplified prompt is recommended." }), {
             headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
 
-        const base64Data = imageData.replace(/^data:image\/\w+;base64,/, "");
-        const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-        const fileName = `sarina-${Date.now()}-${Math.random().toString(36).slice(2,6)}.png`;
+        // Upload to storage
+        const publicUrl = await uploadBase64Image(supabase, imageData, "sarina");
 
-        const { error: uploadError } = await supabase.storage
-          .from("site-images")
-          .upload(fileName, binaryData, { contentType: "image/png", upsert: true });
-        if (uploadError) throw uploadError;
-
-        const { data: urlData } = supabase.storage.from("site-images").getPublicUrl(fileName);
-        const publicUrl = urlData.publicUrl;
-
-        if (content_key) {
+        // If auto_deploy is true (batch mode), deploy immediately
+        if (auto_deploy && content_key) {
           await supabase.from("site_content").upsert(
             { content_key, content_value: content_key, content_type: "image", image_url: publicUrl, updated_at: new Date().toISOString() },
             { onConflict: "content_key" }
           );
+          return new Response(JSON.stringify({ 
+            success: true, deployed: true,
+            message: `🖼️ Image generated & deployed (model: ${modelUsed.split('/').pop()})`, 
+            image_url: publicUrl, model_used: modelUsed,
+          }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
 
+        // Otherwise return preview (not deployed yet)
         return new Response(JSON.stringify({ 
-          success: true, 
-          message: `🖼️ Image generated & deployed (model: ${modelUsed.split('/').pop()})`, 
-          image_url: publicUrl, 
-          model_used: modelUsed,
-          deployed: !!content_key,
-        }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+          success: true, deployed: false, preview: true,
+          message: `🖼️ Image generated (model: ${modelUsed.split('/').pop()}) — awaiting your approval before deploying.`, 
+          image_url: publicUrl, model_used: modelUsed,
+          content_key: content_key || null,
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
-      // ─── generate_product_images ───
+      // ─── generate_product_images (batch - auto deploys) ───
       if (tool_name === "generate_product_images") {
         return new Response(JSON.stringify({
           success: true,
@@ -374,7 +407,6 @@ serve(async (req) => {
         const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
         if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-        // For images, send to vision model
         const messageContent: any[] = [
           { type: "text", text: instructions || "Analyze this file and extract useful content for the website." }
         ];
@@ -471,13 +503,14 @@ serve(async (req) => {
           type: "function",
           function: {
             name: "generate_image",
-            description: "Generate a high-quality AI image. Uses pro model with automatic fallback. Image is uploaded to storage and optionally linked to a content key.",
+            description: "Generate a high-quality AI image. Uses pro model with automatic fallback. Image is uploaded to storage. Set auto_deploy=true for batch operations, otherwise image goes to preview for user confirmation.",
             parameters: {
               type: "object",
               properties: {
                 prompt: { type: "string", description: "Detailed image description" },
-                content_key: { type: "string", description: "Optional content key to link the image to" },
+                content_key: { type: "string", description: "Content key to link the image to after approval" },
                 quality: { type: "string", enum: ["auto", "fast"], description: "auto = try pro model first, fast = use fast model only" },
+                auto_deploy: { type: "boolean", description: "If true, deploy immediately without preview. Use for batch operations." },
               },
               required: ["prompt"],
             },
@@ -487,7 +520,7 @@ serve(async (req) => {
           type: "function",
           function: {
             name: "generate_product_images",
-            description: "Batch generate images for multiple products. Types: 'benefits' or 'comparison'. Client handles progress.",
+            description: "Batch generate images for multiple products. Types: 'benefits' or 'comparison'. Auto-deploys each image.",
             parameters: {
               type: "object",
               properties: {
@@ -507,7 +540,7 @@ serve(async (req) => {
           type: "function",
           function: {
             name: "analyze_file",
-            description: "Analyze an uploaded file (image, PDF, document) and extract content for the website. Use when user uploads reference files.",
+            description: "Analyze an uploaded file (image, PDF, document) and extract content for the website.",
             parameters: {
               type: "object",
               properties: {
@@ -593,12 +626,12 @@ serve(async (req) => {
 
       if (!response.ok) {
         if (response.status === 429) {
-          return new Response(JSON.stringify({ error: "Rate limited. Please wait a moment and try again." }), {
+          return new Response(JSON.stringify({ error: "Rate limited. Please wait a moment and try again.", error_type: "rate_limit" }), {
             status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
         if (response.status === 402) {
-          return new Response(JSON.stringify({ error: "AI credits exhausted. Please add credits." }), {
+          return new Response(JSON.stringify({ error: "AI credits exhausted. Please add credits.", error_type: "credits" }), {
             status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
@@ -624,7 +657,7 @@ serve(async (req) => {
     });
   } catch (e) {
     console.error("sarina-admin error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error", error_type: "server_error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
