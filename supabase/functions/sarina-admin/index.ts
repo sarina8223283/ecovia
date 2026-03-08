@@ -52,7 +52,7 @@ const WEBSITE_STRUCTURE = `
 
 ## Editable Content Keys by Page:
 
-### Home Page (already connected):
+### Home Page:
 hero_badge, hero_heading_1, hero_heading_highlight, hero_heading_2, hero_heading_3, hero_description, hero_cta_1, hero_cta_2
 
 ### About Page:
@@ -69,9 +69,37 @@ about_cta_heading, about_cta_text
 products_badge, products_heading, products_description,
 products_cta_heading, products_cta_text
 
+### Contact Page:
+contact_heading, contact_description,
+contact_office_title, contact_address,
+contact_phone_title, contact_phone_hours, contact_phone,
+contact_email_title, contact_email_subtitle, contact_email,
+contact_map_heading
+
+### Export Page:
+export_badge, export_heading, export_description, export_cta_1, export_cta_2,
+export_quality_heading, export_quality_text,
+export_credentials_heading, export_credentials_text,
+export_cred_1_title, export_cred_1_desc, export_cred_2_title, export_cred_2_desc, export_cred_3_title, export_cred_3_desc, export_cred_4_title, export_cred_4_desc,
+export_benefits_heading, export_benefits_text,
+export_markets_heading, export_markets_text,
+export_company_heading, export_company_name, export_brand_name, export_director,
+export_cta_heading, export_cta_text, export_cta_button
+
+### Bulk Orders Page:
+bulk_badge, bulk_heading, bulk_description, bulk_cta_1,
+bulk_tiers_heading, bulk_tiers_text,
+bulk_benefits_heading,
+bulk_products_heading, bulk_products_text,
+bulk_cta_heading, bulk_cta_text, bulk_cta_whatsapp, bulk_cta_email
+
 ### Footer (appears on all pages):
 footer_brand_name, footer_brand_subtitle, footer_brand_description,
 footer_phone, footer_email, footer_address, footer_copyright
+
+### Product Images (auto-generated keys):
+{product-id}_benefits_image - Benefits infographic for a product
+{product-id}_comparison_image - Mittika vs others comparison image
 
 ## Company Info:
 - **Brand**: Mittika by Ecovia Enterprises OPC Pvt. Ltd.
@@ -97,35 +125,44 @@ ${WEBSITE_STRUCTURE}
 
 1. **update_content** - Update any text/content on the LIVE website instantly
    - Parameters: content_key (string), content_value (string)
-   - Content keys for Hero: hero_badge, hero_heading_1, hero_heading_highlight, hero_heading_2, hero_heading_3, hero_description, hero_cta_1, hero_cta_2
-   - You can create ANY new content key for other sections
-   - ⚡ Changes go LIVE immediately on the published website
+   - You can update ANY key from the editable content keys listed above
+   - You can also create ANY new content key for other sections
+   - Changes go LIVE immediately on the published website
 
-2. **generate_image** - Generate AI images for the website
+2. **generate_image** - Generate a single AI image for the website
    - Parameters: prompt (string), content_key (string, optional)
+   - Uses advanced AI image generation (Gemini Flash Image model)
    - Image is uploaded to storage and URL saved
 
-3. **update_theme** - Update theme/style settings live
+3. **generate_product_images** - Batch generate images for multiple products at once
+   - Parameters: product_ids (array of IDs or "all"), image_type ("benefits" or "comparison")
+   - Use "benefits" to create infographics showing top benefits of each product
+   - Use "comparison" for Mittika vs generic market product comparisons
+   - Generates and deploys all images automatically with 2s delay between to avoid rate limits
+
+4. **update_theme** - Update theme/style settings live
    - Parameters: theme_key (string), theme_value (string)
    - Keys: primary_color, accent_color, font_heading, font_body, or custom
 
-4. **list_content** - List all current website content entries
+5. **list_content** - List all current website content entries
    - No parameters needed
 
-5. **delete_content** - Remove a content entry
+6. **delete_content** - Remove a content entry
    - Parameters: content_key (string)
 
-6. **get_website_info** - Get detailed info about a specific aspect of the website
+7. **get_website_info** - Get detailed info about a specific aspect of the website
    - Parameters: topic (string) - e.g., "products", "pages", "pricing", "company", "features"
 
 ## Guidelines:
 - **LIVE Deployment**: When you update content, it goes live IMMEDIATELY. Always confirm what changed and where it appears.
 - **Explain Changes**: After making changes, explain exactly what was updated, which page it affects, and how users will see it.
-- **Answer Questions**: If someone asks about products, pricing, website pages, features, or the company, answer directly with your knowledge. No need to call a tool for general questions.
-- **Be Proactive**: If someone says "make the hero about summer sale", update ALL relevant hero fields (badge, headings, description, buttons).
+- **Answer Questions**: If someone asks about products, pricing, website pages, features, or the company, answer directly with your knowledge.
+- **Be Proactive**: If someone says "make the hero about summer sale", update ALL relevant hero fields.
 - **Brand Voice**: Keep content premium, natural, Ayurvedic, earthy. Mittika means "from the earth."
 - **Verify Context**: When listing content, always use list_content to show the CURRENT live state.
-- **Multi-step Changes**: For complex requests (e.g., "redesign the hero section"), plan all changes, execute them, then summarize what was deployed.`;
+- **Multi-step Changes**: For complex requests, plan all changes, execute them, then summarize what was deployed.
+- **Image Generation**: For batch product images, use generate_product_images. For single custom images, use generate_image.
+- **Full Page Coverage**: You can now edit ALL pages: Home, About, Products, Contact, Export, Bulk Orders, and Footer.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
