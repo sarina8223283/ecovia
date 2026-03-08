@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Lock, LogOut, Loader2, RefreshCw, LayoutDashboard, MessageSquare, FileText, Palette, Image as ImageIcon, Trash2, Edit3, Plus, Eye, ArrowLeft, Paperclip, X, ZoomIn, CheckCircle, XCircle } from 'lucide-react';
+import { Send, Lock, LogOut, Loader2, RefreshCw, LayoutDashboard, MessageSquare, FileText, Palette, Image as ImageIcon, Trash2, Edit3, Plus, Eye, ArrowLeft, Paperclip, X, ZoomIn, CheckCircle, XCircle, ArrowRight, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import ReactMarkdown from 'react-markdown';
@@ -15,6 +15,7 @@ interface Message {
   content: string;
   images?: { url: string; model?: string; contentKey?: string }[];
   pendingDeploy?: boolean;
+  changePreview?: { key: string; current_value: string; new_value: string; is_new: boolean }[];
 }
 
 interface ContentItem {
@@ -520,6 +521,96 @@ const ImageZoomModal = ({ src, onClose }: { src: string; onClose: () => void }) 
   </AnimatePresence>
 );
 
+// ─── Image Thumbnail with loading skeleton ───
+const ImageThumbnail = ({ src, alt, onClick, model, contentKey }: { src: string; alt: string; onClick: () => void; model?: string; contentKey?: string }) => {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+
+  return (
+    <div className="relative group cursor-pointer" onClick={onClick}>
+      {!loaded && !error && (
+        <div className="w-full h-32 rounded-xl bg-muted animate-pulse flex items-center justify-center">
+          <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+        </div>
+      )}
+      {error && (
+        <div className="w-full h-32 rounded-xl bg-destructive/10 flex items-center justify-center border border-destructive/20">
+          <span className="text-xs text-destructive">Failed to load</span>
+        </div>
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className={`rounded-xl w-full h-32 object-cover border border-border transition-opacity ${loaded ? 'opacity-100' : 'opacity-0 absolute inset-0'}`}
+        onLoad={() => setLoaded(true)}
+        onError={() => setError(true)}
+      />
+      {loaded && (
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <ZoomIn className="w-6 h-6 text-white drop-shadow-lg" />
+        </div>
+      )}
+      {model && loaded && (
+        <span className="absolute bottom-1 left-1 text-[9px] bg-black/60 text-white px-1.5 py-0.5 rounded-full">
+          🤖 {model.split('/').pop()}
+        </span>
+      )}
+      {contentKey && loaded && (
+        <span className="absolute top-1 left-1 text-[9px] bg-primary/80 text-primary-foreground px-1.5 py-0.5 rounded-full">
+          {contentKey}
+        </span>
+      )}
+    </div>
+  );
+};
+
+// ─── Content Change Preview ───
+const ContentChangePreview = ({ changes, onApprove, onReject, deploying }: {
+  changes: { key: string; current_value: string; new_value: string; is_new: boolean }[];
+  onApprove: () => void;
+  onReject: () => void;
+  deploying?: boolean;
+}) => (
+  <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="bg-accent/10 border border-accent rounded-2xl p-4 space-y-3 max-w-[85%]">
+    <div className="flex items-center gap-2">
+      <Activity className="w-4 h-4 text-primary" />
+      <p className="text-sm font-medium text-foreground">📋 Preview {changes.length} change(s):</p>
+    </div>
+    <div className="space-y-2 max-h-60 overflow-y-auto">
+      {changes.map((c, i) => (
+        <div key={i} className="bg-card border border-border rounded-xl p-2.5 text-xs space-y-1">
+          <div className="flex items-center gap-1.5">
+            <span className="font-mono text-primary font-medium">{c.key}</span>
+            {c.is_new && <span className="bg-primary/20 text-primary px-1.5 py-0.5 rounded-full text-[10px]">NEW</span>}
+          </div>
+          {!c.is_new && (
+            <div className="flex items-start gap-1.5 text-destructive/70">
+              <span className="flex-shrink-0 mt-0.5">−</span>
+              <span className="line-through break-words">{c.current_value.slice(0, 100)}{c.current_value.length > 100 ? '...' : ''}</span>
+            </div>
+          )}
+          <div className="flex items-start gap-1.5 text-primary">
+            <span className="flex-shrink-0 mt-0.5">+</span>
+            <span className="font-medium break-words">{c.new_value.slice(0, 100)}{c.new_value.length > 100 ? '...' : ''}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+    <div className="flex gap-2">
+      <button onClick={onApprove} disabled={deploying}
+        className="flex-1 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5">
+        {deploying ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+        {deploying ? 'Deploying...' : 'Deploy Changes'}
+      </button>
+      <button onClick={onReject} disabled={deploying}
+        className="flex-1 py-2 bg-secondary text-secondary-foreground rounded-xl text-sm font-medium hover:bg-secondary/80 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5">
+        <XCircle className="w-4 h-4" />
+        Discard
+      </button>
+    </div>
+  </motion.div>
+);
+
 // ─── Deploy Confirmation Banner ───
 const DeployConfirmBanner = ({ images, onConfirm, onReject, deploying }: {
   images: { url: string; model?: string; contentKey?: string }[];
@@ -564,7 +655,7 @@ const DeployConfirmBanner = ({ images, onConfirm, onReject, deploying }: {
 
 const AIChat = () => {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website — changes appear **instantly** in real-time. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika"\n- 🖼️ "Generate a high-quality banner of herbal powders"\n- 🖼️ "Generate benefit images for all 15 products"\n- 📎 Upload PDFs, images, or documents as reference\n- 📋 "Show me all live content"\n- 🎨 "Set primary color to dark green"\n\n💡 **Images are previewed first** — you approve before they go live!' },
+    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website — changes appear **instantly** in real-time. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika"\n- 🖼️ "Generate a high-quality banner of herbal powders"\n- 🖼️ "Generate benefit images for all 15 products"\n- 📎 Upload PDFs, images, or documents as reference\n- 📋 "Show me all live content"\n- 📊 "Show me today\'s traffic analytics"\n- 🎨 "Set primary color to dark green"\n\n💡 **Preview mode** — I\'ll show you before/after changes for approval!\n💡 **Image thumbnails** load with smooth animations!' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -574,6 +665,7 @@ const AIChat = () => {
   const [attachedFiles, setAttachedFiles] = useState<{ name: string; url: string; type: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [pendingDeploy, setPendingDeploy] = useState<{ url: string; model?: string; contentKey?: string }[] | null>(null);
+  const [pendingChanges, setPendingChanges] = useState<{ key: string; current_value: string; new_value: string; is_new: boolean }[] | null>(null);
   const [deploying, setDeploying] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -735,7 +827,26 @@ const AIChat = () => {
 
   const handleDeployReject = () => {
     setPendingDeploy(null);
-    setMessages(prev => [...prev, { role: 'assistant', content: '🗑️ Images discarded. Ask me to generate new ones with a different style!' }]);
+    setPendingChanges(null);
+    setMessages(prev => [...prev, { role: 'assistant', content: '🗑️ Changes discarded. Ask me to try a different approach!' }]);
+  };
+
+  // Deploy previewed content changes
+  const handleDeployChanges = async () => {
+    if (!pendingChanges) return;
+    setDeploying(true);
+    try {
+      const updates = pendingChanges.map(c => ({ key: c.key, value: c.new_value }));
+      await callFunction({ action: 'execute_tool', tool_call: { tool_name: 'bulk_update_content', parameters: { updates } } });
+      invalidateCaches();
+      toast({ title: '🚀 Deployed!', description: `${updates.length} change(s) are now live!` });
+      setMessages(prev => [...prev, { role: 'assistant', content: `✅ **${updates.length} change(s) deployed live!** Website updated.` }]);
+    } catch (err: any) {
+      toast({ title: 'Deploy Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setPendingChanges(null);
+      setDeploying(false);
+    }
   };
 
   // File upload handler
@@ -826,6 +937,8 @@ const AIChat = () => {
               bulk_delete_content: '🗑️ Bulk deleting content...',
               get_website_info: '📖 Getting info...',
               analyze_file: '📄 Analyzing uploaded file...',
+              preview_changes: '👁️ Preparing change preview...',
+              get_analytics: '📊 Fetching live analytics...',
             };
             setStatusText(toolLabels[fn.name] || `⚙️ Running ${fn.name}...`);
 
@@ -843,6 +956,10 @@ const AIChat = () => {
                 }
               }
               if (parsed.images?.length) deployedImages.push(...parsed.images.map((u: string) => ({ url: u })));
+              if (parsed.preview && parsed.changes) {
+                // Content change preview
+                setPendingChanges(parsed.changes);
+              }
               if (parsed.deployed && !parsed.preview) {
                 toast({ title: '🚀 Deployed Live', description: parsed.message || 'Change is live!' });
               }
@@ -912,22 +1029,14 @@ const AIChat = () => {
                 <div className="mt-3 space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     {msg.images.map((img, j) => (
-                      <div key={j} className="relative group cursor-pointer" onClick={() => setZoomedImage(img.url)}>
-                        <img src={img.url} alt="Generated" className="rounded-xl w-full h-32 object-cover border border-border" />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
-                          <ZoomIn className="w-6 h-6 text-white drop-shadow-lg" />
-                        </div>
-                        {img.model && (
-                          <span className="absolute bottom-1 left-1 text-[9px] bg-black/60 text-white px-1.5 py-0.5 rounded-full">
-                            🤖 {img.model.split('/').pop()}
-                          </span>
-                        )}
-                        {img.contentKey && (
-                          <span className="absolute top-1 left-1 text-[9px] bg-primary/80 text-primary-foreground px-1.5 py-0.5 rounded-full">
-                            {img.contentKey}
-                          </span>
-                        )}
-                      </div>
+                      <ImageThumbnail
+                        key={j}
+                        src={img.url}
+                        alt="Generated"
+                        onClick={() => setZoomedImage(img.url)}
+                        model={img.model}
+                        contentKey={img.contentKey}
+                      />
                     ))}
                   </div>
                 </div>
@@ -945,6 +1054,12 @@ const AIChat = () => {
         {pendingDeploy && pendingDeploy.length > 0 && (
           <div className="flex justify-start max-w-[85%]">
             <DeployConfirmBanner images={pendingDeploy} onConfirm={handleDeployConfirm} onReject={handleDeployReject} deploying={deploying} />
+          </div>
+        )}
+
+        {pendingChanges && pendingChanges.length > 0 && (
+          <div className="flex justify-start">
+            <ContentChangePreview changes={pendingChanges} onApprove={handleDeployChanges} onReject={handleDeployReject} deploying={deploying} />
           </div>
         )}
 
