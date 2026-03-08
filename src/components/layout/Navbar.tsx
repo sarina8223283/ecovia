@@ -37,7 +37,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0" data-no-translate="true">
             <img src={ecoviaLogoIcon} alt="Ecovia Logo" className="h-8 sm:h-10 w-auto object-contain" />
             <div className="flex flex-col leading-none">
               <span className="font-serif text-sm sm:text-base font-bold text-primary leading-tight">Ecovia Enterprises</span>
