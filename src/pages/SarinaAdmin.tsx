@@ -430,7 +430,7 @@ const AIChat = () => {
   const executeTool = async (toolName: string, parameters: any): Promise<string> => {
     try {
       const result = await callFunction({ action: 'execute_tool', tool_call: { tool_name: toolName, parameters } });
-      if (['update_content', 'delete_content', 'generate_image', 'update_theme'].includes(toolName)) {
+      if (['update_content', 'delete_content', 'generate_image', 'update_theme', 'generate_product_images'].includes(toolName)) {
         queryClient.invalidateQueries({ queryKey: ['site-content'] });
         queryClient.invalidateQueries({ queryKey: ['admin-content'] });
         queryClient.invalidateQueries({ queryKey: ['admin-theme'] });
