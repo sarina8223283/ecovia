@@ -510,16 +510,46 @@ const BatchProgressUI = ({ progress }: { progress: BatchProgress }) => {
   );
 };
 
+// ─── Image Zoom Modal ───
+const ImageZoomModal = ({ src, onClose }: { src: string; onClose: () => void }) => (
+  <AnimatePresence>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4 cursor-pointer"
+      onClick={onClose}
+    >
+      <motion.img
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+        src={src}
+        alt="Zoomed"
+        className="max-w-[90vw] max-h-[90vh] object-contain rounded-2xl shadow-2xl"
+        onClick={e => e.stopPropagation()}
+      />
+      <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-full text-white">
+        <X className="w-6 h-6" />
+      </button>
+    </motion.div>
+  </AnimatePresence>
+);
+
 // ─── AI Chat Tab ───
 const AIChat = () => {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website — changes appear **instantly** in real-time. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika"\n- 🖼️ "Generate a banner of herbal powders"\n- 🖼️ "Generate benefit images for all 15 products"\n- 📋 "Show me all live content"\n- 🎨 "Set primary color to dark green"\n- ❓ "What products do we sell?"' },
+    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website — changes appear **instantly** in real-time. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika"\n- 🖼️ "Generate a high-quality banner of herbal powders"\n- 🖼️ "Generate benefit images for all 15 products"\n- 📎 Upload PDFs, images, or documents as reference\n- 📋 "Show me all live content"\n- 🎨 "Set primary color to dark green"' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [statusText, setStatusText] = useState('');
   const [batchProgress, setBatchProgress] = useState<BatchProgress | null>(null);
+  const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  const [attachedFiles, setAttachedFiles] = useState<{ name: string; url: string; type: string }[]>([]);
+  const [uploading, setUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -537,7 +567,6 @@ const AIChat = () => {
     try {
       const result = await callFunction({ action: 'execute_tool', tool_call: { tool_name: toolName, parameters } });
       
-      // If it's a batch_mode response (generate_product_images), handle client-side
       if (result.batch_mode) {
         return await executeBatchImages({ product_ids: result.product_ids, image_type: result.image_type });
       }
@@ -551,7 +580,6 @@ const AIChat = () => {
     }
   };
 
-  // Process batch image generation client-side with progress tracking
   const executeBatchImages = async (parameters: any): Promise<string> => {
     const { product_ids, image_type } = parameters;
     const ids: string[] = product_ids === 'all' ? Object.keys(PRODUCT_NAMES) : (Array.isArray(product_ids) ? product_ids : [product_ids]);
@@ -583,12 +611,12 @@ const AIChat = () => {
         const result = await callFunction({
           action: 'execute_tool',
           tool_call: { tool_name: 'generate_image', parameters: { prompt, content_key: contentKey } },
-        }, 3); // Extra retries for image generation
+        }, 3);
 
         if (result.image_url) {
           progress.successes.push(name);
           progress.images.push(result.image_url);
-          toast({ title: `✅ ${name}`, description: `${image_type} image generated & deployed` });
+          toast({ title: `✅ ${name}`, description: `${image_type} image generated (${result.model_used?.split('/').pop() || 'ai'})` });
         } else if (result.message) {
           progress.failures.push(`${name}: ${result.message}`);
           toast({ title: `⚠️ ${name}`, description: result.message, variant: 'destructive' });
@@ -603,7 +631,6 @@ const AIChat = () => {
       progress.completed = i + 1;
       setBatchProgress({ ...progress });
 
-      // Delay between requests to avoid rate limits
       if (i < ids.length - 1) {
         await new Promise(r => setTimeout(r, 3000));
       }
@@ -615,23 +642,75 @@ const AIChat = () => {
     return JSON.stringify({
       success: true,
       deployed: true,
-      message: `🖼️ Batch complete: ${progress.successes.length}/${total} ${image_type} images generated & deployed to product pages. ${progress.failures.length > 0 ? `\n\nFailed: ${progress.failures.join(', ')}` : '✨ All successful!'}`,
+      message: `🖼️ Batch complete: ${progress.successes.length}/${total} ${image_type} images generated & deployed. ${progress.failures.length > 0 ? `\n\nFailed: ${progress.failures.join(', ')}` : '✨ All successful!'}`,
       results: progress.successes.map(name => ({ product: name })),
       images: progress.images,
     });
   };
 
+  // File upload handler
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+
+    try {
+      const uploaded: typeof attachedFiles = [];
+      for (const file of Array.from(files)) {
+        const ext = file.name.split('.').pop() || 'bin';
+        const fileName = `chat-upload-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
+        const { error } = await supabase.storage.from('site-images').upload(fileName, file, { contentType: file.type, upsert: true });
+        if (error) throw error;
+
+        const { data: urlData } = supabase.storage.from('site-images').getPublicUrl(fileName);
+        uploaded.push({ name: file.name, url: urlData.publicUrl, type: file.type });
+      }
+      setAttachedFiles(prev => [...prev, ...uploaded]);
+      toast({ title: '📎 Files attached', description: `${uploaded.length} file(s) ready for Sarina` });
+    } catch (err: any) {
+      toast({ title: 'Upload Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSend = useCallback(async () => {
-    if (!input.trim() || loading) return;
-    const userMessage: Message = { role: 'user', content: input.trim() };
+    if ((!input.trim() && attachedFiles.length === 0) || loading) return;
+
+    // Build user message with file references
+    let userContent = input.trim();
+    const fileUrls: { name: string; url: string; type: string }[] = [...attachedFiles];
+    if (fileUrls.length > 0) {
+      const fileList = fileUrls.map(f => `📎 ${f.name} (${f.type})`).join('\n');
+      userContent = userContent ? `${userContent}\n\n**Attached files:**\n${fileList}` : `**Attached files:**\n${fileList}`;
+    }
+
+    const userMessage: Message = { role: 'user', content: userContent };
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setInput('');
+    setAttachedFiles([]);
     setLoading(true);
 
     try {
       setStatusText('🤔 Sarina is thinking...');
-      const aiMessages = newMessages.map(m => ({ role: m.role, content: m.content }));
+
+      // Include file URLs in the message to AI so it can use analyze_file tool
+      let aiContent = input.trim();
+      if (fileUrls.length > 0) {
+        const fileInfo = fileUrls.map(f => `Uploaded file: ${f.name} (type: ${f.type}, url: ${f.url})`).join('\n');
+        aiContent = aiContent ? `${aiContent}\n\n${fileInfo}` : fileInfo;
+      }
+
+      const aiMessages = [
+        ...messages.map(m => ({ role: m.role, content: m.content })),
+        { role: 'user', content: aiContent },
+      ];
       const result = await callFunction({ action: 'chat', messages: aiMessages });
 
       if (result.tool_calls?.length > 0) {
@@ -645,17 +724,17 @@ const AIChat = () => {
           const toolLabels: Record<string, string> = {
             update_content: '✏️ Updating content...',
             bulk_update_content: '✏️ Bulk updating content...',
-            generate_image: '🖼️ Generating image...',
+            generate_image: '🖼️ Generating image (pro model)...',
             generate_product_images: '🖼️ Starting batch image generation...',
             update_theme: '🎨 Updating theme...',
             list_content: '📋 Listing content...',
             delete_content: '🗑️ Deleting content...',
             bulk_delete_content: '🗑️ Bulk deleting content...',
             get_website_info: '📖 Getting info...',
+            analyze_file: '📄 Analyzing uploaded file...',
           };
           setStatusText(toolLabels[fn.name] || `⚙️ Running ${fn.name}...`);
 
-          // All tools go through executeTool now (it handles batch_mode internally)
           const toolResult = await executeTool(fn.name, params);
 
           toolResults.push(`**${fn.name}**: ${toolResult}`);
@@ -697,10 +776,13 @@ const AIChat = () => {
       setStatusText('');
       setBatchProgress(null);
     }
-  }, [input, loading, messages]);
+  }, [input, loading, messages, attachedFiles]);
 
   return (
     <div className="flex flex-col h-full">
+      {/* Image zoom modal */}
+      {zoomedImage && <ImageZoomModal src={zoomedImage} onClose={() => setZoomedImage(null)} />}
+
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         {messages.map((msg, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -711,7 +793,12 @@ const AIChat = () => {
               {msg.images && msg.images.length > 0 && (
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   {msg.images.map((img, j) => (
-                    <img key={j} src={img} alt="Generated" className="rounded-xl w-full h-32 object-cover border border-border" />
+                    <div key={j} className="relative group cursor-pointer" onClick={() => setZoomedImage(img)}>
+                      <img src={img} alt="Generated" className="rounded-xl w-full h-32 object-cover border border-border" />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <ZoomIn className="w-6 h-6 text-white drop-shadow-lg" />
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
@@ -726,7 +813,7 @@ const AIChat = () => {
           </div>
         )}
 
-        {/* Simple loading indicator (non-batch) */}
+        {/* Simple loading indicator */}
         {loading && !batchProgress && (
           <div className="flex justify-start">
             <div className="bg-card border border-border rounded-2xl px-4 py-3 flex items-center gap-2 max-w-[85%]">
@@ -738,8 +825,44 @@ const AIChat = () => {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Attached files preview */}
+      {attachedFiles.length > 0 && (
+        <div className="px-3 py-2 border-t border-border bg-secondary/30 flex gap-2 overflow-x-auto">
+          {attachedFiles.map((file, i) => (
+            <div key={i} className="flex items-center gap-1.5 bg-card border border-border rounded-lg px-2 py-1 text-xs flex-shrink-0">
+              {file.type.startsWith('image/') ? (
+                <img src={file.url} alt={file.name} className="w-6 h-6 rounded object-cover" />
+              ) : (
+                <FileText className="w-4 h-4 text-primary" />
+              )}
+              <span className="max-w-[100px] truncate text-foreground">{file.name}</span>
+              <button onClick={() => removeAttachment(i)} className="p-0.5 hover:bg-destructive/10 rounded text-muted-foreground hover:text-destructive">
+                <X className="w-3 h-3" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="border-t border-border bg-card px-3 py-2">
         <div className="flex items-center gap-2">
+          {/* File upload button */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt"
+            multiple
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={loading || uploading}
+            className="p-2.5 hover:bg-secondary rounded-xl transition-colors text-muted-foreground disabled:opacity-50"
+            title="Attach files (images, PDFs, documents)"
+          >
+            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Paperclip className="w-4 h-4" />}
+          </button>
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
@@ -748,7 +871,7 @@ const AIChat = () => {
             className="flex-1 px-3 py-2.5 rounded-xl border border-border bg-background text-sm focus:ring-2 focus:ring-primary outline-none"
             disabled={loading}
           />
-          <button onClick={handleSend} disabled={loading || !input.trim()} className="p-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 disabled:opacity-50">
+          <button onClick={handleSend} disabled={loading || (!input.trim() && attachedFiles.length === 0)} className="p-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 disabled:opacity-50">
             <Send className="w-4 h-4" />
           </button>
         </div>
