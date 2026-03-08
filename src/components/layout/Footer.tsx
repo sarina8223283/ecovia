@@ -54,19 +54,19 @@ const Footer = () => {
                 href="https://instagram.com/info.ecovia"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-12 h-12 bg-primary-foreground/10 rounded-full flex items-center justify-center hover:bg-primary-foreground/20 transition-colors"
+                className="w-14 h-14 bg-primary-foreground/10 rounded-full flex items-center justify-center hover:bg-primary-foreground/20 transition-colors"
                 aria-label="Follow us on Instagram"
               >
-                <img src={instagramIcon} alt="Instagram" className="w-8 h-8 object-contain" />
+                <img src={instagramIcon} alt="Instagram" className="w-9 h-9 object-contain" />
               </a>
               <a
                 href="https://www.facebook.com/share/1Bm5epz5C2/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-12 h-12 bg-primary-foreground/10 rounded-full flex items-center justify-center hover:bg-primary-foreground/20 transition-colors"
+                className="w-14 h-14 bg-primary-foreground/10 rounded-full flex items-center justify-center hover:bg-primary-foreground/20 transition-colors"
                 aria-label="Follow us on Facebook"
               >
-                <img src={facebookIcon} alt="Facebook" className="w-8 h-8 object-contain" />
+                <img src={facebookIcon} alt="Facebook" className="w-9 h-9 object-contain" />
               </a>
             </div>
           </div>
