@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CartDrawer from '@/components/ui/CartDrawer';
 import PowderScanner from '@/components/ui/PowderScanner';
@@ -65,37 +64,37 @@ const Navbar = () => {
           </div>
 
           {/* Right Actions - Desktop */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-1.5">
             <div className="flex items-center gap-1">
               <PowderScanner />
               <LanguageSelector />
-              <a href="https://instagram.com/info.ecovia" target="_blank" rel="noopener noreferrer" className="p-1.5 hover:bg-secondary rounded-lg transition-colors" aria-label="Instagram">
-                <img src={instagramIcon} alt="Instagram" className="w-5 h-5 object-contain" />
+              <a href="https://instagram.com/info.ecovia" target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-secondary rounded-lg transition-colors" aria-label="Instagram">
+                <img src={instagramIcon} alt="Instagram" className="w-7 h-7 object-contain" />
               </a>
-              <a href="https://www.facebook.com/share/1Bm5epz5C2/" target="_blank" rel="noopener noreferrer" className="p-1.5 hover:bg-secondary rounded-lg transition-colors" aria-label="Facebook">
-                <img src={facebookIcon} alt="Facebook" className="w-5 h-5 object-contain" />
+              <a href="https://www.facebook.com/share/1Bm5epz5C2/" target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-secondary rounded-lg transition-colors" aria-label="Facebook">
+                <img src={facebookIcon} alt="Facebook" className="w-7 h-7 object-contain" />
               </a>
             </div>
             <CartDrawer />
-            <Link to={user ? '/account' : '/auth'} className="p-2 hover:bg-secondary rounded-lg transition-colors" aria-label="Account">
-              <img src={accountIcon} alt="Account" className="w-6 h-6 object-contain" />
+            <Link to={user ? '/account' : '/auth'} className="p-1 hover:bg-secondary rounded-lg transition-colors" aria-label="Account">
+              <img src={accountIcon} alt="Account" className="w-8 h-8 object-contain" />
             </Link>
           </div>
 
           {/* Mobile Actions */}
-          <div className="flex xl:hidden items-center gap-2">
+          <div className="flex xl:hidden items-center gap-1">
             <PowderScanner />
             <LanguageSelector />
             <CartDrawer />
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 hover:bg-secondary rounded-lg transition-colors"
+              className="p-1 hover:bg-secondary rounded-lg transition-colors"
               aria-label="Toggle menu"
             >
               <img
                 src={isOpen ? closeIcon : menuIcon}
                 alt={isOpen ? 'Close menu' : 'Open menu'}
-                className="w-6 h-6 object-contain"
+                className="w-8 h-8 object-contain"
               />
             </button>
           </div>
@@ -126,17 +125,17 @@ const Navbar = () => {
                 </Link>
               ))}
               <div className="border-t border-border pt-3 mt-3">
-                <Link to={user ? '/account' : '/auth'} onClick={() => setIsOpen(false)} className="flex items-center gap-2 py-2 font-sans text-base font-medium text-muted-foreground">
-                  <img src={accountIcon} alt="Account" className="w-5 h-5 object-contain" />
+                <Link to={user ? '/account' : '/auth'} onClick={() => setIsOpen(false)} className="flex items-center gap-3 py-2 font-sans text-base font-medium text-muted-foreground">
+                  <img src={accountIcon} alt="Account" className="w-7 h-7 object-contain" />
                   {user ? 'My Account' : 'Sign In'}
                 </Link>
               </div>
               <div className="flex items-center gap-4 pt-2">
                 <a href="https://instagram.com/info.ecovia" target="_blank" rel="noopener noreferrer">
-                  <img src={instagramIcon} alt="Instagram" className="w-6 h-6 object-contain" />
+                  <img src={instagramIcon} alt="Instagram" className="w-8 h-8 object-contain" />
                 </a>
                 <a href="https://www.facebook.com/share/1Bm5epz5C2/" target="_blank" rel="noopener noreferrer">
-                  <img src={facebookIcon} alt="Facebook" className="w-6 h-6 object-contain" />
+                  <img src={facebookIcon} alt="Facebook" className="w-8 h-8 object-contain" />
                 </a>
               </div>
             </div>

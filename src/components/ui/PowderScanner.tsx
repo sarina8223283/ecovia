@@ -67,7 +67,7 @@ const PowderScanner = () => {
         aria-label="Scan Powder"
         title="Identify powder from image"
       >
-        <img src={cameraIcon} alt="Scan" className="w-5 h-5 object-contain" />
+        <img src={cameraIcon} alt="Scan" className="w-8 h-8 object-contain" />
       </button>
 
       <AnimatePresence>

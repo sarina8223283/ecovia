@@ -45,8 +45,8 @@
    return (
      <Sheet open={isOpen} onOpenChange={setIsOpen}>
        <SheetTrigger asChild>
-        <button className="relative p-2 hover:bg-secondary rounded-lg transition-colors">
-            <img src={cartIcon} alt="Cart" className="w-6 h-6 object-contain" />
+        <button className="relative p-1 hover:bg-secondary rounded-lg transition-colors">
+            <img src={cartIcon} alt="Cart" className="w-8 h-8 object-contain" />
             {items.length > 0 && (
               <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center font-medium">
                 {items.length}
