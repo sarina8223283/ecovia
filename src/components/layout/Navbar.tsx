@@ -1,12 +1,17 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, User, Instagram, Facebook } from 'lucide-react';
+import { User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CartDrawer from '@/components/ui/CartDrawer';
 import PowderScanner from '@/components/ui/PowderScanner';
 import LanguageSelector from '@/components/ui/LanguageSelector';
 import { useAuth } from '@/contexts/AuthContext';
 import ecoviaLogoIcon from '@/assets/ecovia-logo-icon.png';
+import menuIcon from '@/assets/icons/menu-icon.png';
+import closeIcon from '@/assets/icons/close-icon.png';
+import instagramIcon from '@/assets/icons/instagram-icon.png';
+import facebookIcon from '@/assets/icons/facebook-icon.png';
+import accountIcon from '@/assets/icons/account-icon.png';
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -31,22 +36,13 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Single Row: Logo + Brand + Nav + Actions */}
         <div className="flex items-center justify-between h-16 sm:h-20">
-          {/* Logo Icon + Brand Name (Left) - merged in single row */}
+          {/* Logo */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-            <img 
-              src={ecoviaLogoIcon} 
-              alt="Ecovia Logo" 
-              className="h-8 sm:h-10 w-auto object-contain"
-            />
+            <img src={ecoviaLogoIcon} alt="Ecovia Logo" className="h-8 sm:h-10 w-auto object-contain" />
             <div className="flex flex-col leading-none">
-              <span className="font-serif text-sm sm:text-base font-bold text-primary leading-tight">
-                Ecovia Enterprises
-              </span>
-              <span className="text-[9px] sm:text-[10px] text-muted-foreground font-sans leading-tight">
-                Brand: MITTIKA
-              </span>
+              <span className="font-serif text-sm sm:text-base font-bold text-primary leading-tight">Ecovia Enterprises</span>
+              <span className="text-[9px] sm:text-[10px] text-muted-foreground font-sans leading-tight">Brand: MITTIKA</span>
             </div>
           </Link>
 
@@ -62,65 +58,45 @@ const Navbar = () => {
               >
                 {link.name}
                 {isActive(link.path) && (
-                  <motion.div
-                    layoutId="navbar-indicator"
-                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full"
-                  />
+                  <motion.div layoutId="navbar-indicator" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
                 )}
               </Link>
             ))}
           </div>
 
-          {/* Right Actions */}
+          {/* Right Actions - Desktop */}
           <div className="hidden md:flex items-center gap-2">
-            {/* Scanner, Language & Social Links */}
             <div className="flex items-center gap-1">
               <PowderScanner />
               <LanguageSelector />
-              <a
-                href="https://instagram.com/info.ecovia"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-1.5 hover:bg-secondary rounded-lg transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram size={16} className="text-muted-foreground hover:text-primary" />
+              <a href="https://instagram.com/info.ecovia" target="_blank" rel="noopener noreferrer" className="p-1.5 hover:bg-secondary rounded-lg transition-colors" aria-label="Instagram">
+                <img src={instagramIcon} alt="Instagram" className="w-5 h-5 object-contain" />
               </a>
-              <a
-                href="https://www.facebook.com/share/1Bm5epz5C2/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-1.5 hover:bg-secondary rounded-lg transition-colors"
-                aria-label="Facebook"
-              >
-                <Facebook size={16} className="text-muted-foreground hover:text-primary" />
+              <a href="https://www.facebook.com/share/1Bm5epz5C2/" target="_blank" rel="noopener noreferrer" className="p-1.5 hover:bg-secondary rounded-lg transition-colors" aria-label="Facebook">
+                <img src={facebookIcon} alt="Facebook" className="w-5 h-5 object-contain" />
               </a>
             </div>
-
-            {/* Cart */}
             <CartDrawer />
-
-            {/* Account */}
-            <Link
-              to={user ? '/account' : '/auth'}
-              className="p-2 hover:bg-secondary rounded-lg transition-colors"
-              aria-label="Account"
-            >
-              <User size={20} className={user ? 'text-primary' : 'text-foreground'} />
+            <Link to={user ? '/account' : '/auth'} className="p-2 hover:bg-secondary rounded-lg transition-colors" aria-label="Account">
+              <img src={accountIcon} alt="Account" className="w-6 h-6 object-contain" />
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Actions */}
           <div className="flex xl:hidden items-center gap-2">
             <PowderScanner />
             <LanguageSelector />
             <CartDrawer />
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 text-foreground hover:text-primary transition-colors"
+              className="p-2 hover:bg-secondary rounded-lg transition-colors"
               aria-label="Toggle menu"
             >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
+              <img
+                src={isOpen ? closeIcon : menuIcon}
+                alt={isOpen ? 'Close menu' : 'Open menu'}
+                className="w-6 h-6 object-contain"
+              />
             </button>
           </div>
         </div>
@@ -149,34 +125,18 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
-              
               <div className="border-t border-border pt-3 mt-3">
-                <Link
-                  to={user ? '/account' : '/auth'}
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-2 py-2 font-sans text-base font-medium text-muted-foreground"
-                >
-                  <User size={18} />
+                <Link to={user ? '/account' : '/auth'} onClick={() => setIsOpen(false)} className="flex items-center gap-2 py-2 font-sans text-base font-medium text-muted-foreground">
+                  <img src={accountIcon} alt="Account" className="w-5 h-5 object-contain" />
                   {user ? 'My Account' : 'Sign In'}
                 </Link>
               </div>
-
               <div className="flex items-center gap-4 pt-2">
-                <a
-                  href="https://instagram.com/info.ecovia"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  <Instagram size={20} />
+                <a href="https://instagram.com/info.ecovia" target="_blank" rel="noopener noreferrer">
+                  <img src={instagramIcon} alt="Instagram" className="w-6 h-6 object-contain" />
                 </a>
-                <a
-                  href="https://www.facebook.com/share/1Bm5epz5C2/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary"
-                >
-                  <Facebook size={20} />
+                <a href="https://www.facebook.com/share/1Bm5epz5C2/" target="_blank" rel="noopener noreferrer">
+                  <img src={facebookIcon} alt="Facebook" className="w-6 h-6 object-contain" />
                 </a>
               </div>
             </div>

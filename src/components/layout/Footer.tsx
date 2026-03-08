@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Instagram, Facebook } from 'lucide-react';
+import { Phone, Mail, MapPin } from 'lucide-react';
+import instagramIcon from '@/assets/icons/instagram-icon.png';
+import facebookIcon from '@/assets/icons/facebook-icon.png';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -22,26 +24,10 @@ const Footer = () => {
           <div>
             <h4 className="font-serif text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2">
-              <li>
-                <Link to="/" className="text-sm opacity-80 hover:opacity-100 transition-opacity">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/products" className="text-sm opacity-80 hover:opacity-100 transition-opacity">
-                  Products
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="text-sm opacity-80 hover:opacity-100 transition-opacity">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-sm opacity-80 hover:opacity-100 transition-opacity">
-                  Contact
-                </Link>
-              </li>
+              <li><Link to="/" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Home</Link></li>
+              <li><Link to="/products" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Products</Link></li>
+              <li><Link to="/about" className="text-sm opacity-80 hover:opacity-100 transition-opacity">About Us</Link></li>
+              <li><Link to="/contact" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Contact</Link></li>
             </ul>
           </div>
 
@@ -51,9 +37,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center gap-3">
                 <Phone size={16} className="opacity-80" />
-                <a href="tel:+918758808684" className="text-sm opacity-80 hover:opacity-100 transition-opacity">
-                  +91 8758808684
-                </a>
+                <a href="tel:+918758808684" className="text-sm opacity-80 hover:opacity-100 transition-opacity">+91 8758808684</a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={16} className="opacity-80" />
@@ -61,13 +45,10 @@ const Footer = () => {
               </li>
               <li className="flex items-start gap-3">
                 <MapPin size={16} className="opacity-80 mt-1" />
-                <span className="text-sm opacity-80">
-                  Ecovia Enterprises<br />India
-                </span>
+                <span className="text-sm opacity-80">Ecovia Enterprises<br />India</span>
               </li>
             </ul>
 
-            {/* Social Links */}
             <div className="flex gap-4 mt-6">
               <a
                 href="https://instagram.com/info.ecovia"
@@ -76,7 +57,7 @@ const Footer = () => {
                 className="w-10 h-10 bg-primary-foreground/10 rounded-full flex items-center justify-center hover:bg-primary-foreground/20 transition-colors"
                 aria-label="Follow us on Instagram"
               >
-                <Instagram size={20} className="opacity-90" />
+                <img src={instagramIcon} alt="Instagram" className="w-6 h-6 object-contain" />
               </a>
               <a
                 href="https://www.facebook.com/share/1Bm5epz5C2/"
@@ -85,13 +66,12 @@ const Footer = () => {
                 className="w-10 h-10 bg-primary-foreground/10 rounded-full flex items-center justify-center hover:bg-primary-foreground/20 transition-colors"
                 aria-label="Follow us on Facebook"
               >
-                <Facebook size={20} className="opacity-90" />
+                <img src={facebookIcon} alt="Facebook" className="w-6 h-6 object-contain" />
               </a>
             </div>
           </div>
         </div>
 
-        {/* Bottom Bar */}
         <div className="border-t border-primary-foreground/20 mt-10 pt-8 text-center">
           <p className="text-sm opacity-70">
             © {currentYear} Ecovia Enterprises OPC Pvt. Ltd. – All Rights Reserved | Brand: Mittika

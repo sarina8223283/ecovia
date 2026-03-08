@@ -1,9 +1,11 @@
  import { useState } from 'react';
  import { Link } from 'react-router-dom';
- import { ShoppingBag, X, Plus, Minus, Trash2, MessageCircle } from 'lucide-react';
+ import { Plus, Minus, Trash2 } from 'lucide-react';
  import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
  import { useCart } from '@/contexts/CartContext';
  import { useAuth } from '@/contexts/AuthContext';
+ import cartIcon from '@/assets/icons/cart-icon.png';
+ import whatsappIcon from '@/assets/icons/whatsapp-icon.png';
  
  const CartDrawer = () => {
    const { items, removeItem, updateQuantity, getTotal, clearCart } = useCart();
@@ -43,14 +45,14 @@
    return (
      <Sheet open={isOpen} onOpenChange={setIsOpen}>
        <SheetTrigger asChild>
-         <button className="relative p-2 hover:bg-secondary rounded-lg transition-colors">
-           <ShoppingBag size={22} className="text-foreground" />
-           {items.length > 0 && (
-             <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center font-medium">
-               {items.length}
-             </span>
-           )}
-         </button>
+        <button className="relative p-2 hover:bg-secondary rounded-lg transition-colors">
+            <img src={cartIcon} alt="Cart" className="w-6 h-6 object-contain" />
+            {items.length > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center font-medium">
+                {items.length}
+              </span>
+            )}
+          </button>
        </SheetTrigger>
        <SheetContent className="w-full sm:max-w-md flex flex-col">
          <SheetHeader>
@@ -59,7 +61,7 @@
  
          {items.length === 0 ? (
            <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-             <ShoppingBag size={64} className="text-muted-foreground/30 mb-4" />
+             <img src={cartIcon} alt="Empty cart" className="w-16 h-16 object-contain opacity-30 mb-4" />
              <h3 className="font-medium text-foreground mb-2">Your cart is empty</h3>
              <p className="text-sm text-muted-foreground mb-6">
                Add some natural herbal powders to get started!
@@ -144,7 +146,7 @@
                  onClick={handleOrderViaWhatsApp}
                  className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
                >
-                 <MessageCircle size={20} />
+                 <img src={whatsappIcon} alt="WhatsApp" className="w-5 h-5 object-contain" />
                  Order via WhatsApp
                </button>
  

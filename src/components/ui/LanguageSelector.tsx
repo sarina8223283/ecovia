@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import languageIcon from '@/assets/icons/language-icon.png';
 
 const languages = [
   { code: 'en', name: 'English', native: 'English' },
@@ -41,14 +41,11 @@ const LanguageSelector = () => {
   const handleSelect = (lang: typeof languages[0]) => {
     setSelected(lang);
     setIsOpen(false);
-
-    // Use Google Translate widget to translate the page
     const translateFrame = document.querySelector('.goog-te-combo') as HTMLSelectElement;
     if (translateFrame) {
       translateFrame.value = lang.code;
       translateFrame.dispatchEvent(new Event('change'));
     } else {
-      // Set cookie and reload for Google Translate
       document.cookie = `googtrans=/en/${lang.code};path=/;`;
       document.cookie = `googtrans=/en/${lang.code};path=/;domain=${window.location.hostname}`;
       window.location.reload();
@@ -63,7 +60,7 @@ const LanguageSelector = () => {
         aria-label="Select Language"
         title="Change Language"
       >
-        <Globe size={18} className="text-muted-foreground hover:text-primary" />
+        <img src={languageIcon} alt="Language" className="w-5 h-5 object-contain" />
         <span className="text-xs font-medium text-muted-foreground hidden sm:inline">{selected.code.toUpperCase()}</span>
       </button>
 
