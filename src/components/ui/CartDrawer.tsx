@@ -61,7 +61,7 @@
  
          {items.length === 0 ? (
            <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-             <ShoppingBag size={64} className="text-muted-foreground/30 mb-4" />
+             <img src={cartIcon} alt="Empty cart" className="w-16 h-16 object-contain opacity-30 mb-4" />
              <h3 className="font-medium text-foreground mb-2">Your cart is empty</h3>
              <p className="text-sm text-muted-foreground mb-6">
                Add some natural herbal powders to get started!
