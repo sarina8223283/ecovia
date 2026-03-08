@@ -55,5 +55,5 @@ export const getContent = (
   key: string,
   fallback: string
 ): string => {
-  return contentMap?.[key]?.content_value || fallback;
+  return contentMap && key in contentMap ? (contentMap[key]?.content_value ?? '') : fallback;
 };
