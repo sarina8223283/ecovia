@@ -13,7 +13,8 @@ const ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
-  images?: string[];
+  images?: { url: string; model?: string; contentKey?: string }[];
+  pendingDeploy?: boolean;
 }
 
 interface ContentItem {
