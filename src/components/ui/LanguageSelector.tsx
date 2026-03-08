@@ -167,16 +167,6 @@ const LanguageSelector = () => {
     if (found) setSelected(found);
   }, []);
 
-  // Listen for logo-click reset to English
-  useEffect(() => {
-    const handler = () => {
-      setSelected(languages[0]);
-      restoreEnglish();
-    };
-    window.addEventListener('reset-language-english', handler);
-    return () => window.removeEventListener('reset-language-english', handler);
-  }, [restoreEnglish]);
-
   const getTextNodes = useCallback(() => {
     const nodes: Text[] = [];
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
@@ -205,6 +195,16 @@ const LanguageSelector = () => {
     });
     document.documentElement.lang = 'en';
   }, []);
+
+  // Listen for logo-click reset to English
+  useEffect(() => {
+    const handler = () => {
+      setSelected(languages[0]);
+      restoreEnglish();
+    };
+    window.addEventListener('reset-language-english', handler);
+    return () => window.removeEventListener('reset-language-english', handler);
+  }, [restoreEnglish]);
 
   const applyTranslation = useCallback(async (langCode: string) => {
     const nodes = getTextNodes();
