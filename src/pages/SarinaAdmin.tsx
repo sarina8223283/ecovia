@@ -1055,6 +1055,12 @@ const AIChat = () => {
           </div>
         )}
 
+        {pendingChanges && pendingChanges.length > 0 && (
+          <div className="flex justify-start">
+            <ContentChangePreview changes={pendingChanges} onApprove={handleDeployChanges} onReject={handleDeployReject} deploying={deploying} />
+          </div>
+        )}
+
         {loading && !batchProgress && (
           <div className="flex justify-start">
             <div className="bg-card border border-border rounded-2xl px-4 py-3 flex items-center gap-2 max-w-[85%]">
