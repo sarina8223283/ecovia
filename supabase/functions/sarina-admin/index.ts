@@ -691,6 +691,21 @@ serve(async (req) => {
             },
           },
         },
+        {
+          type: "function",
+          function: {
+            name: "get_analytics",
+            description: "Get LIVE website traffic analytics. Returns total visitors, page-wise breakdown, referral sources (Instagram, WhatsApp, Facebook, etc.), daily trends, and device breakdown (mobile vs desktop). Use this whenever the user asks about visitors, traffic, analytics, or performance.",
+            parameters: {
+              type: "object",
+              properties: {
+                period: { type: "string", enum: ["today", "yesterday", "7days", "30days", "90days", "all"], description: "Time period for analytics" },
+                group_by: { type: "string", enum: ["page", "referrer", "day", "device"], description: "Primary grouping dimension" },
+              },
+              required: ["period"],
+            },
+          },
+        },
       ];
 
       const response = await chatWithFallback(LOVABLE_API_KEY, {
