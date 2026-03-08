@@ -491,7 +491,7 @@ const BatchProgressUI = ({ progress }: { progress: BatchProgress }) => {
       {/* Success/fail counts */}
       <div className="flex gap-3 text-xs">
         {progress.successes.length > 0 && (
-          <span className="text-green-600">✅ {progress.successes.length} done</span>
+          <span className="text-primary">✅ {progress.successes.length} done</span>
         )}
         {progress.failures.length > 0 && (
           <span className="text-destructive">❌ {progress.failures.length} failed</span>
