@@ -38,7 +38,7 @@ const Index = () => {
               className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-sm font-medium mb-6 shadow-lg backdrop-blur-sm"
             >
               <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-              100% Pure & Natural
+              {getContent(content, 'hero_badge', '100% Pure & Natural')}
             </motion.div>
 
             <motion.h1
@@ -47,14 +47,14 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-[1.1] drop-shadow-sm"
             >
-              Experience the <br/>
+              {getContent(content, 'hero_heading_1', 'Experience the')} <br/>
               <span className="text-primary relative inline-block">
-                Luxury
+                {getContent(content, 'hero_heading_highlight', 'Luxury')}
                 <svg className="absolute w-full h-3 -bottom-1 left-0 text-primary/20" viewBox="0 0 100 10" preserveAspectRatio="none">
                   <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="3" fill="none" />
                 </svg>
-              </span> of <br/>
-              Earthly Purity
+              </span> {getContent(content, 'hero_heading_2', 'of')} <br/>
+              {getContent(content, 'hero_heading_3', 'Earthly Purity')}
             </motion.h1>
 
             <motion.p
@@ -63,8 +63,7 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl sm:text-2xl text-foreground/80 mb-10 leading-relaxed font-light max-w-2xl"
             >
-              Mittika brings you authentic, chemical-free herbal powders rooted in 
-              ancient Ayurvedic traditions. Elevate your wellness journey naturally.
+              {getContent(content, 'hero_description', 'Mittika brings you authentic, chemical-free herbal powders rooted in ancient Ayurvedic traditions. Elevate your wellness journey naturally.')}
             </motion.p>
 
             <motion.div
@@ -77,14 +76,14 @@ const Index = () => {
                 to="/products"
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-4 rounded-xl text-lg font-medium hover:bg-primary/90 hover:scale-105 transition-all shadow-xl shadow-primary/20"
               >
-                Explore Collection
+                {getContent(content, 'hero_cta_1', 'Explore Collection')}
                 <ArrowRight size={20} />
               </Link>
               <Link
                 to="/about"
                 className="inline-flex items-center gap-2 bg-white/50 backdrop-blur-md text-foreground border border-foreground/10 px-8 py-4 rounded-xl text-lg font-medium hover:bg-white/80 transition-all"
               >
-                Our Story
+                {getContent(content, 'hero_cta_2', 'Our Story')}
               </Link>
             </motion.div>
           </div>
