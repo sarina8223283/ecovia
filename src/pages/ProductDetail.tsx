@@ -9,6 +9,7 @@ import ProductFeedback from '@/components/ui/ProductFeedback';
 import { getProductById, products } from '@/data/products';
 import { productPricing } from '@/data/pricing';
 import { useCart } from '@/contexts/CartContext';
+import { useSiteContent } from '@/hooks/useSiteContent';
 import { toast } from 'sonner';
 import { Helmet } from 'react-helmet-async';
 
