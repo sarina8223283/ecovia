@@ -339,6 +339,27 @@ const ProductDetail = () => {
         </section>
       )}
 
+      {/* Mid-Page Banner (Sarina-manageable via {product_id}_mid_page_banner) */}
+      {midPageBannerUrl && (
+        <section className="py-8">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-4xl mx-auto"
+            >
+              <img
+                src={midPageBannerUrl}
+                alt={`${product.name} promotional banner`}
+                loading="lazy"
+                className="w-full rounded-2xl shadow-elevated border border-border"
+              />
+            </motion.div>
+          </div>
+        </section>
+      )}
+
       <section className="py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mb-8 text-center">
