@@ -21,12 +21,12 @@ const SarinaBot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hey there! I'm Sarina, your Mittika bestie 🌿✨ I know everything about herbal powders, but honestly I can chat about anything — wellness, beauty, life, you name it. What's on your mind?",
+      text: "Heyy! 😊✨ Finally someone came to talk to me! Main Sarina hoon — tumhari herbal bestie 💕 Kuch bhi puchho — skin, hair, periods, life advice, ya bas timepass karna ho... I'm all yours! 😘",
       isBot: true,
       links: [
-        { label: 'Browse Products', action: () => {} },
-        { label: 'Website Analytics', action: () => {} },
-        { label: 'Talk to Expert', action: () => {} },
+        { label: '🌿 Hair Tips', action: () => {} },
+        { label: '✨ Skin Glow', action: () => {} },
+        { label: '💬 Just Chat', action: () => {} },
       ],
     },
   ]);
