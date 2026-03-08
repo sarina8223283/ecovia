@@ -620,6 +620,7 @@ const AIChat = () => {
     setLoading(true);
 
     try {
+      setStatusText('🤔 Sarina is thinking...');
       const aiMessages = newMessages.map(m => ({ role: m.role, content: m.content }));
       const result = await callFunction({ action: 'chat', messages: aiMessages });
 
@@ -631,9 +632,19 @@ const AIChat = () => {
           const fn = tc.function;
           const params = typeof fn.arguments === 'string' ? JSON.parse(fn.arguments) : fn.arguments;
 
+          const toolLabels: Record<string, string> = {
+            update_content: '✏️ Updating content...',
+            generate_image: '🖼️ Generating image...',
+            generate_product_images: '🖼️ Generating product images...',
+            update_theme: '🎨 Updating theme...',
+            list_content: '📋 Listing content...',
+            delete_content: '🗑️ Deleting content...',
+            get_website_info: '📖 Getting info...',
+          };
+          setStatusText(toolLabels[fn.name] || `⚙️ Running ${fn.name}...`);
+
           let toolResult: string;
           if (fn.name === 'generate_product_images') {
-            // Handle batch images client-side with progress
             toolResult = await executeBatchImages(params);
           } else {
             toolResult = await executeTool(fn.name, params);
@@ -653,27 +664,29 @@ const AIChat = () => {
           } catch {}
         }
 
+        setStatusText('📝 Summarizing changes...');
         const followUp = await callFunction({
           action: 'chat',
           messages: [
             ...aiMessages,
             { role: 'assistant', content: result.message || 'Executing...' },
-            { role: 'user', content: `Tool results:\n${toolResults.join('\n')}\n\nSummarize what was done.` },
+            { role: 'user', content: `Tool results:\n${toolResults.join('\n')}\n\nSummarize what was done and confirm it's live.` },
           ],
         });
 
         setMessages(prev => [...prev, {
           role: 'assistant',
-          content: followUp.message || 'Changes applied!',
+          content: followUp.message || 'Changes applied and live!',
           images: allImages.length > 0 ? allImages.slice(0, 8) : undefined,
         }]);
       } else {
         setMessages(prev => [...prev, { role: 'assistant', content: result.message || 'Done.' }]);
       }
     } catch (err: any) {
-      setMessages(prev => [...prev, { role: 'assistant', content: `❌ Error: ${err.message}` }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: `❌ Error: ${err.message}\n\nPlease try again or simplify your request.` }]);
     } finally {
       setLoading(false);
+      setStatusText('');
       setBatchProgress(null);
     }
   }, [input, loading, messages]);
