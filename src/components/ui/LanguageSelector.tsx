@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
 import languageIcon from '@/assets/icons/language-icon.png';
-import languageIcon from '@/assets/icons/language-icon.png';
 
 const languages = [
   { code: 'en', name: 'English', native: 'English' },
