@@ -146,7 +146,7 @@
                  onClick={handleOrderViaWhatsApp}
                  className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
                >
-                 <MessageCircle size={20} />
+                 <img src={whatsappIcon} alt="WhatsApp" className="w-5 h-5 object-contain" />
                  Order via WhatsApp
                </button>
  
