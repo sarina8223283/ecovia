@@ -8,9 +8,10 @@ import cartIcon from '@/assets/icons/cart-icon.png';
 import whatsappIcon from '@/assets/icons/whatsapp-icon.png';
  
  const CartDrawer = () => {
-   const { items, removeItem, updateQuantity, getTotal, clearCart } = useCart();
-   const { user, profile } = useAuth();
-   const [isOpen, setIsOpen] = useState(false);
+  const { items, removeItem, updateQuantity, getTotal, clearCart } = useCart();
+  const { user, profile } = useAuth();
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
  
    const handleOrderViaWhatsApp = () => {
      const customerName = profile?.full_name || 'Customer';
