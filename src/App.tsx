@@ -53,6 +53,7 @@ const App = () => (
                 <Route path="/visitors" element={<Visitors />} />
                 <Route path="/sarina-admin" element={<SarinaAdmin />} />
                 <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/payment" element={<Payment />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

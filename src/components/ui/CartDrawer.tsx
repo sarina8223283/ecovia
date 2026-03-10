@@ -143,13 +143,21 @@ import whatsappIcon from '@/assets/icons/whatsapp-icon.png';
                  </div>
                )}
  
-               <button
-                 onClick={handleOrderViaWhatsApp}
-                 className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
-               >
-                 <img src={whatsappIcon} alt="WhatsApp" className="w-5 h-5 object-contain" />
-                 Order via WhatsApp
-               </button>
+                <button
+                  onClick={() => { navigate('/payment'); setIsOpen(false); }}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                >
+                  <CreditCard size={18} />
+                  Pay & Place Order
+                </button>
+
+                <button
+                  onClick={handleOrderViaWhatsApp}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-secondary text-secondary-foreground py-3 rounded-lg font-medium hover:bg-secondary/80 transition-colors"
+                >
+                  <img src={whatsappIcon} alt="WhatsApp" className="w-5 h-5 object-contain" />
+                  Order via WhatsApp
+                </button>
  
                <button
                  onClick={clearCart}
