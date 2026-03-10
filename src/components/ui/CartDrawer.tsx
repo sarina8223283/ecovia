@@ -1,16 +1,17 @@
- import { useState } from 'react';
- import { Link } from 'react-router-dom';
- import { Plus, Minus, Trash2 } from 'lucide-react';
- import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
- import { useCart } from '@/contexts/CartContext';
- import { useAuth } from '@/contexts/AuthContext';
- import cartIcon from '@/assets/icons/cart-icon.png';
- import whatsappIcon from '@/assets/icons/whatsapp-icon.png';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Plus, Minus, Trash2, CreditCard } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { useCart } from '@/contexts/CartContext';
+import { useAuth } from '@/contexts/AuthContext';
+import cartIcon from '@/assets/icons/cart-icon.png';
+import whatsappIcon from '@/assets/icons/whatsapp-icon.png';
  
  const CartDrawer = () => {
-   const { items, removeItem, updateQuantity, getTotal, clearCart } = useCart();
-   const { user, profile } = useAuth();
-   const [isOpen, setIsOpen] = useState(false);
+  const { items, removeItem, updateQuantity, getTotal, clearCart } = useCart();
+  const { user, profile } = useAuth();
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(false);
  
    const handleOrderViaWhatsApp = () => {
      const customerName = profile?.full_name || 'Customer';
@@ -142,13 +143,21 @@
                  </div>
                )}
  
-               <button
-                 onClick={handleOrderViaWhatsApp}
-                 className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
-               >
-                 <img src={whatsappIcon} alt="WhatsApp" className="w-5 h-5 object-contain" />
-                 Order via WhatsApp
-               </button>
+                <button
+                  onClick={() => { navigate('/payment'); setIsOpen(false); }}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                >
+                  <CreditCard size={18} />
+                  Pay & Place Order
+                </button>
+
+                <button
+                  onClick={handleOrderViaWhatsApp}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-secondary text-secondary-foreground py-3 rounded-lg font-medium hover:bg-secondary/80 transition-colors"
+                >
+                  <img src={whatsappIcon} alt="WhatsApp" className="w-5 h-5 object-contain" />
+                  Order via WhatsApp
+                </button>
  
                <button
                  onClick={clearCart}
