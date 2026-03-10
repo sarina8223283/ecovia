@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.sarina-admin]
 verify_jwt = false
+
+[functions.order-notification]
+verify_jwt = false
