@@ -23,6 +23,7 @@ import Visitors from "./pages/Visitors";
 import NotFound from "./pages/NotFound";
 import SarinaAdmin from "./pages/SarinaAdmin";
 import AdminDashboard from "./pages/AdminDashboard";
+import Payment from "./pages/Payment";
 
 const queryClient = new QueryClient();
 
