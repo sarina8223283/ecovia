@@ -161,14 +161,21 @@ const ProductDetail = () => {
               animate={{ opacity: 1, x: 0 }}
               className="relative"
             >
+              {/* Main Image with Carousel */}
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-elevated">
-                <img 
-                  src={product.image} 
-                  alt={product.name}
-                  loading="eager"
-                  decoding="async"
-                  className="w-full h-full object-cover"
-                />
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={currentImageIndex}
+                    src={carouselImages[currentImageIndex]}
+                    alt={`${product.name} - Image ${currentImageIndex + 1}`}
+                    loading="eager"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full h-full object-cover"
+                  />
+                </AnimatePresence>
                 {/* Mittika Brand */}
                 <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
                   <span className="text-xs font-serif font-semibold text-primary">MITTIKA</span>
@@ -180,7 +187,40 @@ const ProductDetail = () => {
                 >
                   100% Natural
                 </div>
+                {/* Carousel Navigation Arrows */}
+                {carouselImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => setCurrentImageIndex(prev => prev === 0 ? carouselImages.length - 1 : prev - 1)}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background transition-colors"
+                    >
+                      <ChevronLeft size={20} className="text-foreground" />
+                    </button>
+                    <button
+                      onClick={() => setCurrentImageIndex(prev => prev === carouselImages.length - 1 ? 0 : prev + 1)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background transition-colors"
+                    >
+                      <ChevronRight size={20} className="text-foreground" />
+                    </button>
+                  </>
+                )}
               </div>
+              {/* Thumbnail Strip */}
+              {carouselImages.length > 1 && (
+                <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
+                  {carouselImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentImageIndex(idx)}
+                      className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                        idx === currentImageIndex ? 'border-primary shadow-md' : 'border-transparent opacity-60 hover:opacity-100'
+                      }`}
+                    >
+                      <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </motion.div>
 
             {/* Product Info */}
