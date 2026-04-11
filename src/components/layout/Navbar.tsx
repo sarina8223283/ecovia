@@ -45,13 +45,13 @@ const Navbar = () => {
           <a href="/" onClick={handleLogoClick} className="flex items-center gap-2.5 flex-shrink-0 cursor-pointer mr-6" data-no-translate="true">
             <img src={ecoviaLogoIcon} alt="Ecovia Logo" className="h-9 sm:h-11 w-auto object-contain" />
             <div className="flex flex-col leading-none">
-              <span className="font-serif text-sm sm:text-base font-bold text-primary leading-tight">Ecovia Enterprises</span>
-              <span className="text-[9px] sm:text-[10px] text-muted-foreground font-sans leading-tight">Brand: MITTIKA</span>
+              <span className="font-serif text-base sm:text-lg lg:text-xl font-bold text-primary leading-tight">Ecovia Enterprises</span>
+              <span className="text-[9px] sm:text-[11px] text-muted-foreground font-sans leading-tight">Brand: MITTIKA</span>
             </div>
           </a>
 
           {/* Desktop Navigation */}
-          <div className="hidden xl:flex items-center gap-1 2xl:gap-1.5">
+          <div className="hidden xl:flex items-center gap-0.5 2xl:gap-1 overflow-x-auto scrollbar-hide">
             {navLinks.map((link) => {
               const Icon = link.icon;
               const active = isActive(link.path);
