@@ -20,6 +20,24 @@ const ProductDetail = () => {
   const { data: siteContent } = useSiteContent();
   const [selectedQuantity, setSelectedQuantity] = useState(100);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Build carousel images: main product image + any Sarina-added images from site_content
+  const carouselImages = useMemo(() => {
+    if (!product || !siteContent) return product ? [product.image] : [];
+    const images = [product.image];
+    // Check for up to 10 additional images: {product_id}_image_1, _image_2, etc.
+    for (let i = 1; i <= 10; i++) {
+      const key = `${id}_image_${i}`;
+      const entry = siteContent[key];
+      if (entry?.image_url) {
+        images.push(entry.image_url);
+      } else if (entry?.content_value && entry.content_value.startsWith('http')) {
+        images.push(entry.content_value);
+      }
+    }
+    return images;
+  }, [product, siteContent, id]);
 
   // Get AI-generated images for this product
   const benefitsImageUrl = siteContent?.[`${id}_benefits_image`]?.image_url;
