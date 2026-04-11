@@ -5,6 +5,7 @@ import ProductCard from '@/components/ui/ProductCard';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { products } from '@/data/products';
 import { useSiteContent, getContent } from '@/hooks/useSiteContent';
+import herbalThemeBg from '@/assets/herbal-theme-bg.png';
 
 type Category = 'all' | 'skin' | 'hair' | 'wellness';
 
@@ -26,8 +27,12 @@ const Products = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="py-16 sm:py-24 bg-hero-pattern">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <section className="relative py-16 sm:py-24 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img src={herbalThemeBg} alt="" className="w-full h-full object-cover opacity-15" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
+        </div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
