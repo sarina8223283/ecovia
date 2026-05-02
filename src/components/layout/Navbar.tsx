@@ -87,7 +87,7 @@ const Navbar = () => {
           </div>
 
           {/* Right Actions - Desktop (uniform 22px icons, p-2 buttons, primary green) */}
-          <div className="hidden md:flex items-center gap-1.5">
+          <div className="hidden xl:flex items-center gap-1.5 ml-2">
             <PowderScanner />
             <LanguageSelector />
             <a href="https://instagram.com/info.ecovia" target="_blank" rel="noopener noreferrer" className="p-2 hover:bg-primary/10 rounded-full transition-all duration-200 text-primary" aria-label="Instagram">
