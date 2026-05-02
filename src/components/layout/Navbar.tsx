@@ -103,7 +103,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile / Tablet Actions */}
-          <div className="flex xl:hidden items-center gap-1 md:hidden">
+          <div className="flex xl:hidden items-center gap-1">
             <PowderScanner />
             <LanguageSelector />
             <CartDrawer />
