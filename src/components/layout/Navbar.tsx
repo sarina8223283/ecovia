@@ -102,8 +102,8 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Mobile Actions */}
-          <div className="flex md:hidden xl:hidden items-center gap-1">
+          {/* Mobile / Tablet Actions */}
+          <div className="flex xl:hidden items-center gap-1 md:hidden">
             <PowderScanner />
             <LanguageSelector />
             <CartDrawer />
