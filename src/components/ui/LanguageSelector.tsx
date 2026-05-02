@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
-import languageIcon from '@/assets/icons/language-icon.png';
+import { LanguageGlobe } from '@/components/icons/BotanicalIcons';
 
 const languages = [
   { code: 'en', name: 'English', native: 'English' },
@@ -335,13 +335,13 @@ const LanguageSelector = () => {
     <div ref={ref} className="relative" data-no-translate="true">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-1.5 hover:bg-secondary rounded-lg transition-colors flex items-center gap-1"
+        className="p-2 hover:bg-primary/10 rounded-full transition-all duration-200 flex items-center gap-1 text-primary"
         aria-label="Select Language"
         title="Change Language"
         disabled={translating}
       >
-        <img src={languageIcon} alt="Language" className="w-9 h-9 object-contain" />
-        <span className="text-xs font-medium text-muted-foreground hidden sm:inline">
+        <LanguageGlobe size={22} className="hover:scale-110 transition-transform" />
+        <span className="text-[11px] font-bold text-primary hidden sm:inline tracking-wide">
           {translating ? '...' : selected.code.toUpperCase()}
         </span>
       </button>

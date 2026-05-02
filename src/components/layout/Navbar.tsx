@@ -1,7 +1,21 @@
 import { useState, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, ShoppingBag, Grid3X3, BookOpen, Package, Globe, Info, Shield, Users, Phone, Settings, Instagram, Facebook, User, Menu, X } from 'lucide-react';
+import { Instagram, Facebook, Menu, X } from 'lucide-react';
+import {
+  LeafHome,
+  HerbPouch,
+  LeafGrid,
+  HerbScroll,
+  JarStack,
+  GlobeLeaf,
+  SproutSun,
+  LeafShield,
+  HerbalUsers,
+  LeafChat,
+  SproutGear,
+  HerbalUser,
+} from '@/components/icons/BotanicalIcons';
 import CartDrawer from '@/components/ui/CartDrawer';
 import PowderScanner from '@/components/ui/PowderScanner';
 import LanguageSelector from '@/components/ui/LanguageSelector';
@@ -9,17 +23,17 @@ import { useAuth } from '@/contexts/AuthContext';
 import ecoviaLogoIcon from '@/assets/ecovia-logo-icon.png';
 
 const navLinks = [
-  { name: 'Home', path: '/', icon: Home },
-  { name: 'Products', path: '/products', icon: ShoppingBag },
-  { name: 'Shop by Category', path: '/shop-by-category', icon: Grid3X3 },
-  { name: 'Directions of Use', path: '/directions', icon: BookOpen },
-  { name: 'Bulk Orders', path: '/bulk-orders', icon: Package },
-  { name: 'Export', path: '/export', icon: Globe },
-  { name: 'About Us', path: '/about', icon: Info },
-  { name: 'Purity', path: '/purity', icon: Shield },
-  { name: 'Visitors', path: '/visitors', icon: Users },
-  { name: 'Contact', path: '/contact', icon: Phone },
-  { name: 'Admin', path: '/admin', icon: Settings },
+  { name: 'Home', path: '/', icon: LeafHome },
+  { name: 'Products', path: '/products', icon: HerbPouch },
+  { name: 'Shop by Category', path: '/shop-by-category', icon: LeafGrid },
+  { name: 'Directions of Use', path: '/directions', icon: HerbScroll },
+  { name: 'Bulk Orders', path: '/bulk-orders', icon: JarStack },
+  { name: 'Export', path: '/export', icon: GlobeLeaf },
+  { name: 'About Us', path: '/about', icon: SproutSun },
+  { name: 'Purity', path: '/purity', icon: LeafShield },
+  { name: 'Visitors', path: '/visitors', icon: HerbalUsers },
+  { name: 'Contact', path: '/contact', icon: LeafChat },
+  { name: 'Admin', path: '/admin', icon: SproutGear },
 ];
 
 const Navbar = () => {
@@ -65,31 +79,31 @@ const Navbar = () => {
                       : 'text-foreground/70 hover:bg-primary/10 hover:text-primary'
                   }`}
                 >
-                  <Icon size={15} strokeWidth={2.5} className={active ? 'text-primary-foreground' : 'text-primary group-hover:scale-110 transition-transform'} />
+                  <Icon size={17} className={active ? 'text-primary-foreground' : 'text-primary group-hover:scale-110 transition-transform'} />
                   {link.name}
                 </Link>
               );
             })}
           </div>
 
-          {/* Right Actions - Desktop */}
-          <div className="hidden md:flex items-center gap-1">
+          {/* Right Actions - Desktop (uniform 22px icons, p-2 buttons, primary green) */}
+          <div className="hidden xl:flex items-center gap-1.5 ml-2">
             <PowderScanner />
             <LanguageSelector />
-            <a href="https://instagram.com/info.ecovia" target="_blank" rel="noopener noreferrer" className="p-2 hover:bg-primary/10 rounded-full transition-all duration-200 group" aria-label="Instagram">
-              <Instagram size={20} strokeWidth={2} className="text-primary group-hover:scale-110 transition-transform" />
+            <a href="https://instagram.com/info.ecovia" target="_blank" rel="noopener noreferrer" className="p-2 hover:bg-primary/10 rounded-full transition-all duration-200 text-primary" aria-label="Instagram">
+              <Instagram size={22} strokeWidth={1.8} className="hover:scale-110 transition-transform" />
             </a>
-            <a href="https://www.facebook.com/share/1Bm5epz5C2/" target="_blank" rel="noopener noreferrer" className="p-2 hover:bg-primary/10 rounded-full transition-all duration-200 group" aria-label="Facebook">
-              <Facebook size={20} strokeWidth={2} className="text-primary group-hover:scale-110 transition-transform" />
+            <a href="https://www.facebook.com/share/1Bm5epz5C2/" target="_blank" rel="noopener noreferrer" className="p-2 hover:bg-primary/10 rounded-full transition-all duration-200 text-primary" aria-label="Facebook">
+              <Facebook size={22} strokeWidth={1.8} className="hover:scale-110 transition-transform" />
             </a>
             <CartDrawer />
-            <Link to={user ? '/account' : '/auth'} className="p-2 hover:bg-primary/10 rounded-full transition-all duration-200 group" aria-label="Account">
-              <User size={22} strokeWidth={2} className="text-primary group-hover:scale-110 transition-transform" />
+            <Link to={user ? '/account' : '/auth'} className="p-2 hover:bg-primary/10 rounded-full transition-all duration-200 text-primary" aria-label="Account">
+              <HerbalUser size={22} className="hover:scale-110 transition-transform" />
             </Link>
           </div>
 
-          {/* Mobile Actions */}
-          <div className="flex xl:hidden items-center gap-0.5">
+          {/* Mobile / Tablet Actions */}
+          <div className="flex xl:hidden items-center gap-1">
             <PowderScanner />
             <LanguageSelector />
             <CartDrawer />
@@ -133,14 +147,14 @@ const Navbar = () => {
                         : 'text-foreground/70 hover:bg-primary/10 hover:text-primary'
                     }`}
                   >
-                    <Icon size={18} strokeWidth={2.5} className={active ? 'text-primary-foreground' : 'text-primary'} />
+                    <Icon size={20} className={active ? 'text-primary-foreground' : 'text-primary'} />
                     {link.name}
                   </Link>
                 );
               })}
               <div className="border-t border-primary/10 pt-3 mt-2">
                 <Link to={user ? '/account' : '/auth'} onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-2.5 rounded-xl font-sans text-[15px] font-semibold text-foreground/70 hover:bg-primary/10 hover:text-primary transition-all">
-                  <User size={18} strokeWidth={2.5} className="text-primary" />
+                  <HerbalUser size={20} className="text-primary" />
                   {user ? 'My Account' : 'Sign In'}
                 </Link>
               </div>

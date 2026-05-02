@@ -26,11 +26,11 @@ const Products = () => {
 
   return (
     <Layout>
-      {/* Hero Section */}
+      {/* Hero Section with strong herbal background */}
       <section className="relative py-16 sm:py-24 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={herbalThemeBg} alt="" className="w-full h-full object-cover opacity-15" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
+          <img src={herbalThemeBg} alt="" loading="eager" className="w-full h-full object-cover opacity-40" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background/70" />
         </div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <motion.span
@@ -59,9 +59,13 @@ const Products = () => {
         </div>
       </section>
 
-      {/* Products Grid */}
-      <section className="py-16 sm:py-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Products Grid with subtle herbal watermark */}
+      <section className="relative py-16 sm:py-20 overflow-hidden">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <img src={herbalThemeBg} alt="" loading="lazy" className="w-full h-full object-cover opacity-25" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/60 to-background/80" />
+        </div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
