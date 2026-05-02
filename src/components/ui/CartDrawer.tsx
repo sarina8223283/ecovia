@@ -4,6 +4,7 @@ import { Plus, Minus, Trash2, CreditCard } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { WovenBasket } from '@/components/icons/BotanicalIcons';
 import cartIcon from '@/assets/icons/cart-icon.png';
 import whatsappIcon from '@/assets/icons/whatsapp-icon.png';
  
@@ -46,10 +47,10 @@ import whatsappIcon from '@/assets/icons/whatsapp-icon.png';
    return (
      <Sheet open={isOpen} onOpenChange={setIsOpen}>
        <SheetTrigger asChild>
-        <button className="relative p-1 hover:bg-secondary rounded-lg transition-colors">
-            <img src={cartIcon} alt="Cart" className="w-8 h-8 object-contain" />
+        <button className="relative p-2 hover:bg-primary/10 rounded-full transition-all duration-200 text-primary" aria-label="Cart">
+            <WovenBasket size={22} className="hover:scale-110 transition-transform" />
             {items.length > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center font-medium">
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-accent text-accent-foreground text-[10px] rounded-full flex items-center justify-center font-bold">
                 {items.length}
               </span>
             )}
