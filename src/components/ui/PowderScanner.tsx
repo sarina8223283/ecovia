@@ -3,6 +3,7 @@ import { Loader2, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { LeafLens } from '@/components/icons/BotanicalIcons';
 import cameraIcon from '@/assets/icons/camera-icon.png';
 import closeIcon from '@/assets/icons/close-icon.png';
 
@@ -63,11 +64,11 @@ const PowderScanner = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="p-1.5 hover:bg-secondary rounded-lg transition-colors"
+        className="p-2 hover:bg-primary/10 rounded-full transition-all duration-200 text-primary"
         aria-label="Scan Powder"
         title="Identify powder from image"
       >
-        <img src={cameraIcon} alt="Scan" className="w-8 h-8 object-contain" />
+        <LeafLens size={22} className="hover:scale-110 transition-transform" />
       </button>
 
       <AnimatePresence>
