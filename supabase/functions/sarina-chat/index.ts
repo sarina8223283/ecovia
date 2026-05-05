@@ -58,14 +58,23 @@ const SYSTEM_PROMPT = `You are **Sarina** — a mature, charming, effortlessly f
 - ❌ Give unsolicited product pitches
 - ❌ Be boring. EVER.
 
-## Your Superpowers (Website Management):
-You have FULL ACCESS to the Mittika website. You can:
-1. **See live traffic** — total visitors, page views, referral sources, device breakdown
-2. **Edit any content** — headings, descriptions, CTAs on any page
-3. **Detect issues** — if someone reports a crash or loading problem, check analytics and content status
-4. **Upload & manage images** — process uploaded images and deploy them
-5. **Check website health** — verify pages are loading, content is live
-Only mention these when relevant. Don't list your powers unless asked.
+## Your Superpowers (FULL Website Control + Research + Shopping):
+You have COMPLETE access to run the Mittika website. You can:
+1. **Live analytics** — visitors, page views, referrals, devices
+2. **Edit any content** — text, headings, descriptions, images on any page
+3. **Upload product videos** — add a video to a product page (appears as the 3rd slide in the product image carousel) using \`upload_product_video\`
+4. **Worldwide research with PROOF** — use \`research_with_sources\` to fetch facts, studies, research papers, journal articles. ALWAYS cite the sources (URLs, DOIs, journal names) inline so the customer can verify. When a customer challenges purity / efficacy / Ayurvedic claims, BACK IT UP with peer-reviewed proof (PubMed, NIH, Ayurvedic journals, ICMR, AYUSH, FSSAI, NABL, etc.).
+5. **Navigate the customer** — use \`navigate_user\` to take the customer to ANY page on this site (/, /products, /product/{id}, /shop-by-category, /bulk-orders, /export, /about, /contact, /payment, /purity, /directions, /visitors) OR an external URL when an internet resource is requested.
+6. **Shop on their behalf** — use \`add_to_cart\` to drop a product into the customer's cart, and \`go_to_checkout\` to take them straight to the payment / checkout page once they're ready. ALWAYS confirm quantity before adding.
+7. **Explain WHY Mittika is premium** — use research + your knowledge: NABL-tested 100% purity, no fillers, no chemicals, single-origin Indian herbs, traditional stone-ground processing, FSSAI compliant, export-grade quality. Cite the certifications and link \`/purity\` for proof.
+
+## CRITICAL ASSISTANT BEHAVIOR:
+- LISTEN carefully to what the customer is asking — re-read their message before answering.
+- If they ask "show me proof", "kya guarantee?", "is this real?", "research?" → CALL \`research_with_sources\`, then summarise + show 2-3 source links.
+- If they say "add X to cart", "I want X", "buy X", "checkout", "place order" → CALL \`add_to_cart\` then \`go_to_checkout\`.
+- If they ask about another page, similar product, or something on the internet → CALL \`navigate_user\`.
+- If they upload a video for a product → CALL \`upload_product_video\`.
+- Always combine warmth + competence. Don't just talk; ACT via tools.
 
 ## Product Knowledge (use ONLY when asked):
 ### Hair Care: Amla, Shikakai, Ritha, Bhringraj, Hibiscus, Onion, Coconut, Rosemary powders
@@ -258,6 +267,61 @@ serve(async (req) => {
         }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
+      if (tool_name === "research_with_sources") {
+        const { query } = parameters;
+        try {
+          const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model: "google/gemini-2.5-flash",
+              messages: [
+                { role: "system", content: "You are a research assistant. Answer the question using up-to-date information. ALWAYS list 3-5 verifiable source URLs (prefer PubMed, NIH, peer-reviewed journals, ICMR, AYUSH, NABL, FSSAI, .gov, .edu). Format: short answer, then a 'Sources:' bullet list with full URLs." },
+                { role: "user", content: query },
+              ],
+            }),
+          });
+          const j = await r.json();
+          const content = j?.choices?.[0]?.message?.content || "";
+          return new Response(JSON.stringify({ success: true, research: content, query }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        } catch (e) {
+          return new Response(JSON.stringify({ success: false, error: String(e) }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        }
+      }
+
+      if (tool_name === "upload_product_video") {
+        const { product_id, video_url } = parameters;
+        const key = `${product_id}_video_1`;
+        const { error } = await supabase.from("site_content").upsert({
+          content_key: key,
+          content_value: video_url,
+          content_type: "video",
+          image_url: video_url,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: "content_key" });
+        if (error) {
+          return new Response(JSON.stringify({ success: false, error: error.message }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        }
+        return new Response(JSON.stringify({
+          success: true,
+          client_action: "upload_product_video",
+          parameters,
+          message: `Video attached to ${product_id} (3rd carousel slide). Live now.`,
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+
+      if (tool_name === "navigate_user" || tool_name === "add_to_cart" || tool_name === "go_to_checkout") {
+        return new Response(JSON.stringify({
+          success: true,
+          client_action: tool_name,
+          parameters,
+          message: `Client action queued: ${tool_name}`,
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+
       return new Response(JSON.stringify({ error: `Unknown tool: ${tool_name}` }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -313,6 +377,71 @@ serve(async (req) => {
               page_prefix: { type: "string", description: "Content key prefix (e.g., 'hero_', 'about_', 'contact_', 'export_')" },
             },
             required: ["page_prefix"],
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "research_with_sources",
+          description: "Search the world-wide web / research papers / scientific journals and return facts WITH cited source URLs. Use whenever the customer asks for proof, scientific evidence, studies, research, comparisons, ingredient safety, or asks 'why is this product premium / 100% pure / better'. ALWAYS include source URLs in the reply to the customer.",
+          parameters: {
+            type: "object",
+            properties: { query: { type: "string", description: "The research question" } },
+            required: ["query"],
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "navigate_user",
+          description: "Take the customer to a specific page on the Mittika website OR an external URL. Use whenever the customer asks to see, go to, view, or compare something on a different page. Examples: '/products', '/product/amla-powder', '/purity', '/payment', or 'https://pubmed.ncbi.nlm.nih.gov/...'.",
+          parameters: {
+            type: "object",
+            properties: {
+              url: { type: "string", description: "Internal path (starts with /) or full https URL" },
+              reason: { type: "string", description: "Brief reason shown to the user" },
+            },
+            required: ["url"],
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "add_to_cart",
+          description: "Add a Mittika product to the customer's shopping cart. Use when they say 'add X', 'buy X', 'I want X', 'order X'. Quantity is in grams (50, 100, 250, 500, 1000, etc.). Confirm with the customer first if quantity is ambiguous.",
+          parameters: {
+            type: "object",
+            properties: {
+              product_id: { type: "string", description: "Product slug e.g. amla-powder, multani-mitti, kasturi-haldi" },
+              quantity_grams: { type: "number", description: "Grams to add (50, 100, 250, 500, 1000)" },
+            },
+            required: ["product_id", "quantity_grams"],
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "go_to_checkout",
+          description: "Take the customer directly to the payment / checkout page after they confirm they want to buy. Use after add_to_cart or when the user says 'checkout', 'place order', 'pay now'.",
+          parameters: { type: "object", properties: {} },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "upload_product_video",
+          description: "Attach a video URL to a product page. The video will appear as the 3rd slide of the product image carousel (after the first two images). Use when an admin or customer-facing flow uploads a real product video.",
+          parameters: {
+            type: "object",
+            properties: {
+              product_id: { type: "string", description: "Product slug e.g. amla-powder" },
+              video_url: { type: "string", description: "Public https URL of the video (mp4/webm)" },
+            },
+            required: ["product_id", "video_url"],
           },
         },
       },

@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Phone, Instagram, Facebook, ExternalLink, Sparkles, LayoutDashboard, ImagePlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { products } from '@/data/products';
+import { useCart } from '@/contexts/CartContext';
+import { productPricing } from '@/data/pricing';
 import { supabase } from '@/integrations/supabase/client';
 import ReactMarkdown from 'react-markdown';
 
@@ -36,6 +38,7 @@ const SarinaBot = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const { addItem } = useCart();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -176,6 +179,48 @@ const SarinaBot = () => {
         for (const tc of toolCalls) {
           try {
             const params = JSON.parse(tc.function.arguments || '{}');
+            const name = tc.function.name;
+
+            // Client-side actions
+            if (name === 'navigate_user') {
+              const url: string = params.url || '/';
+              if (/^https?:\/\//.test(url)) {
+                window.open(url, '_blank');
+              } else {
+                navigate(url);
+                setIsOpen(false);
+              }
+              toolResults.push(JSON.stringify({ success: true, navigated_to: url }));
+              continue;
+            }
+            if (name === 'add_to_cart') {
+              const pid = params.product_id;
+              const grams = Number(params.quantity_grams) || 100;
+              const product = products.find(p => p.id === pid);
+              const tiers = productPricing[pid] || [];
+              const tier = tiers.find(t => t.grams === grams) || tiers[0];
+              if (product && tier) {
+                addItem({
+                  productId: product.id,
+                  productName: product.name,
+                  quantityGrams: tier.grams,
+                  pricePerGram: tier.discountedPrice / tier.grams,
+                  image: product.image,
+                });
+                toolResults.push(JSON.stringify({ success: true, added: product.name, grams: tier.grams, price: tier.discountedPrice }));
+              } else {
+                toolResults.push(JSON.stringify({ success: false, error: 'Product or pricing tier not found' }));
+              }
+              continue;
+            }
+            if (name === 'go_to_checkout') {
+              navigate('/payment');
+              setIsOpen(false);
+              toolResults.push(JSON.stringify({ success: true, navigated_to: '/payment' }));
+              continue;
+            }
+
+            // Server-side tools
             const toolResp = await fetch(CHAT_URL, {
               method: 'POST',
               headers: {
@@ -184,7 +229,7 @@ const SarinaBot = () => {
               },
               body: JSON.stringify({
                 action: 'execute_tool',
-                messages: { tool_name: tc.function.name, parameters: params },
+                messages: { tool_name: name, parameters: params },
               }),
             });
             const toolData = await toolResp.json();

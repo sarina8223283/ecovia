@@ -22,22 +22,33 @@ const ProductDetail = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Build carousel images: main product image + any Sarina-added images from site_content
-  const carouselImages = useMemo(() => {
-    if (!product || !siteContent) return product ? [product.image] : [];
-    const images = [product.image];
-    // Check for up to 10 additional images: {product_id}_image_1, _image_2, etc.
-    for (let i = 1; i <= 10; i++) {
-      const key = `${id}_image_${i}`;
-      const entry = siteContent[key];
-      if (entry?.image_url) {
-        images.push(entry.image_url);
-      } else if (entry?.content_value && entry.content_value.startsWith('http')) {
-        images.push(entry.content_value);
-      }
+  // Build carousel media: main image (0), 2nd image (1), VIDEO at 3rd position (2 — Sarina manageable),
+  // then remaining additional images. Each item is { type: 'image' | 'video', src }.
+  const carouselMedia = useMemo(() => {
+    if (!product) return [] as Array<{ type: 'image' | 'video'; src: string }>;
+    const media: Array<{ type: 'image' | 'video'; src: string }> = [
+      { type: 'image', src: product.image },
+    ];
+    const getEntry = (k: string) => {
+      const e = siteContent?.[k];
+      return e?.image_url || (e?.content_value && /^https?:\/\//.test(e.content_value) ? e.content_value : null);
+    };
+    // 2nd image slot
+    const img1 = getEntry(`${id}_image_1`);
+    if (img1) media.push({ type: 'image', src: img1 });
+    // 3rd slot = video (Sarina uploads to {id}_video_1)
+    const video1 = getEntry(`${id}_video_1`);
+    if (video1) media.push({ type: 'video', src: video1 });
+    // Remaining images
+    for (let i = 2; i <= 10; i++) {
+      const v = getEntry(`${id}_image_${i}`);
+      if (v) media.push({ type: 'image', src: v });
     }
-    return images;
+    const v2 = getEntry(`${id}_video_2`);
+    if (v2) media.push({ type: 'video', src: v2 });
+    return media;
   }, [product, siteContent, id]);
+  const carouselImages = carouselMedia; // alias to minimize downstream changes
 
   // Get AI-generated images for this product
   const benefitsImageUrl = siteContent?.[`${id}_benefits_image`]?.image_url;
@@ -164,17 +175,32 @@ const ProductDetail = () => {
               {/* Main Image with Carousel */}
               <div className="relative aspect-square rounded-2xl overflow-hidden shadow-elevated">
                 <AnimatePresence mode="wait">
-                  <motion.img
-                    key={currentImageIndex}
-                    src={carouselImages[currentImageIndex]}
-                    alt={`${product.name} - Image ${currentImageIndex + 1}`}
-                    loading="eager"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-full h-full object-cover"
-                  />
+                  {carouselMedia[currentImageIndex]?.type === 'video' ? (
+                    <motion.video
+                      key={currentImageIndex}
+                      src={carouselMedia[currentImageIndex].src}
+                      controls
+                      playsInline
+                      preload="metadata"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-full h-full object-cover bg-black"
+                    />
+                  ) : (
+                    <motion.img
+                      key={currentImageIndex}
+                      src={carouselMedia[currentImageIndex]?.src || product.image}
+                      alt={`${product.name} - Image ${currentImageIndex + 1}`}
+                      loading="eager"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </AnimatePresence>
                 {/* Mittika Brand */}
                 <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
@@ -208,7 +234,7 @@ const ProductDetail = () => {
               {/* Thumbnail Strip */}
               {carouselImages.length > 1 && (
                 <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
-                  {carouselImages.map((img, idx) => (
+                  {carouselMedia.map((m, idx) => (
                     <button
                       key={idx}
                       onClick={() => setCurrentImageIndex(idx)}
@@ -216,7 +242,14 @@ const ProductDetail = () => {
                         idx === currentImageIndex ? 'border-primary shadow-md' : 'border-transparent opacity-60 hover:opacity-100'
                       }`}
                     >
-                      <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                      {m.type === 'video' ? (
+                        <div className="relative w-full h-full bg-black">
+                          <video src={m.src} className="w-full h-full object-cover" muted preload="metadata" />
+                          <span className="absolute inset-0 flex items-center justify-center text-white text-xl">▶</span>
+                        </div>
+                      ) : (
+                        <img src={m.src} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                      )}
                     </button>
                   ))}
                 </div>
