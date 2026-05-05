@@ -267,6 +267,40 @@ serve(async (req) => {
         }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
 
+      if (tool_name === "research_with_sources") {
+        const { query } = parameters;
+        try {
+          const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model: "google/gemini-2.5-flash",
+              messages: [
+                { role: "system", content: "You are a research assistant. Answer the question using up-to-date information. ALWAYS list 3-5 verifiable source URLs (prefer PubMed, NIH, peer-reviewed journals, ICMR, AYUSH, NABL, FSSAI, .gov, .edu). Format: short answer, then a 'Sources:' bullet list with full URLs." },
+                { role: "user", content: query },
+              ],
+            }),
+          });
+          const j = await r.json();
+          const content = j?.choices?.[0]?.message?.content || "";
+          return new Response(JSON.stringify({ success: true, research: content, query }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        } catch (e) {
+          return new Response(JSON.stringify({ success: false, error: String(e) }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        }
+      }
+
+      if (tool_name === "navigate_user" || tool_name === "add_to_cart" || tool_name === "go_to_checkout" || tool_name === "upload_product_video") {
+        // These are client-side actions. Echo the instruction back so the bot's reply tells the client what to do.
+        return new Response(JSON.stringify({
+          success: true,
+          client_action: tool_name,
+          parameters,
+          message: `Client action queued: ${tool_name}`,
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+
       return new Response(JSON.stringify({ error: `Unknown tool: ${tool_name}` }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -322,6 +356,71 @@ serve(async (req) => {
               page_prefix: { type: "string", description: "Content key prefix (e.g., 'hero_', 'about_', 'contact_', 'export_')" },
             },
             required: ["page_prefix"],
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "research_with_sources",
+          description: "Search the world-wide web / research papers / scientific journals and return facts WITH cited source URLs. Use whenever the customer asks for proof, scientific evidence, studies, research, comparisons, ingredient safety, or asks 'why is this product premium / 100% pure / better'. ALWAYS include source URLs in the reply to the customer.",
+          parameters: {
+            type: "object",
+            properties: { query: { type: "string", description: "The research question" } },
+            required: ["query"],
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "navigate_user",
+          description: "Take the customer to a specific page on the Mittika website OR an external URL. Use whenever the customer asks to see, go to, view, or compare something on a different page. Examples: '/products', '/product/amla-powder', '/purity', '/payment', or 'https://pubmed.ncbi.nlm.nih.gov/...'.",
+          parameters: {
+            type: "object",
+            properties: {
+              url: { type: "string", description: "Internal path (starts with /) or full https URL" },
+              reason: { type: "string", description: "Brief reason shown to the user" },
+            },
+            required: ["url"],
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "add_to_cart",
+          description: "Add a Mittika product to the customer's shopping cart. Use when they say 'add X', 'buy X', 'I want X', 'order X'. Quantity is in grams (50, 100, 250, 500, 1000, etc.). Confirm with the customer first if quantity is ambiguous.",
+          parameters: {
+            type: "object",
+            properties: {
+              product_id: { type: "string", description: "Product slug e.g. amla-powder, multani-mitti, kasturi-haldi" },
+              quantity_grams: { type: "number", description: "Grams to add (50, 100, 250, 500, 1000)" },
+            },
+            required: ["product_id", "quantity_grams"],
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "go_to_checkout",
+          description: "Take the customer directly to the payment / checkout page after they confirm they want to buy. Use after add_to_cart or when the user says 'checkout', 'place order', 'pay now'.",
+          parameters: { type: "object", properties: {} },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "upload_product_video",
+          description: "Attach a video URL to a product page. The video will appear as the 3rd slide of the product image carousel (after the first two images). Use when an admin or customer-facing flow uploads a real product video.",
+          parameters: {
+            type: "object",
+            properties: {
+              product_id: { type: "string", description: "Product slug e.g. amla-powder" },
+              video_url: { type: "string", description: "Public https URL of the video (mp4/webm)" },
+            },
+            required: ["product_id", "video_url"],
           },
         },
       },
