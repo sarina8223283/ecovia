@@ -191,6 +191,7 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          permanent_address: string | null
           phone: string | null
           pincode: string | null
           state: string | null
@@ -203,6 +204,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          permanent_address?: string | null
           phone?: string | null
           pincode?: string | null
           state?: string | null
@@ -215,6 +217,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          permanent_address?: string | null
           phone?: string | null
           pincode?: string | null
           state?: string | null
