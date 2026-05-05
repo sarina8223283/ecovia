@@ -24,6 +24,7 @@ import NotFound from "./pages/NotFound";
 import SarinaAdmin from "./pages/SarinaAdmin";
 import AdminDashboard from "./pages/AdminDashboard";
 import Payment from "./pages/Payment";
+import Checkout from "./pages/Checkout";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,7 @@ const App = () => (
                 <Route path="/sarina-admin" element={<SarinaAdmin />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/payment" element={<Payment />} />
+                <Route path="/checkout" element={<Checkout />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
