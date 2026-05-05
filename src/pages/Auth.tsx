@@ -1,5 +1,5 @@
  import { useState } from 'react';
- import { useNavigate, Link } from 'react-router-dom';
+  import { useNavigate, Link, useSearchParams } from 'react-router-dom';
  import { motion } from 'framer-motion';
  import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react';
  import Layout from '@/components/layout/Layout';
@@ -9,6 +9,8 @@
  const Auth = () => {
    const navigate = useNavigate();
    const { signIn, signUp, user } = useAuth();
+    const [searchParams] = useSearchParams();
+    const redirectTo = searchParams.get('redirect') || '/account';
    const [isLogin, setIsLogin] = useState(true);
    const [showPassword, setShowPassword] = useState(false);
    const [loading, setLoading] = useState(false);
@@ -20,7 +22,7 @@
  
    // Redirect if already logged in
    if (user) {
-     navigate('/account');
+      navigate(redirectTo);
      return null;
    }
  
@@ -35,7 +37,7 @@
            toast.error(error.message);
          } else {
            toast.success('Welcome back!');
-           navigate('/');
+            navigate(redirectTo);
          }
        } else {
          if (!form.fullName.trim()) {

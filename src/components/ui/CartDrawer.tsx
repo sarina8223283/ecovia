@@ -6,42 +6,20 @@ import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { WovenBasket } from '@/components/icons/BotanicalIcons';
 import cartIcon from '@/assets/icons/cart-icon.png';
-import whatsappIcon from '@/assets/icons/whatsapp-icon.png';
  
  const CartDrawer = () => {
   const { items, removeItem, updateQuantity, getTotal, clearCart } = useCart();
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
  
-   const handleOrderViaWhatsApp = () => {
-     const customerName = profile?.full_name || 'Customer';
-     const customerPhone = profile?.phone || 'Not provided';
-     const customerAddress = profile?.address ? 
-       `${profile.address}, ${profile.city || ''}, ${profile.state || ''} - ${profile.pincode || ''}` : 
-       'Not provided';
- 
-     const orderItems = items.map(item => {
-       const quantity = item.quantityGrams >= 1000 
-         ? `${item.quantityGrams / 1000} Kg` 
-         : `${item.quantityGrams}g`;
-       const price = (item.quantityGrams * item.pricePerGram).toFixed(2);
-       return `• ${item.productName} - ${quantity} - ₹${price}`;
-     }).join('\n');
- 
-     const total = getTotal().toFixed(2);
- 
-     const message = `🌿 *MITTIKA ORDER REQUEST*\n\n` +
-       `*Customer Details:*\n` +
-       `Name: ${customerName}\n` +
-       `Phone: ${customerPhone}\n` +
-       `Address: ${customerAddress}\n\n` +
-       `*Order Items:*\n${orderItems}\n\n` +
-       `*Total Amount: ₹${total}*\n\n` +
-       `Please confirm availability and share payment details.`;
- 
-     const whatsappUrl = `https://wa.me/918758808684?text=${encodeURIComponent(message)}`;
-     window.open(whatsappUrl, '_blank');
+   const handleCheckout = () => {
+     if (!user) {
+       navigate('/auth?redirect=/checkout');
+     } else {
+       navigate('/checkout');
+     }
+     setIsOpen(false);
    };
  
    return (
@@ -145,21 +123,13 @@ import whatsappIcon from '@/assets/icons/whatsapp-icon.png';
                )}
  
                 <button
-                  onClick={() => { navigate('/payment'); setIsOpen(false); }}
+                  onClick={handleCheckout}
                   className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
                 >
                   <CreditCard size={18} />
-                  Pay & Place Order
+                  Proceed to Checkout
                 </button>
 
-                <button
-                  onClick={handleOrderViaWhatsApp}
-                  className="w-full inline-flex items-center justify-center gap-2 bg-secondary text-secondary-foreground py-3 rounded-lg font-medium hover:bg-secondary/80 transition-colors"
-                >
-                  <img src={whatsappIcon} alt="WhatsApp" className="w-5 h-5 object-contain" />
-                  Order via WhatsApp
-                </button>
- 
                <button
                  onClick={clearCart}
                  className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"

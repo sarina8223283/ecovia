@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -20,6 +20,19 @@ const Payment = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const total = getTotal();
+
+  // Guard: must be signed in AND have completed checkout details
+  useEffect(() => {
+    if (!user) {
+      navigate('/auth?redirect=/checkout');
+      return;
+    }
+    if (items.length === 0) return;
+    const hasDetails = profile?.full_name && profile?.phone && profile?.address && profile?.city && profile?.state && profile?.pincode;
+    if (!hasDetails) {
+      navigate('/checkout');
+    }
+  }, [user, profile, items.length, navigate]);
 
   const copyUPI = () => {
     navigator.clipboard.writeText(UPI_ID);
@@ -92,6 +105,7 @@ const Payment = () => {
       clearCart();
       setOrderPlaced(true);
       toast.success('Order placed successfully! 🎉');
+      setTimeout(() => navigate('/account?tab=orders'), 1800);
     } catch (err: any) {
       toast.error(err.message || 'Failed to place order');
     } finally {

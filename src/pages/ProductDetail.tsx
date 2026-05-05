@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Plus, MessageCircle, Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Plus, ShoppingBag, Check, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import TestimonialsSection from '@/components/ui/TestimonialsSection';
@@ -17,6 +17,7 @@ const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
   const product = getProductById(id || '');
   const { addItem } = useCart();
+  const navigate = useNavigate();
   const { data: siteContent } = useSiteContent();
   const [selectedQuantity, setSelectedQuantity] = useState(100);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -88,9 +89,14 @@ const ProductDetail = () => {
 
   const handleBuyNow = () => {
     if (!selectedTier) return;
-    const message = `Hi! I'd like to order:\n\n*${product.name}*\nQuantity: ${selectedTier.label}\nPrice: ₹${selectedTier.discountedPrice}\n\nPlease confirm availability and payment details.`;
-    const whatsappUrl = `https://wa.me/918758808684?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    addItem({
+      productId: product.id,
+      productName: product.name,
+      quantityGrams: selectedQuantity,
+      pricePerGram: selectedTier.discountedPrice / selectedTier.grams,
+      image: product.image,
+    });
+    navigate('/checkout');
   };
 
   // FAQ Schema for SEO
@@ -338,8 +344,8 @@ const ProductDetail = () => {
                   disabled={!selectedTier}
                   className="flex-1 inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
                 >
-                  <MessageCircle size={20} />
-                  Buy Now via WhatsApp
+                  <ShoppingBag size={20} />
+                  Buy Now
                 </button>
               </div>
 

@@ -8,6 +8,7 @@
    full_name: string | null;
    phone: string | null;
    address: string | null;
+  permanent_address: string | null;
    city: string | null;
    state: string | null;
    pincode: string | null;
