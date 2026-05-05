@@ -291,8 +291,29 @@ serve(async (req) => {
         }
       }
 
-      if (tool_name === "navigate_user" || tool_name === "add_to_cart" || tool_name === "go_to_checkout" || tool_name === "upload_product_video") {
-        // These are client-side actions. Echo the instruction back so the bot's reply tells the client what to do.
+      if (tool_name === "upload_product_video") {
+        const { product_id, video_url } = parameters;
+        const key = `${product_id}_video_1`;
+        const { error } = await supabase.from("site_content").upsert({
+          content_key: key,
+          content_value: video_url,
+          content_type: "video",
+          image_url: video_url,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: "content_key" });
+        if (error) {
+          return new Response(JSON.stringify({ success: false, error: error.message }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        }
+        return new Response(JSON.stringify({
+          success: true,
+          client_action: "upload_product_video",
+          parameters,
+          message: `Video attached to ${product_id} (3rd carousel slide). Live now.`,
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+
+      if (tool_name === "navigate_user" || tool_name === "add_to_cart" || tool_name === "go_to_checkout") {
         return new Response(JSON.stringify({
           success: true,
           client_action: tool_name,
