@@ -1,5 +1,5 @@
- import { useState, useEffect } from 'react';
- import { useNavigate, Link } from 'react-router-dom';
+  import { useState, useEffect } from 'react';
+  import { useNavigate, Link, useSearchParams } from 'react-router-dom';
  import { motion } from 'framer-motion';
  import { User, Package, MapPin, Phone, Save, LogOut } from 'lucide-react';
  import Layout from '@/components/layout/Layout';
@@ -17,9 +17,12 @@
  
  const Account = () => {
    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
    const { user, profile, loading, signOut, updateProfile } = useAuth();
    const [orders, setOrders] = useState<Order[]>([]);
-   const [activeTab, setActiveTab] = useState<'profile' | 'orders'>('profile');
+    const [activeTab, setActiveTab] = useState<'profile' | 'orders'>(
+      searchParams.get('tab') === 'orders' ? 'orders' : 'profile'
+    );
    const [saving, setSaving] = useState(false);
    const [form, setForm] = useState({
      full_name: '',
