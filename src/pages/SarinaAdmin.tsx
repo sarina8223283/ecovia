@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Lock, LogOut, Loader2, RefreshCw, LayoutDashboard, MessageSquare, FileText, Palette, Image as ImageIcon, Trash2, Edit3, Plus, Eye, ArrowLeft, Paperclip, X, ZoomIn, CheckCircle, XCircle, ArrowRight, Activity } from 'lucide-react';
+import { Send, Lock, LogOut, Loader2, RefreshCw, LayoutDashboard, MessageSquare, FileText, Palette, Image as ImageIcon, Trash2, Edit3, Plus, Eye, ArrowLeft, Paperclip, X, ZoomIn, CheckCircle, XCircle, ArrowRight, Activity, Package, Tag } from 'lucide-react';
+import OrdersAdmin from '@/components/admin/OrdersAdmin';
+import CouponsAdmin from '@/components/admin/CouponsAdmin';
 import { Link } from 'react-router-dom';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import ReactMarkdown from 'react-markdown';
@@ -27,7 +29,7 @@ interface ContentItem {
   updated_at: string;
 }
 
-type Tab = 'chat' | 'content' | 'theme' | 'images';
+type Tab = 'chat' | 'content' | 'theme' | 'images' | 'orders' | 'coupons';
 
 const callFunction = async (body: any, retries = 3): Promise<any> => {
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -1121,6 +1123,8 @@ const SarinaAdmin = () => {
 
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
     { id: 'chat', label: 'AI Editor', icon: <MessageSquare className="w-4 h-4" /> },
+    { id: 'orders', label: 'Orders', icon: <Package className="w-4 h-4" /> },
+    { id: 'coupons', label: 'Coupons', icon: <Tag className="w-4 h-4" /> },
     { id: 'content', label: 'Content', icon: <FileText className="w-4 h-4" /> },
     { id: 'theme', label: 'Theme', icon: <Palette className="w-4 h-4" /> },
     { id: 'images', label: 'Images', icon: <ImageIcon className="w-4 h-4" /> },
@@ -1165,6 +1169,8 @@ const SarinaAdmin = () => {
 
       <div className="flex-1 overflow-hidden flex flex-col">
         {activeTab === 'chat' && <AIChat />}
+        {activeTab === 'orders' && <div className="flex-1 overflow-y-auto"><OrdersAdmin /></div>}
+        {activeTab === 'coupons' && <div className="flex-1 overflow-y-auto"><CouponsAdmin /></div>}
         {activeTab === 'content' && <div className="flex-1 overflow-y-auto"><ContentManager /></div>}
         {activeTab === 'theme' && <div className="flex-1 overflow-y-auto"><ThemeEditor /></div>}
         {activeTab === 'images' && <div className="flex-1 overflow-y-auto"><ImageGallery /></div>}
