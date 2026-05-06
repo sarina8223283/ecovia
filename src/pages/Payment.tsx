@@ -8,6 +8,8 @@ import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { openWhatsApp } from '@/lib/whatsapp';
+import { buildInvoiceNumber } from '@/lib/invoice';
 
 const UPI_ID = 'sarina8223283@ptyes';
 
@@ -20,6 +22,12 @@ const Payment = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const total = getTotal();
+  // Read applied coupon from session
+  const couponData = (() => {
+    try { const raw = sessionStorage.getItem('mittika_coupon'); return raw ? JSON.parse(raw) : null; } catch { return null; }
+  })();
+  const discount = Number(couponData?.discount || 0);
+  const finalTotal = Math.max(0, total - discount);
 
   // Guard: must be signed in AND have completed checkout details
   useEffect(() => {
@@ -60,10 +68,14 @@ const Payment = () => {
         user_id: user.id,
         customer_name: profile?.full_name || 'Customer',
         customer_phone: profile?.phone || '',
+        customer_email: user.email || '',
         customer_address: profile?.address ? `${profile.address}, ${profile.city || ''}, ${profile.state || ''} - ${profile.pincode || ''}` : '',
         order_number: orderNumber,
-        total_amount: total,
-        status: 'payment_pending',
+        total_amount: finalTotal,
+        status: 'placed',
+        invoice_number: buildInvoiceNumber(orderNumber),
+        coupon_code: couponData?.code || null,
+        discount_amount: discount,
         notes: `UPI Payment to ${UPI_ID}`,
       }).select().single();
 
@@ -102,6 +114,16 @@ const Payment = () => {
         console.error('Email notification failed:', emailErr);
       }
 
+      // Open WhatsApp for "order placed" notification
+      if (profile?.phone) {
+        openWhatsApp(profile.phone, 'placed', {
+          orderNumber,
+          customerName: profile.full_name || 'Customer',
+          total: finalTotal,
+        });
+      }
+
+      sessionStorage.removeItem('mittika_coupon');
       clearCart();
       setOrderPlaced(true);
       toast.success('Order placed successfully! 🎉');
