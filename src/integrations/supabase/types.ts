@@ -35,6 +35,80 @@ export type Database = {
         }
         Relationships: []
       }
+      coupon_sends: {
+        Row: {
+          coupon_id: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          sent_at: string
+          user_id: string | null
+        }
+        Insert: {
+          coupon_id?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          sent_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          coupon_id?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          sent_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_sends_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coupons: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          description: string | null
+          discount_type: string
+          discount_value: number
+          expires_at: string | null
+          id: string
+          min_order: number
+          product_id: string | null
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          description?: string | null
+          discount_type: string
+          discount_value: number
+          expires_at?: string | null
+          id?: string
+          min_order?: number
+          product_id?: string | null
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string | null
+          id?: string
+          min_order?: number
+          product_id?: string | null
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -78,41 +152,71 @@ export type Database = {
       }
       orders: {
         Row: {
+          accepted_at: string | null
+          coupon_code: string | null
+          courier: string | null
           created_at: string
           customer_address: string
+          customer_email: string | null
           customer_name: string
           customer_phone: string
+          delivered_at: string | null
+          discount_amount: number | null
           id: string
+          invoice_number: string | null
           notes: string | null
           order_number: string
+          packed_at: string | null
+          shipped_at: string | null
           status: string
           total_amount: number
+          tracking_number: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          accepted_at?: string | null
+          coupon_code?: string | null
+          courier?: string | null
           created_at?: string
           customer_address: string
+          customer_email?: string | null
           customer_name: string
           customer_phone: string
+          delivered_at?: string | null
+          discount_amount?: number | null
           id?: string
+          invoice_number?: string | null
           notes?: string | null
           order_number: string
+          packed_at?: string | null
+          shipped_at?: string | null
           status?: string
           total_amount?: number
+          tracking_number?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          accepted_at?: string | null
+          coupon_code?: string | null
+          courier?: string | null
           created_at?: string
           customer_address?: string
+          customer_email?: string | null
           customer_name?: string
           customer_phone?: string
+          delivered_at?: string | null
+          discount_amount?: number | null
           id?: string
+          invoice_number?: string | null
           notes?: string | null
           order_number?: string
+          packed_at?: string | null
+          shipped_at?: string | null
           status?: string
           total_amount?: number
+          tracking_number?: string | null
           updated_at?: string
           user_id?: string
         }
