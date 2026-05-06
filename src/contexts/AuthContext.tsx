@@ -21,6 +21,8 @@
    loading: boolean;
    signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
    signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  verifyEmailOtp: (email: string, token: string) => Promise<{ error: Error | null }>;
+  resendSignupOtp: (email: string) => Promise<{ error: Error | null }>;
    signOut: () => Promise<void>;
    updateProfile: (data: Partial<Profile>) => Promise<{ error: Error | null }>;
  }
@@ -86,6 +88,16 @@
      const { error } = await supabase.auth.signInWithPassword({ email, password });
      return { error: error ? new Error(error.message) : null };
    };
+
+  const verifyEmailOtp = async (email: string, token: string) => {
+    const { error } = await supabase.auth.verifyOtp({ email, token, type: 'signup' });
+    return { error: error ? new Error(error.message) : null };
+  };
+
+  const resendSignupOtp = async (email: string) => {
+    const { error } = await supabase.auth.resend({ email, type: 'signup' });
+    return { error: error ? new Error(error.message) : null };
+  };
  
    const signOut = async () => {
      await supabase.auth.signOut();
@@ -108,7 +120,7 @@
    };
  
    return (
-     <AuthContext.Provider value={{ user, session, profile, loading, signUp, signIn, signOut, updateProfile }}>
+    <AuthContext.Provider value={{ user, session, profile, loading, signUp, signIn, verifyEmailOtp, resendSignupOtp, signOut, updateProfile }}>
        {children}
      </AuthContext.Provider>
    );
