@@ -240,9 +240,15 @@ const Payment = () => {
                       <span className="font-semibold text-foreground">₹{(item.quantityGrams * item.pricePerGram).toFixed(2)}</span>
                     </div>
                   ))}
+                  {discount > 0 && (
+                    <div className="flex justify-between text-sm text-primary">
+                      <span>Coupon ({couponData?.code})</span>
+                      <span>- ₹{discount.toFixed(2)}</span>
+                    </div>
+                  )}
                   <div className="border-t border-border pt-3 flex justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span className="text-primary">₹{total.toFixed(2)}</span>
+                    <span className="text-primary">₹{finalTotal.toFixed(2)}</span>
                   </div>
                 </div>
               )}
@@ -276,7 +282,7 @@ const Payment = () => {
               disabled={isSubmitting || items.length === 0}
               className="w-full bg-primary text-primary-foreground py-4 rounded-xl font-semibold text-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
             >
-              {isSubmitting ? 'Placing Order...' : `Confirm Order — ₹${total.toFixed(2)}`}
+              {isSubmitting ? 'Placing Order...' : `Confirm Order — ₹${finalTotal.toFixed(2)}`}
             </button>
 
             {!user && (
