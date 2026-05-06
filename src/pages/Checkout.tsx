@@ -8,6 +8,8 @@ import Layout from '@/components/layout/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { Tag, X } from 'lucide-react';
 
 const schema = z.object({
   full_name: z.string().trim().min(2, 'Full name is required').max(100),
@@ -26,6 +28,9 @@ const Checkout = () => {
   const { items, getTotal } = useCart();
   const [saving, setSaving] = useState(false);
   const [sameAddress, setSameAddress] = useState(false);
+  const [couponInput, setCouponInput] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
+  const [validating, setValidating] = useState(false);
   const [form, setForm] = useState({
     full_name: '',
     email: '',
@@ -102,7 +107,32 @@ const Checkout = () => {
     navigate('/payment');
   };
 
-  const total = getTotal();
+  const subtotal = getTotal();
+  const total = Math.max(0, subtotal - (appliedCoupon?.discount || 0));
+
+  const applyCoupon = async () => {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) return;
+    setValidating(true);
+    const { data, error } = await supabase.from('coupons').select('*').eq('code', code).eq('active', true).maybeSingle();
+    setValidating(false);
+    if (error || !data) { toast.error('Invalid or inactive coupon'); return; }
+    if (data.expires_at && new Date(data.expires_at) < new Date()) { toast.error('Coupon has expired'); return; }
+    if (subtotal < Number(data.min_order || 0)) { toast.error(`Minimum order ₹${data.min_order} required`); return; }
+    let discount = 0;
+    if (data.discount_type === 'percent') discount = (subtotal * Number(data.discount_value)) / 100;
+    else discount = Number(data.discount_value);
+    discount = Math.min(discount, subtotal);
+    setAppliedCoupon({ code: data.code, discount });
+    sessionStorage.setItem('mittika_coupon', JSON.stringify({ code: data.code, discount }));
+    toast.success(`Coupon applied! You saved ₹${discount.toFixed(2)}`);
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponInput('');
+    sessionStorage.removeItem('mittika_coupon');
+  };
 
   const input = "w-full px-4 py-3 rounded-lg bg-background border border-input focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors";
 
@@ -212,9 +242,26 @@ const Checkout = () => {
                 </div>
               ))}
             </div>
-            <div className="border-t border-border pt-3 flex justify-between font-bold">
-              <span>Total</span>
-              <span className="text-primary">₹{total.toFixed(2)}</span>
+
+            {/* Coupon */}
+            <div className="border-t border-border pt-3">
+              {appliedCoupon ? (
+                <div className="flex items-center justify-between bg-primary/10 px-3 py-2 rounded-lg">
+                  <span className="text-sm font-medium text-primary flex items-center gap-2"><Tag size={14}/> {appliedCoupon.code}</span>
+                  <button onClick={removeCoupon} className="text-muted-foreground hover:text-destructive"><X size={14}/></button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input value={couponInput} onChange={e => setCouponInput(e.target.value.toUpperCase())} placeholder="Coupon code" className="flex-1 px-3 py-2 text-sm rounded-lg border border-input bg-background focus:border-primary outline-none uppercase" />
+                  <button type="button" onClick={applyCoupon} disabled={validating || !couponInput.trim()} className="px-3 py-2 text-sm bg-secondary text-secondary-foreground rounded-lg font-medium hover:bg-secondary/80 disabled:opacity-50">Apply</button>
+                </div>
+              )}
+            </div>
+
+            <div className="border-t border-border pt-3 space-y-1">
+              <div className="flex justify-between text-sm"><span>Subtotal</span><span>₹{subtotal.toFixed(2)}</span></div>
+              {appliedCoupon && <div className="flex justify-between text-sm text-primary"><span>Discount</span><span>- ₹{appliedCoupon.discount.toFixed(2)}</span></div>}
+              <div className="flex justify-between font-bold pt-1"><span>Total</span><span className="text-primary">₹{total.toFixed(2)}</span></div>
             </div>
             <div className="flex items-start gap-2 text-xs text-muted-foreground pt-2">
               <ShieldCheck size={16} className="text-primary flex-shrink-0 mt-0.5" />
