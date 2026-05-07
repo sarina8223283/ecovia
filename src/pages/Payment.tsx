@@ -127,7 +127,7 @@ const Payment = () => {
       clearCart();
       setOrderPlaced(true);
       toast.success('Order placed successfully! 🎉');
-      setTimeout(() => navigate('/account?tab=orders'), 1800);
+      setTimeout(() => navigate(`/order/${orderNumber}`), 1500);
     } catch (err: any) {
       toast.error(err.message || 'Failed to place order');
     } finally {
