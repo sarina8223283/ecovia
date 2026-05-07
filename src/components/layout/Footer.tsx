@@ -33,6 +33,9 @@ const Footer = () => {
               <li><Link to="/products" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Products</Link></li>
               <li><Link to="/about" className="text-sm opacity-80 hover:opacity-100 transition-opacity">About Us</Link></li>
               <li><Link to="/contact" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Contact</Link></li>
+              <li><Link to="/privacy-policy" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Terms of Service</Link></li>
+              <li><Link to="/data-deletion" className="text-sm opacity-80 hover:opacity-100 transition-opacity">Data Deletion</Link></li>
             </ul>
           </div>
 

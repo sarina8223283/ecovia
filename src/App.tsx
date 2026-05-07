@@ -25,6 +25,10 @@ import SarinaAdmin from "./pages/SarinaAdmin";
 import AdminDashboard from "./pages/AdminDashboard";
 import Payment from "./pages/Payment";
 import Checkout from "./pages/Checkout";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Terms from "./pages/Terms";
+import DataDeletion from "./pages/DataDeletion";
+import OrderTracking from "./pages/OrderTracking";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +60,10 @@ const App = () => (
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/payment" element={<Payment />} />
                 <Route path="/checkout" element={<Checkout />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/data-deletion" element={<DataDeletion />} />
+                <Route path="/order/:orderNumber" element={<OrderTracking />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
