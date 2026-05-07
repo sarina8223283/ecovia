@@ -13,7 +13,68 @@ serve(async (req) => {
   }
 
   try {
-    const { orderNumber, customerName, customerPhone, customerEmail, totalAmount, items } = await req.json();
+    const body = await req.json();
+    const action = body.action || 'admin_notify';
+
+    // Customer-facing invoice email
+    if (action === 'send_invoice') {
+      const { to, orderNumber, invoiceNumber, customerName, customerPhone, customerAddress, items, subtotal, discount, total, couponCode } = body;
+      if (!to || !orderNumber) {
+        return new Response(JSON.stringify({ error: 'Missing recipient or order' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+      const itemRows = (items || []).map((it: any) =>
+        `<tr><td style="padding:8px;border-bottom:1px solid #eee">${it.product_name}</td><td style="padding:8px;border-bottom:1px solid #eee">${it.quantity_grams >= 1000 ? `${it.quantity_grams/1000} Kg` : `${it.quantity_grams} g`}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right">₹${Number(it.total_price).toFixed(2)}</td></tr>`
+      ).join('');
+      const html = `
+        <div style="font-family:Georgia,serif;max-width:640px;margin:0 auto;padding:24px;background:#fff;color:#333">
+          <div style="background:#4d7a5e;color:#fff;padding:20px;border-radius:12px 12px 0 0">
+            <h1 style="margin:0;font-size:22px">Mittika by Ecovia Enterprises</h1>
+            <p style="margin:4px 0 0;opacity:.9;font-size:13px">Tax Invoice — ${invoiceNumber}</p>
+          </div>
+          <div style="border:1px solid #eee;border-top:0;padding:20px;border-radius:0 0 12px 12px">
+            <p>Dear <strong>${customerName}</strong>,</p>
+            <p>Thank you for your order <strong>${orderNumber}</strong>. Here is your invoice:</p>
+            <table style="width:100%;border-collapse:collapse;margin:16px 0">
+              <thead><tr style="background:#f4f7f5"><th style="text-align:left;padding:8px">Item</th><th style="text-align:left;padding:8px">Qty</th><th style="text-align:right;padding:8px">Total</th></tr></thead>
+              <tbody>${itemRows}</tbody>
+            </table>
+            <div style="text-align:right;font-size:14px">
+              <p>Subtotal: ₹${Number(subtotal).toFixed(2)}</p>
+              ${discount > 0 ? `<p>Discount${couponCode ? ` (${couponCode})` : ''}: -₹${Number(discount).toFixed(2)}</p>` : ''}
+              <p style="font-size:18px;font-weight:bold;color:#4d7a5e">Total: ₹${Number(total).toFixed(2)}</p>
+            </div>
+            <hr style="border:none;border-top:1px solid #eee;margin:20px 0">
+            <p style="font-size:13px;color:#666"><strong>Ship To:</strong><br>${customerAddress}<br>${customerPhone}</p>
+            <p style="font-size:12px;color:#999;margin-top:24px">Mittika by Ecovia Enterprises OPC Pvt. Ltd. • ecovia.co.in • info@ecovia.co.in<br>Note: 100% natural herbal powders. No returns once dispatched (per our <a href="https://ecovia.co.in/terms">Terms</a>).</p>
+          </div>
+        </div>`;
+
+      // Try sending via Resend if configured
+      const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+      if (RESEND_API_KEY) {
+        const r = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            from: 'Mittika <invoice@ecovia.co.in>',
+            to: [to],
+            bcc: [ADMIN_EMAIL],
+            subject: `Your Mittika Invoice ${invoiceNumber}`,
+            html,
+          }),
+        });
+        const out = await r.json();
+        return new Response(JSON.stringify({ success: r.ok, provider: 'resend', result: out }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      // Fallback: log only
+      console.log(`📧 Invoice email queued (no provider) to ${to} for ${orderNumber}`);
+      return new Response(JSON.stringify({ success: true, queued: true, message: 'Invoice prepared. Configure email provider to enable delivery.' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const { orderNumber, customerName, customerPhone, customerEmail, totalAmount, items } = body;
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
