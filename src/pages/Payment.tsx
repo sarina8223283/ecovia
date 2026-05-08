@@ -29,18 +29,28 @@ const Payment = () => {
   const discount = Number(couponData?.discount || 0);
   const finalTotal = Math.max(0, total - discount);
 
-  // Guard: must be signed in AND have completed checkout details
+  // Read guest details (or signed-in profile)
+  const guest = (() => {
+    try { const raw = sessionStorage.getItem('mittika_guest_details'); return raw ? JSON.parse(raw) : null; } catch { return null; }
+  })();
+  const customer = {
+    name: profile?.full_name || guest?.full_name || '',
+    email: user?.email || guest?.email || '',
+    phone: profile?.phone || guest?.phone || '',
+    address: profile?.address || guest?.address || '',
+    city: profile?.city || guest?.city || '',
+    state: profile?.state || guest?.state || '',
+    pincode: profile?.pincode || guest?.pincode || '',
+  };
+
+  // Guard: must have completed checkout details (guest or signed-in)
   useEffect(() => {
-    if (!user) {
-      navigate('/auth?redirect=/checkout');
-      return;
-    }
     if (items.length === 0) return;
-    const hasDetails = profile?.full_name && profile?.phone && profile?.address && profile?.city && profile?.state && profile?.pincode;
+    const hasDetails = customer.name && customer.phone && customer.address && customer.city && customer.state && customer.pincode;
     if (!hasDetails) {
       navigate('/checkout');
     }
-  }, [user, profile, items.length, navigate]);
+  }, [items.length, navigate, customer.name, customer.phone, customer.address, customer.pincode]);
 
   const copyUPI = () => {
     navigator.clipboard.writeText(UPI_ID);
@@ -50,11 +60,6 @@ const Payment = () => {
   };
 
   const handleConfirmPayment = async () => {
-    if (!user) {
-      toast.error('Please sign in to place an order');
-      navigate('/auth');
-      return;
-    }
     if (items.length === 0) {
       toast.error('Your cart is empty');
       return;
@@ -64,12 +69,15 @@ const Payment = () => {
     try {
       // Create order
       const orderNumber = `MTK-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(Math.random()*10000).toString().padStart(4,'0')}`;
+      const guestToken = user ? null : crypto.randomUUID();
       const { data: order, error: orderError } = await supabase.from('orders').insert({
-        user_id: user.id,
-        customer_name: profile?.full_name || 'Customer',
-        customer_phone: profile?.phone || '',
-        customer_email: user.email || '',
-        customer_address: profile?.address ? `${profile.address}, ${profile.city || ''}, ${profile.state || ''} - ${profile.pincode || ''}` : '',
+        user_id: user?.id || null,
+        guest_email: user ? null : customer.email,
+        guest_token: guestToken,
+        customer_name: customer.name || 'Customer',
+        customer_phone: customer.phone || '',
+        customer_email: customer.email || '',
+        customer_address: customer.address ? `${customer.address}, ${customer.city || ''}, ${customer.state || ''} - ${customer.pincode || ''}` : '',
         order_number: orderNumber,
         total_amount: finalTotal,
         status: 'placed',
@@ -99,9 +107,9 @@ const Payment = () => {
         await supabase.functions.invoke('order-notification', {
           body: {
             orderNumber,
-            customerName: profile?.full_name || 'Customer',
-            customerPhone: profile?.phone || '',
-            customerEmail: user.email || '',
+            customerName: customer.name || 'Customer',
+            customerPhone: customer.phone || '',
+            customerEmail: customer.email || '',
             totalAmount: total,
             items: items.map(i => ({
               name: i.productName,
@@ -115,19 +123,20 @@ const Payment = () => {
       }
 
       // Open WhatsApp for "order placed" notification
-      if (profile?.phone) {
-        openWhatsApp(profile.phone, 'placed', {
+      if (customer.phone) {
+        openWhatsApp(customer.phone, 'placed', {
           orderNumber,
-          customerName: profile.full_name || 'Customer',
+          customerName: customer.name || 'Customer',
           total: finalTotal,
         });
       }
 
       sessionStorage.removeItem('mittika_coupon');
+      sessionStorage.removeItem('mittika_guest_details');
       clearCart();
       setOrderPlaced(true);
       toast.success('Order placed successfully! 🎉');
-      setTimeout(() => navigate(`/order/${orderNumber}`), 1500);
+      setTimeout(() => navigate(`/order/${orderNumber}${guestToken ? `?token=${guestToken}` : ''}`), 2500);
     } catch (err: any) {
       toast.error(err.message || 'Failed to place order');
     } finally {
@@ -152,6 +161,13 @@ const Payment = () => {
             <p className="text-sm text-muted-foreground mb-8">
               Our team will verify your payment and process your order immediately. You'll receive confirmation via WhatsApp.
             </p>
+            {!user && (
+              <div className="mb-6 p-4 rounded-xl bg-primary/10 border border-primary/20 text-sm text-foreground">
+                <strong>Want order tracking?</strong>{' '}
+                <button onClick={() => navigate('/auth')} className="text-primary font-semibold hover:underline">Sign up or log in</button>{' '}
+                to view live order status, download invoices and track delivery.
+              </div>
+            )}
             <button
               onClick={() => navigate('/products')}
               className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
