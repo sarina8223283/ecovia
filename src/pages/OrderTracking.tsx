@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,6 +11,8 @@ import { downloadInvoice, buildInvoiceNumber } from '@/lib/invoice';
 
 const OrderTracking = () => {
   const { orderNumber } = useParams();
+  const [searchParams] = useSearchParams();
+  const guestToken = searchParams.get('token');
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [order, setOrder] = useState<any>(null);
@@ -18,20 +20,25 @@ const OrderTracking = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!authLoading && !user) navigate('/auth');
-  }, [user, authLoading, navigate]);
+    if (authLoading) return;
+    if (!user && !guestToken) navigate('/auth');
+  }, [user, authLoading, guestToken, navigate]);
 
   useEffect(() => {
-    if (!user || !orderNumber) return;
+    if (!orderNumber) return;
+    if (!user && !guestToken) return;
     (async () => {
-      const { data: o } = await supabase.from('orders').select('*').eq('order_number', orderNumber).eq('user_id', user.id).maybeSingle();
+      let q = supabase.from('orders').select('*').eq('order_number', orderNumber);
+      if (user) q = q.eq('user_id', user.id);
+      else if (guestToken) q = q.eq('guest_token', guestToken);
+      const { data: o } = await q.maybeSingle();
       if (!o) { setLoading(false); return; }
       setOrder(o);
       const { data: it } = await supabase.from('order_items').select('*').eq('order_id', o.id);
       setItems(it || []);
       setLoading(false);
     })();
-  }, [user, orderNumber]);
+  }, [user, orderNumber, guestToken]);
 
   const sendInvoiceEmail = async () => {
     if (!order) return;
