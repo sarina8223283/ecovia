@@ -109,6 +109,33 @@ export type Database = {
         }
         Relationships: []
       }
+      meta_data_deletion_requests: {
+        Row: {
+          confirmation_code: string
+          created_at: string
+          id: string
+          signed_request: string | null
+          status: string
+          user_id_meta: string | null
+        }
+        Insert: {
+          confirmation_code: string
+          created_at?: string
+          id?: string
+          signed_request?: string | null
+          status?: string
+          user_id_meta?: string | null
+        }
+        Update: {
+          confirmation_code?: string
+          created_at?: string
+          id?: string
+          signed_request?: string | null
+          status?: string
+          user_id_meta?: string | null
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -162,6 +189,8 @@ export type Database = {
           customer_phone: string
           delivered_at: string | null
           discount_amount: number | null
+          guest_email: string | null
+          guest_token: string | null
           id: string
           invoice_number: string | null
           notes: string | null
@@ -172,7 +201,7 @@ export type Database = {
           total_amount: number
           tracking_number: string | null
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           accepted_at?: string | null
@@ -185,6 +214,8 @@ export type Database = {
           customer_phone: string
           delivered_at?: string | null
           discount_amount?: number | null
+          guest_email?: string | null
+          guest_token?: string | null
           id?: string
           invoice_number?: string | null
           notes?: string | null
@@ -195,7 +226,7 @@ export type Database = {
           total_amount?: number
           tracking_number?: string | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           accepted_at?: string | null
@@ -208,6 +239,8 @@ export type Database = {
           customer_phone?: string
           delivered_at?: string | null
           discount_amount?: number | null
+          guest_email?: string | null
+          guest_token?: string | null
           id?: string
           invoice_number?: string | null
           notes?: string | null
@@ -218,7 +251,7 @@ export type Database = {
           total_amount?: number
           tracking_number?: string | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -246,6 +279,39 @@ export type Database = {
           referrer?: string | null
           referrer_source?: string | null
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      pending_signups: {
+        Row: {
+          attempts: number
+          created_at: string
+          email: string
+          expires_at: string
+          full_name: string
+          id: string
+          otp_code: string
+          password: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          email: string
+          expires_at: string
+          full_name: string
+          id?: string
+          otp_code: string
+          password: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          email?: string
+          expires_at?: string
+          full_name?: string
+          id?: string
+          otp_code?: string
+          password?: string
         }
         Relationships: []
       }
