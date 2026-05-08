@@ -9,9 +9,13 @@ const PrivacyPolicy = () => (
       <link rel="canonical" href="https://ecovia.co.in/privacy-policy" />
     </Helmet>
     <section className="py-12 bg-hero-pattern min-h-[80vh]">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl prose prose-emerald dark:prose-invert">
-        <h1 className="font-serif text-3xl sm:text-4xl font-bold mb-4">Privacy Policy</h1>
-        <p className="text-sm text-muted-foreground">Last updated: May 7, 2026</p>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
+        <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-2xl p-8 mb-6 shadow-elevated">
+          <p className="text-xs uppercase tracking-widest opacity-80">Ecovia Enterprises • Brand: Mittika</p>
+          <h1 className="font-serif text-3xl sm:text-4xl font-bold mt-1">Privacy Policy</h1>
+          <p className="text-sm opacity-90 mt-2">Last updated: May 7, 2026</p>
+        </div>
+        <div className="bg-card rounded-2xl shadow-elevated p-8 prose prose-emerald dark:prose-invert max-w-none">
 
         <p>Mittika is a brand operated by <strong>Ecovia Enterprises OPC Pvt. Ltd.</strong> ("Mittika", "we", "us"). This Privacy Policy explains how we collect, use, store, and protect your information when you use <a href="https://ecovia.co.in">ecovia.co.in</a> and our official Facebook and Instagram presence.</p>
 
