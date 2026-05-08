@@ -77,6 +77,7 @@ const PrivacyPolicy = () => (
 
         <h2>10. Changes & Contact</h2>
         <p>We may update this policy. The "Last updated" date will reflect changes. Questions: <a href="mailto:info@ecovia.co.in">info@ecovia.co.in</a> or +91 87588 08684.</p>
+        </div>
       </div>
     </section>
   </Layout>
