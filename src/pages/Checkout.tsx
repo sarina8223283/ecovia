@@ -19,7 +19,7 @@ const schema = z.object({
   city: z.string().trim().min(1, 'City is required').max(100),
   state: z.string().trim().min(1, 'State is required').max(100),
   pincode: z.string().trim().min(4, 'Pincode is required').max(10),
-  permanent_address: z.string().trim().min(5, 'Permanent address is required').max(500),
+  permanent_address: z.string().trim().max(500).optional().or(z.literal('')),
 });
 
 const Checkout = () => {
@@ -27,7 +27,7 @@ const Checkout = () => {
   const { user, profile, loading, updateProfile } = useAuth();
   const { items, getTotal } = useCart();
   const [saving, setSaving] = useState(false);
-  const [sameAddress, setSameAddress] = useState(false);
+  const [pincodeLoading, setPincodeLoading] = useState(false);
   const [couponInput, setCouponInput] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
   const [validating, setValidating] = useState(false);
@@ -41,12 +41,6 @@ const Checkout = () => {
     pincode: '',
     permanent_address: '',
   });
-
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth?redirect=/checkout');
-    }
-  }, [user, loading, navigate]);
 
   useEffect(() => {
     if (profile || user) {
@@ -64,11 +58,26 @@ const Checkout = () => {
     }
   }, [profile, user]);
 
-  useEffect(() => {
-    if (sameAddress) {
-      setForm(prev => ({ ...prev, permanent_address: prev.address }));
+  // Pincode auto-fetch (India Post free API)
+  const handlePincodeChange = async (value: string) => {
+    const v = value.replace(/\D/g, '').slice(0, 6);
+    setForm(p => ({ ...p, pincode: v }));
+    if (v.length === 6) {
+      setPincodeLoading(true);
+      try {
+        const res = await fetch(`https://api.postalpincode.in/pincode/${v}`);
+        const data = await res.json();
+        const po = data?.[0]?.PostOffice?.[0];
+        if (po) {
+          setForm(p => ({ ...p, city: po.District || p.city, state: po.State || p.state }));
+          toast.success(`${po.District}, ${po.State}`);
+        } else {
+          toast.error('Pincode not found — please enter city/state manually.');
+        }
+      } catch { /* ignore */ }
+      setPincodeLoading(false);
     }
-  }, [sameAddress, form.address]);
+  };
 
   if (!loading && items.length === 0) {
     return (
@@ -90,20 +99,20 @@ const Checkout = () => {
       return;
     }
     setSaving(true);
-    const { error } = await updateProfile({
-      full_name: form.full_name,
-      phone: form.phone,
-      address: form.address,
-      city: form.city,
-      state: form.state,
-      pincode: form.pincode,
-      permanent_address: form.permanent_address,
-    } as any);
-    setSaving(false);
-    if (error) {
-      toast.error('Could not save your details. Please try again.');
-      return;
+    // Save guest details to sessionStorage so Payment can read them
+    sessionStorage.setItem('mittika_guest_details', JSON.stringify(form));
+    if (user) {
+      await updateProfile({
+        full_name: form.full_name,
+        phone: form.phone,
+        address: form.address,
+        city: form.city,
+        state: form.state,
+        pincode: form.pincode,
+        permanent_address: form.permanent_address || form.address,
+      } as any);
     }
+    setSaving(false);
     navigate('/payment');
   };
 
@@ -155,7 +164,12 @@ const Checkout = () => {
             animate={{ opacity: 1, y: 0 }}
             className="lg:col-span-2 bg-card rounded-2xl shadow-elevated p-6 sm:p-8 space-y-5"
           >
-            <h2 className="font-serif text-xl font-bold mb-4">Customer Details</h2>
+            <h2 className="font-serif text-xl font-bold mb-1">Customer Details</h2>
+            {!user && (
+              <p className="text-xs text-muted-foreground mb-3">
+                You're checking out as a guest. <button type="button" onClick={() => navigate('/auth?redirect=/checkout')} className="text-primary font-medium hover:underline">Sign in</button> for order tracking & history (optional).
+              </p>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="sm:col-span-2">
@@ -173,43 +187,31 @@ const Checkout = () => {
             </div>
 
             <div className="pt-4 border-t border-border">
-              <h3 className="font-medium text-foreground mb-3">Residential / Shipping Address</h3>
+              <h3 className="font-medium text-foreground mb-3">Shipping Address</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium mb-2">Address *</label>
-                  <textarea required rows={2} value={form.address} onChange={e => setForm(p => ({ ...p, address: e.target.value }))} className={`${input} resize-none`} />
+                <div>
+                  <label className="block text-sm font-medium mb-2">Pincode *</label>
+                  <input type="text" required inputMode="numeric" maxLength={6} value={form.pincode}
+                    onChange={e => handlePincodeChange(e.target.value)}
+                    placeholder="6-digit pincode"
+                    className={input} />
+                  {pincodeLoading && <p className="text-xs text-muted-foreground mt-1">Looking up location…</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">City *</label>
                   <input type="text" required value={form.city} onChange={e => setForm(p => ({ ...p, city: e.target.value }))} className={input} />
                 </div>
-                <div>
+                <div className="sm:col-span-2">
                   <label className="block text-sm font-medium mb-2">State *</label>
                   <input type="text" required value={form.state} onChange={e => setForm(p => ({ ...p, state: e.target.value }))} className={input} />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Pincode *</label>
-                  <input type="text" required value={form.pincode} onChange={e => setForm(p => ({ ...p, pincode: e.target.value }))} className={input} />
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium mb-2">Full Address *</label>
+                  <textarea required rows={2} placeholder="House / Flat / Street / Landmark"
+                    value={form.address} onChange={e => setForm(p => ({ ...p, address: e.target.value }))}
+                    className={`${input} resize-none`} />
                 </div>
               </div>
-            </div>
-
-            <div className="pt-4 border-t border-border">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-medium text-foreground">Permanent Address</h3>
-                <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
-                  <input type="checkbox" checked={sameAddress} onChange={e => setSameAddress(e.target.checked)} />
-                  Same as residential
-                </label>
-              </div>
-              <textarea
-                required
-                rows={2}
-                disabled={sameAddress}
-                value={form.permanent_address}
-                onChange={e => setForm(p => ({ ...p, permanent_address: e.target.value }))}
-                className={`${input} resize-none ${sameAddress ? 'opacity-60' : ''}`}
-              />
             </div>
 
             <button
