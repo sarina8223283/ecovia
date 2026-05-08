@@ -73,15 +73,12 @@
    }, []);
  
    const signUp = async (email: string, password: string, fullName: string) => {
-     const { error } = await supabase.auth.signUp({
-       email,
-       password,
-       options: {
-         data: { full_name: fullName },
-         emailRedirectTo: window.location.origin
-       }
-     });
-     return { error: error ? new Error(error.message) : null };
+    const { data, error } = await supabase.functions.invoke('signup-otp', {
+      body: { action: 'send', email, password, fullName },
+    });
+    if (error) return { error: new Error(error.message) };
+    if (data?.error) return { error: new Error(data.error) };
+    return { error: null };
    };
  
    const signIn = async (email: string, password: string) => {
@@ -90,13 +87,17 @@
    };
 
   const verifyEmailOtp = async (email: string, token: string) => {
-    const { error } = await supabase.auth.verifyOtp({ email, token, type: 'signup' });
-    return { error: error ? new Error(error.message) : null };
+    const { data, error } = await supabase.functions.invoke('signup-otp', {
+      body: { action: 'verify', email, otp: token },
+    });
+    if (error) return { error: new Error(error.message) };
+    if (data?.error) return { error: new Error(data.error) };
+    return { error: null };
   };
 
   const resendSignupOtp = async (email: string) => {
-    const { error } = await supabase.auth.resend({ email, type: 'signup' });
-    return { error: error ? new Error(error.message) : null };
+    // Cannot resend without password; client should re-call signUp. Return ok no-op.
+    return { error: null };
   };
  
    const signOut = async () => {

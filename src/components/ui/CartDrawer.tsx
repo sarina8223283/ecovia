@@ -14,11 +14,7 @@ import cartIcon from '@/assets/icons/cart-icon.png';
   const [isOpen, setIsOpen] = useState(false);
  
    const handleCheckout = () => {
-     if (!user) {
-       navigate('/auth?redirect=/checkout');
-     } else {
-       navigate('/checkout');
-     }
+     navigate('/checkout');
      setIsOpen(false);
    };
  

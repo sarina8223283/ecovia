@@ -10,7 +10,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { signIn, signUp, verifyEmailOtp, resendSignupOtp, user } = useAuth();
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/checkout';
+  const redirectTo = searchParams.get('redirect') || '/account';
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -46,15 +46,20 @@ const Auth = () => {
     if (otp.length < 6) { toast.error('Enter the 6-digit code from your email'); return; }
     setLoading(true);
     const { error } = await verifyEmailOtp(form.email, otp);
+    if (error) { setLoading(false); toast.error(error.message); return; }
+    // Auto-login with the password the user just set
+    const { error: signInError } = await signIn(form.email, form.password);
     setLoading(false);
-    if (error) toast.error(error.message);
-    else { toast.success('Email verified! Welcome to Mittika 🌿'); navigate(redirectTo); }
+    if (signInError) { toast.error('Verified, but sign-in failed. Please log in.'); return; }
+    toast.success('Email verified! Welcome to Mittika 🌿');
+    navigate(redirectTo);
   };
 
   const handleResend = async () => {
-    const { error } = await resendSignupOtp(form.email);
+    if (!form.password) { toast.error('Please go back and re-enter your password'); return; }
+    const { error } = await signUp(form.email, form.password, form.fullName);
     if (error) toast.error(error.message);
-    else toast.success('A new OTP has been sent.');
+    else toast.success('A new OTP has been sent to your email.');
   };
 
   if (otpStep) {

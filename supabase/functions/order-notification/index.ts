@@ -6,6 +6,21 @@ const corsHeaders = {
 };
 
 const ADMIN_EMAIL = 'info@ecovia.co.in';
+const FROM = 'Ecovia Enterprises <noreply@ecovia.co.in>';
+const SIGNATURE = `
+  <hr style="border:none;border-top:1px solid #eee;margin:20px 0">
+  <p style="font-size:12px;color:#999;margin:0">Warm regards,<br><strong>Ecovia Enterprises</strong><br>Brand: Mittika — Pure Herbal Powders<br>info@ecovia.co.in • +91 87588 08684 • <a href="https://ecovia.co.in">ecovia.co.in</a></p>`;
+
+async function sendViaResend(to: string[], subject: string, html: string, bcc?: string[]) {
+  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+  if (!RESEND_API_KEY) return { ok: false, error: 'no_resend_key' };
+  const r = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: FROM, to, bcc, subject, html, reply_to: 'info@ecovia.co.in' }),
+  });
+  return { ok: r.ok, result: await r.json().catch(() => ({})) };
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -43,47 +58,16 @@ serve(async (req) => {
               ${discount > 0 ? `<p>Discount${couponCode ? ` (${couponCode})` : ''}: -₹${Number(discount).toFixed(2)}</p>` : ''}
               <p style="font-size:18px;font-weight:bold;color:#4d7a5e">Total: ₹${Number(total).toFixed(2)}</p>
             </div>
-            <hr style="border:none;border-top:1px solid #eee;margin:20px 0">
             <p style="font-size:13px;color:#666"><strong>Ship To:</strong><br>${customerAddress}<br>${customerPhone}</p>
-            <p style="font-size:12px;color:#999;margin-top:24px">Mittika by Ecovia Enterprises OPC Pvt. Ltd. • ecovia.co.in • info@ecovia.co.in<br>Note: 100% natural herbal powders. No returns once dispatched (per our <a href="https://ecovia.co.in/terms">Terms</a>).</p>
+            ${SIGNATURE}
           </div>
         </div>`;
 
-      // Try sending via Resend if configured
-      const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-      if (RESEND_API_KEY) {
-        const r = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            from: 'Mittika <invoice@ecovia.co.in>',
-            to: [to],
-            bcc: [ADMIN_EMAIL],
-            subject: `Your Mittika Invoice ${invoiceNumber}`,
-            html,
-          }),
-        });
-        const out = await r.json();
-        return new Response(JSON.stringify({ success: r.ok, provider: 'resend', result: out }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      }
-
-      // Fallback: log only
-      console.log(`📧 Invoice email queued (no provider) to ${to} for ${orderNumber}`);
-      return new Response(JSON.stringify({ success: true, queued: true, message: 'Invoice prepared. Configure email provider to enable delivery.' }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      const out = await sendViaResend([to], `Your Mittika Invoice ${invoiceNumber}`, html, [ADMIN_EMAIL]);
+      return new Response(JSON.stringify({ success: out.ok, provider: 'resend', result: out.result }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     const { orderNumber, customerName, customerPhone, customerEmail, totalAmount, items } = body;
-
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) {
-      console.error('LOVABLE_API_KEY not configured');
-      return new Response(JSON.stringify({ error: 'Email service not configured' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
 
     // Build email content
     const itemsList = items.map((i: any) => `• ${i.name} — ${i.quantity} — ₹${i.price}`).join('\n');
@@ -112,9 +96,7 @@ serve(async (req) => {
           <p style="margin: 5px 0 0; font-size: 14px; opacity: 0.9;">UPI Payment Pending — sarina8223283@ptyes</p>
         </div>
         
-        <p style="color: #999; font-size: 12px; text-align: center; margin-top: 20px;">
-          This is an automated notification from Mittika Order System.
-        </p>
+        ${SIGNATURE}
       </div>
     `;
 
@@ -126,10 +108,18 @@ serve(async (req) => {
     // Send WhatsApp notification to admin
     const whatsappMessage = `🌿 *NEW MITTIKA ORDER*\n\nOrder: ${orderNumber}\nCustomer: ${customerName}\nPhone: ${customerPhone}\nEmail: ${customerEmail}\n\n*Items:*\n${itemsList}\n\n*Total: ₹${Number(totalAmount).toFixed(2)}*\n\nPayment: UPI (sarina8223283@ptyes)\nStatus: Payment Pending ⏳`;
 
+    // Email admin
+    const adminSend = await sendViaResend([ADMIN_EMAIL], `🌿 New Order ${orderNumber} — ${customerName}`, emailHtml);
+    // Email customer confirmation
+    if (customerEmail) {
+      await sendViaResend([customerEmail], `Order Confirmation ${orderNumber} — Mittika by Ecovia`, emailHtml);
+    }
+
     console.log(`📧 Order notification for ${orderNumber}:`, {
       to: ADMIN_EMAIL,
       customer: customerName,
       total: totalAmount,
+      adminSent: adminSend.ok,
       whatsappMessage,
     });
 

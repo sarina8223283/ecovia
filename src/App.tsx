@@ -29,6 +29,10 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import DataDeletion from "./pages/DataDeletion";
 import OrderTracking from "./pages/OrderTracking";
+import MetaWebhook from "./pages/MetaWebhook";
+import WebhookUninstall from "./pages/WebhookUninstall";
+import WebhookDelete from "./pages/WebhookDelete";
+import AuthCallback from "./pages/AuthCallback";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +68,10 @@ const App = () => (
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/data-deletion" element={<DataDeletion />} />
                 <Route path="/order/:orderNumber" element={<OrderTracking />} />
+                <Route path="/webhook" element={<MetaWebhook />} />
+                <Route path="/webhook/uninstall" element={<WebhookUninstall />} />
+                <Route path="/webhook/delete" element={<WebhookDelete />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
