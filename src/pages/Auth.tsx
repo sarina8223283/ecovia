@@ -10,7 +10,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { signIn, signUp, verifyEmailOtp, resendSignupOtp, user } = useAuth();
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/checkout';
+  const redirectTo = searchParams.get('redirect') || '/account';
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
