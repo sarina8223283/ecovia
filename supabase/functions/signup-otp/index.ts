@@ -6,7 +6,7 @@ const corsHeaders = {
 };
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-const FROM = 'Ecovia Enterprises <noreply@ecovia.co.in>';
+const FROM = 'Ecovia Enterprises <onboarding@resend.dev>';
 
 function genOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -28,20 +28,31 @@ async function sendEmail(to: string, subject: string, html: string) {
 
 function otpEmailHtml(name: string, otp: string) {
   return `
-  <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;padding:24px;background:#fff;color:#333">
-    <div style="background:#4d7a5e;color:#fff;padding:20px;border-radius:12px 12px 0 0;text-align:center">
-      <h1 style="margin:0;font-size:22px">Ecovia Enterprises</h1>
-      <p style="margin:4px 0 0;opacity:.9;font-size:13px">Brand: Mittika — Pure Herbal Powders</p>
+  <div style="font-family:Georgia,'Times New Roman',serif;max-width:560px;margin:0 auto;background:#fbfaf6;color:#333">
+    <div style="background:linear-gradient(135deg,#2f5d3a 0%,#4d7a5e 55%,#c9a44a 100%);color:#fff;padding:28px 24px;border-radius:14px 14px 0 0;text-align:center">
+      <p style="margin:0;font-size:11px;letter-spacing:4px;text-transform:uppercase;opacity:.9">Ecovia Enterprises</p>
+      <h1 style="margin:6px 0 4px;font-family:'Playfair Display',Georgia,serif;font-size:30px">Mittika</h1>
+      <p style="margin:0;font-size:13px;opacity:.92;font-style:italic">Pure Herbal Powders • Rooted in Ayurveda</p>
     </div>
-    <div style="border:1px solid #eee;border-top:0;padding:24px;border-radius:0 0 12px 12px">
-      <p>Dear <strong>${name || 'Customer'}</strong>,</p>
-      <p>Use the One-Time Password (OTP) below to verify your email and finish creating your Mittika account:</p>
-      <div style="text-align:center;margin:24px 0">
-        <span style="display:inline-block;font-family:monospace;font-size:34px;letter-spacing:10px;font-weight:bold;color:#4d7a5e;background:#f4f7f5;padding:14px 26px;border-radius:10px;border:2px dashed #c9a44a">${otp}</span>
+    <div style="border:1px solid #eee;border-top:0;padding:26px;border-radius:0 0 14px 14px;background:#fff">
+      <div style="background:#fff8e6;border:1px dashed #c9a44a;border-radius:12px;padding:14px;text-align:center;margin-bottom:22px">
+        <h2 style="margin:0;font-family:'Playfair Display',Georgia,serif;font-size:20px;color:#2f5d3a">Welcome to the Mittika family 🌿</h2>
+        <p style="margin:6px 0 0;font-size:13px;color:#7a5a14">Thanks for choosing authentic, lab-tested herbal powders.</p>
       </div>
-      <p style="font-size:13px;color:#666">This code expires in 10 minutes. If you did not request this, you can safely ignore the email.</p>
-      <hr style="border:none;border-top:1px solid #eee;margin:20px 0">
-      <p style="font-size:12px;color:#999;margin:0">Warm regards,<br><strong>Ecovia Enterprises</strong><br>info@ecovia.co.in • +91 87588 08684<br>ecovia.co.in</p>
+      <p>Dear <strong style="color:#2f5d3a">${name || 'Customer'}</strong>,</p>
+      <p style="line-height:1.6">Use the secure One-Time Password (OTP) below to verify your email and complete your Mittika account setup:</p>
+      <div style="text-align:center;margin:24px 0">
+        <span style="display:inline-block;font-family:monospace;font-size:36px;letter-spacing:12px;font-weight:bold;color:#2f5d3a;background:#f4f7f5;padding:16px 28px;border-radius:12px;border:2px dashed #c9a44a">${otp}</span>
+      </div>
+      <p style="font-size:13px;color:#666;text-align:center">⏱ Expires in 10 minutes. If you didn't request this, please ignore.</p>
+      <hr style="border:none;border-top:1px solid #eee;margin:22px 0 14px">
+      <p style="font-size:12px;color:#888;margin:0;line-height:1.6">
+        Warm regards,<br>
+        <strong style="color:#2f5d3a">Ecovia Enterprises OPC Pvt. Ltd.</strong><br>
+        Brand: <em>Mittika</em><br>
+        📧 info@ecovia.co.in &nbsp;•&nbsp; 📞 +91 87588 08684<br>
+        🌐 <a href="https://ecovia.co.in" style="color:#4d7a5e;text-decoration:none">ecovia.co.in</a>
+      </p>
     </div>
   </div>`;
 }
