@@ -73,12 +73,16 @@
    }, []);
  
    const signUp = async (email: string, password: string, fullName: string) => {
-    const { data, error } = await supabase.functions.invoke('signup-otp', {
-      body: { action: 'send', email, password, fullName },
+    const redirectUrl = `${window.location.origin}/account`;
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: fullName },
+        emailRedirectTo: redirectUrl,
+      },
     });
-    if (error) return { error: new Error(error.message) };
-    if (data?.error) return { error: new Error(data.error) };
-    return { error: null };
+    return { error: error ? new Error(error.message) : null };
    };
  
    const signIn = async (email: string, password: string) => {
@@ -87,17 +91,13 @@
    };
 
   const verifyEmailOtp = async (email: string, token: string) => {
-    const { data, error } = await supabase.functions.invoke('signup-otp', {
-      body: { action: 'verify', email, otp: token },
-    });
-    if (error) return { error: new Error(error.message) };
-    if (data?.error) return { error: new Error(data.error) };
-    return { error: null };
+    const { error } = await supabase.auth.verifyOtp({ email, token, type: 'email' });
+    return { error: error ? new Error(error.message) : null };
   };
 
   const resendSignupOtp = async (email: string) => {
-    // Cannot resend without password; client should re-call signUp. Return ok no-op.
-    return { error: null };
+    const { error } = await supabase.auth.resend({ type: 'signup', email });
+    return { error: error ? new Error(error.message) : null };
   };
  
    const signOut = async () => {
