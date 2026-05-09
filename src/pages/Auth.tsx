@@ -56,8 +56,7 @@ const Auth = () => {
   };
 
   const handleResend = async () => {
-    if (!form.password) { toast.error('Please go back and re-enter your password'); return; }
-    const { error } = await signUp(form.email, form.password, form.fullName);
+    const { error } = await resendSignupOtp(form.email);
     if (error) toast.error(error.message);
     else toast.success('A new OTP has been sent to your email.');
   };
