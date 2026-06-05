@@ -114,6 +114,16 @@ const Navbar = () => {
             <PowderScanner />
             <LanguageSelector />
             <CartDrawer />
+            {user ? (
+              <Link to="/account" className="p-2 hover:bg-primary/10 rounded-full transition-all duration-200 text-primary" aria-label="Account">
+                <HerbalUser size={22} className="hover:scale-110 transition-transform" />
+              </Link>
+            ) : (
+              <Link to="/auth" className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-primary-foreground text-[13px] font-semibold hover:bg-primary/90 transition-colors whitespace-nowrap" aria-label="Sign In">
+                <HerbalUser size={16} />
+                Sign In
+              </Link>
+            )}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 hover:bg-primary/10 rounded-full transition-all duration-200"
