@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Copy, CheckCircle, AlertTriangle, Truck, Shield, ArrowLeft } from 'lucide-react';
+import { Tag, X } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -23,11 +24,45 @@ const Payment = () => {
 
   const total = getTotal();
   // Read applied coupon from session
-  const couponData = (() => {
+  const [couponData, setCouponData] = useState<{ code: string; discount: number } | null>(() => {
     try { const raw = sessionStorage.getItem('mittika_coupon'); return raw ? JSON.parse(raw) : null; } catch { return null; }
-  })();
+  });
+  const [couponInput, setCouponInput] = useState('');
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
   const discount = Number(couponData?.discount || 0);
   const finalTotal = Math.max(0, total - discount);
+
+  const applyCoupon = async () => {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) return;
+    setValidatingCoupon(true);
+    // Server-side validation against coupons table (RLS allows only active=true rows;
+    // fake / inactive / expired codes therefore cannot be applied).
+    const { data, error } = await supabase
+      .from('coupons')
+      .select('*')
+      .eq('code', code)
+      .eq('active', true)
+      .maybeSingle();
+    setValidatingCoupon(false);
+    if (error || !data) { toast.error('Invalid coupon code'); return; }
+    if (data.expires_at && new Date(data.expires_at) < new Date()) { toast.error('Coupon has expired'); return; }
+    if (total < Number(data.min_order || 0)) { toast.error(`Minimum order ₹${data.min_order} required`); return; }
+    let d = 0;
+    if (data.discount_type === 'percent') d = (total * Number(data.discount_value)) / 100;
+    else d = Number(data.discount_value);
+    d = Math.min(d, total);
+    const applied = { code: data.code, discount: d };
+    setCouponData(applied);
+    sessionStorage.setItem('mittika_coupon', JSON.stringify(applied));
+    toast.success(`Coupon applied! You saved ₹${d.toFixed(2)}`);
+  };
+
+  const removeCoupon = () => {
+    setCouponData(null);
+    setCouponInput('');
+    sessionStorage.removeItem('mittika_coupon');
+  };
 
   // Read guest details (or signed-in profile)
   const guest = (() => {
@@ -268,6 +303,41 @@ const Payment = () => {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Coupon code entry — server-validated, fake codes are rejected */}
+            <div className="bg-card border border-border rounded-2xl p-5">
+              <h3 className="font-serif text-base font-semibold mb-3 flex items-center gap-2">
+                <Tag size={16} className="text-primary" /> Have a coupon code?
+              </h3>
+              {couponData ? (
+                <div className="flex items-center justify-between bg-primary/10 border border-primary/20 px-3 py-2 rounded-lg">
+                  <span className="text-sm font-medium text-primary flex items-center gap-2">
+                    <Tag size={14} /> {couponData.code} — ₹{couponData.discount.toFixed(2)} off
+                  </span>
+                  <button onClick={removeCoupon} className="text-muted-foreground hover:text-destructive" aria-label="Remove coupon">
+                    <X size={16} />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    value={couponInput}
+                    onChange={e => setCouponInput(e.target.value.toUpperCase())}
+                    placeholder="ENTER COUPON CODE"
+                    className="flex-1 px-3 py-2 text-sm rounded-lg border border-input bg-background focus:border-primary focus:ring-1 focus:ring-primary outline-none uppercase font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={applyCoupon}
+                    disabled={validatingCoupon || !couponInput.trim()}
+                    className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50"
+                  >
+                    {validatingCoupon ? 'Checking…' : 'Apply'}
+                  </button>
+                </div>
+              )}
+              <p className="text-[11px] text-muted-foreground mt-2">Only valid coupons issued by Mittika are accepted.</p>
             </div>
 
             {/* Policies */}
