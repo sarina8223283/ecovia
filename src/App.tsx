@@ -33,6 +33,7 @@ import MetaWebhook from "./pages/MetaWebhook";
 import WebhookUninstall from "./pages/WebhookUninstall";
 import WebhookDelete from "./pages/WebhookDelete";
 import AuthCallback from "./pages/AuthCallback";
+import CustomerOutreach from "./pages/CustomerOutreach";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,7 @@ const App = () => (
                 <Route path="/webhook/uninstall" element={<WebhookUninstall />} />
                 <Route path="/webhook/delete" element={<WebhookDelete />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
+                <Route path="/admin/outreach" element={<CustomerOutreach />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, LayoutDashboard, Users, FileText, Settings, Eye, BarChart3, Shield, Sparkles, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
+import { Lock, LayoutDashboard, Users, FileText, Settings, Eye, BarChart3, Shield, Sparkles, ExternalLink, Loader2, RefreshCw, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -185,6 +185,7 @@ const DashboardContent = () => {
         <h2 className="font-serif text-lg font-bold text-foreground mb-4">Quick Actions</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           <QuickAction icon={Sparkles} title="Sarina AI Editor" description="Edit website content, generate images, manage everything with AI" to="/sarina-admin" />
+          <QuickAction icon={Send} title="Email & Message Customers" description="Send branded offer emails & WhatsApp messages with auto-generated valid coupon codes" to="/admin/outreach" />
           <QuickAction icon={Users} title="Visitor Analytics" description="View detailed visitor statistics and traffic sources" to="/visitors" />
           <QuickAction icon={FileText} title="Products" description="Browse and manage your product catalog" to="/products" />
           <QuickAction icon={Shield} title="Purity Verification" description="Manage powder purity testing information" to="/purity" />
