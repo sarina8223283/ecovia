@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { Lock, Send, Sparkles, Tag, MessageCircle, Mail, Users, Loader2, Check, ArrowLeft } from 'lucide-react';
+import { Lock, Send, Sparkles, Tag, MessageCircle, Mail, Users, Loader2, Check, ArrowLeft, Eye } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -83,6 +83,9 @@ const OutreachPanel = () => {
   });
   const [sending, setSending] = useState(false);
   const [search, setSearch] = useState('');
+  const [testEmail, setTestEmail] = useState('');
+  const [testPhone, setTestPhone] = useState('');
+  const [sendingTest, setSendingTest] = useState(false);
 
   const { data: customers = [], isLoading } = useQuery({
     queryKey: ['outreach-customers'],
@@ -191,6 +194,55 @@ const OutreachPanel = () => {
       toast.error(e?.message || 'Failed to send');
     } finally {
       setSending(false);
+    }
+  };
+
+  const sendTest = async () => {
+    if (!headline.trim() || !message.trim()) {
+      toast.error('Compose a headline and message first');
+      return;
+    }
+    if (channel !== 'whatsapp' && !testEmail.trim()) {
+      toast.error('Enter a test email address');
+      return;
+    }
+    if (channel !== 'email' && !testPhone.trim()) {
+      toast.error('Enter a test WhatsApp number');
+      return;
+    }
+    setSendingTest(true);
+    try {
+      if (channel === 'email' || channel === 'both') {
+        const { error } = await supabase.functions.invoke('customer-outreach', {
+          body: {
+            recipients: [{ email: testEmail.trim(), name: 'Sarina (Preview)', phone: testPhone }],
+            headline,
+            message,
+            testMode: true,
+            coupon: includeCoupon ? {
+              code: coupon.code.trim().toUpperCase() || 'PREVIEW',
+              discount_type: coupon.discount_type,
+              discount_value: Number(coupon.discount_value || 0),
+              min_order: Number(coupon.min_order || 0),
+              expires_at: coupon.expires_at || null,
+            } : null,
+          },
+        });
+        if (error) throw error;
+        toast.success(`📧 Preview email sent to ${testEmail}`);
+      }
+      if (channel === 'whatsapp' || channel === 'both') {
+        const couponLine = includeCoupon
+          ? `\n\n🎁 Coupon (PREVIEW): *${(coupon.code || 'PREVIEW').toUpperCase()}* (${coupon.discount_type === 'percent' ? (coupon.discount_value || 0) + '% OFF' : '₹' + (coupon.discount_value || 0) + ' OFF'})`
+          : '';
+        const text = `[PREVIEW] *${headline}*\n\nHi Sarina,\n\n${message}${couponLine}\n\n— Team Mittika`;
+        window.open(waLink(testPhone.trim(), text), '_blank');
+        toast.success('📱 WhatsApp preview opened');
+      }
+    } catch (e: any) {
+      toast.error(e?.message || 'Test send failed');
+    } finally {
+      setSendingTest(false);
     }
   };
 
@@ -316,6 +368,29 @@ const OutreachPanel = () => {
                   </div>
                 </>
               )}
+            </div>
+
+            {/* Test / Preview send */}
+            <div className="bg-card border border-dashed border-primary/40 rounded-2xl p-5 space-y-3">
+              <div className="flex items-center gap-2">
+                <Eye size={16} className="text-primary"/>
+                <h3 className="font-semibold text-sm">Send Test / Preview</h3>
+                <span className="text-[10px] text-muted-foreground">(Sarina won't save the coupon)</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Preview the exact email / WhatsApp formatting customers will see before broadcasting.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-2">
+                <input value={testEmail} onChange={e => setTestEmail(e.target.value)} type="email" placeholder="test@email.com"
+                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background"/>
+                <input value={testPhone} onChange={e => setTestPhone(e.target.value)} placeholder="+91 98xxxxxxxx (WhatsApp)"
+                  className="px-3 py-2 text-sm border border-border rounded-lg bg-background"/>
+              </div>
+              <button onClick={sendTest} disabled={sendingTest}
+                className="w-full inline-flex items-center justify-center gap-2 bg-secondary text-foreground py-2.5 rounded-xl font-medium text-sm hover:bg-secondary/80 disabled:opacity-50">
+                {sendingTest ? <Loader2 className="w-4 h-4 animate-spin"/> : <Eye size={14}/>}
+                {sendingTest ? 'Sending preview…' : 'Send Test Preview'}
+              </button>
             </div>
 
             <button onClick={send} disabled={sending || selected.size === 0}
