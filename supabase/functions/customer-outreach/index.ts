@@ -68,6 +68,7 @@ serve(async (req) => {
       headline,
       message,
       coupon,                // optional: { code, discount_type, discount_value, min_order, expires_at, description }
+      testMode,              // optional: bool — skip coupon creation, label as preview
     } = body;
 
     if (!Array.isArray(recipients) || recipients.length === 0) {
@@ -77,9 +78,10 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Headline and message required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    // Create coupon via service role (bypasses RLS, ensures only server can mint real codes)
+    // Create coupon via service role (bypasses RLS, ensures only server can mint real codes).
+    // In test mode we skip persisting the coupon — it's only a preview for Sarina.
     let couponRecord: any = null;
-    if (coupon && coupon.code && coupon.discount_value) {
+    if (coupon && coupon.code && coupon.discount_value && !testMode) {
       const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
       const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
       const admin = createClient(SUPABASE_URL, SERVICE_KEY);
@@ -103,6 +105,13 @@ serve(async (req) => {
         }
         couponRecord = ins;
       }
+    } else if (coupon && coupon.code && coupon.discount_value && testMode) {
+      couponRecord = {
+        code: String(coupon.code).trim().toUpperCase(),
+        discount_type: coupon.discount_type || 'percent',
+        discount_value: Number(coupon.discount_value),
+        expires_at: coupon.expires_at || null,
+      };
     }
 
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
@@ -122,9 +131,10 @@ serve(async (req) => {
     const results: any[] = [];
     for (const r of recipients) {
       if (!r?.email) { results.push({ email: r?.email, ok: false, error: 'no_email' }); continue; }
+      const previewHeadline = testMode ? `[PREVIEW] ${headline}` : headline;
       const html = buildOfferHtml({
         customerName: r.name || 'Valued Customer',
-        headline,
+        headline: previewHeadline,
         body: message,
         couponCode: couponRecord?.code,
         discountLabel,
@@ -133,7 +143,7 @@ serve(async (req) => {
       const resp = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from: FROM, to: [r.email], subject: headline, html, reply_to: 'info@ecovia.co.in' }),
+        body: JSON.stringify({ from: FROM, to: [r.email], subject: previewHeadline, html, reply_to: 'info@ecovia.co.in' }),
       });
       const j = await resp.json().catch(() => ({}));
       results.push({ email: r.email, ok: resp.ok, id: j?.id, error: resp.ok ? undefined : j });
