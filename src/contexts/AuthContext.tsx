@@ -22,7 +22,7 @@
    signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
    signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   verifyEmailOtp: (email: string, token: string) => Promise<{ error: Error | null }>;
-  resendSignupOtp: (email: string) => Promise<{ error: Error | null }>;
+  resendSignupOtp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
    signOut: () => Promise<void>;
    updateProfile: (data: Partial<Profile>) => Promise<{ error: Error | null }>;
  }
@@ -73,16 +73,12 @@
    }, []);
  
    const signUp = async (email: string, password: string, fullName: string) => {
-    const redirectUrl = `${window.location.origin}/account`;
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: fullName },
-        emailRedirectTo: redirectUrl,
-      },
+    const { data, error } = await supabase.functions.invoke('signup-otp', {
+      body: { action: 'send', email, password, fullName },
     });
-    return { error: error ? new Error(error.message) : null };
+    if (error) return { error: new Error(error.message) };
+    if (data?.error) return { error: new Error(data.error) };
+    return { error: null };
    };
  
    const signIn = async (email: string, password: string) => {
@@ -91,13 +87,21 @@
    };
 
   const verifyEmailOtp = async (email: string, token: string) => {
-    const { error } = await supabase.auth.verifyOtp({ email, token, type: 'email' });
-    return { error: error ? new Error(error.message) : null };
+    const { data, error } = await supabase.functions.invoke('signup-otp', {
+      body: { action: 'verify', email, otp: token },
+    });
+    if (error) return { error: new Error(error.message) };
+    if (data?.error) return { error: new Error(data.error) };
+    return { error: null };
   };
 
-  const resendSignupOtp = async (email: string) => {
-    const { error } = await supabase.auth.resend({ type: 'signup', email });
-    return { error: error ? new Error(error.message) : null };
+  const resendSignupOtp = async (email: string, password: string, fullName: string) => {
+    const { data, error } = await supabase.functions.invoke('signup-otp', {
+      body: { action: 'send', email, password, fullName },
+    });
+    if (error) return { error: new Error(error.message) };
+    if (data?.error) return { error: new Error(data.error) };
+    return { error: null };
   };
  
    const signOut = async () => {

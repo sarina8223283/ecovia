@@ -56,9 +56,9 @@ const Auth = () => {
   };
 
   const handleResend = async () => {
-    const { error } = await resendSignupOtp(form.email);
+    const { error } = await resendSignupOtp(form.email, form.password, form.fullName);
     if (error) toast.error(error.message);
-    else toast.success('A new OTP has been sent to your email.');
+    else toast.success('A new 6-digit OTP has been sent to your email.');
   };
 
   if (otpStep) {
