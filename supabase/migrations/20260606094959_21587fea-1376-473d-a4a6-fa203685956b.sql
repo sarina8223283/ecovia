@@ -1,0 +1,1 @@
+GRANT ALL ON public.pending_signups TO service_role;
