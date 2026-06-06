@@ -27,10 +27,14 @@ const Payment = () => {
   const [couponData, setCouponData] = useState<{ code: string; discount: number } | null>(() => {
     try { const raw = sessionStorage.getItem('mittika_coupon'); return raw ? JSON.parse(raw) : null; } catch { return null; }
   });
+  const [couponMeta, setCouponMeta] = useState<{ discount_type: 'percent' | 'flat'; discount_value: number } | null>(() => {
+    try { const raw = sessionStorage.getItem('mittika_coupon_meta'); return raw ? JSON.parse(raw) : null; } catch { return null; }
+  });
   const [couponInput, setCouponInput] = useState('');
   const [validatingCoupon, setValidatingCoupon] = useState(false);
   const discount = Number(couponData?.discount || 0);
   const finalTotal = Math.max(0, total - discount);
+  const discountPercent = total > 0 ? (discount / total) * 100 : 0;
 
   const applyCoupon = async () => {
     const code = couponInput.trim().toUpperCase();
@@ -45,23 +49,35 @@ const Payment = () => {
       .eq('active', true)
       .maybeSingle();
     setValidatingCoupon(false);
-    if (error || !data) { toast.error('Invalid coupon code'); return; }
-    if (data.expires_at && new Date(data.expires_at) < new Date()) { toast.error('Coupon has expired'); return; }
-    if (total < Number(data.min_order || 0)) { toast.error(`Minimum order ₹${data.min_order} required`); return; }
+    if (error) { toast.error('Could not validate coupon. Try again.'); return; }
+    if (!data) { toast.error(`"${code}" is not a valid coupon code. Please check and try again.`); return; }
+    if (data.expires_at && new Date(data.expires_at) < new Date()) {
+      toast.error(`Coupon "${code}" has expired and can no longer be used.`);
+      return;
+    }
+    if (total < Number(data.min_order || 0)) {
+      toast.error(`Coupon "${code}" requires a minimum order of ₹${data.min_order}.`);
+      return;
+    }
     let d = 0;
     if (data.discount_type === 'percent') d = (total * Number(data.discount_value)) / 100;
     else d = Number(data.discount_value);
     d = Math.min(d, total);
     const applied = { code: data.code, discount: d };
     setCouponData(applied);
+    const meta = { discount_type: data.discount_type as 'percent' | 'flat', discount_value: Number(data.discount_value) };
+    setCouponMeta(meta);
     sessionStorage.setItem('mittika_coupon', JSON.stringify(applied));
+    sessionStorage.setItem('mittika_coupon_meta', JSON.stringify(meta));
     toast.success(`Coupon applied! You saved ₹${d.toFixed(2)}`);
   };
 
   const removeCoupon = () => {
     setCouponData(null);
+    setCouponMeta(null);
     setCouponInput('');
     sessionStorage.removeItem('mittika_coupon');
+    sessionStorage.removeItem('mittika_coupon_meta');
   };
 
   // Read guest details (or signed-in profile)
@@ -291,15 +307,37 @@ const Payment = () => {
                       <span className="font-semibold text-foreground">₹{(item.quantityGrams * item.pricePerGram).toFixed(2)}</span>
                     </div>
                   ))}
-                  {discount > 0 && (
-                    <div className="flex justify-between text-sm text-primary">
-                      <span>Coupon ({couponData?.code})</span>
-                      <span>- ₹{discount.toFixed(2)}</span>
+                  <div className="border-t border-border pt-3 space-y-1.5 text-sm">
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>Subtotal</span>
+                      <span>₹{total.toFixed(2)}</span>
                     </div>
-                  )}
-                  <div className="border-t border-border pt-3 flex justify-between font-bold text-lg">
-                    <span>Total</span>
-                    <span className="text-primary">₹{finalTotal.toFixed(2)}</span>
+                    {discount > 0 && couponData && (
+                      <>
+                        <div className="flex justify-between text-primary">
+                          <span className="flex items-center gap-1">
+                            <Tag size={12}/> Coupon ({couponData.code})
+                            {couponMeta?.discount_type === 'percent' && (
+                              <span className="text-[11px] bg-primary/10 px-1.5 py-0.5 rounded-full">
+                                {couponMeta.discount_value}% off
+                              </span>
+                            )}
+                          </span>
+                          <span>− ₹{discount.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-[11px] text-muted-foreground italic pl-4">
+                          <span>Effective discount</span>
+                          <span>{discountPercent.toFixed(1)}% off subtotal</span>
+                        </div>
+                      </>
+                    )}
+                    <div className="border-t border-border pt-2 mt-1 flex justify-between font-bold text-lg">
+                      <span>Total Payable</span>
+                      <span className="text-primary">₹{finalTotal.toFixed(2)}</span>
+                    </div>
+                    {discount > 0 && (
+                      <p className="text-[11px] text-primary/80 text-right">You saved ₹{discount.toFixed(2)} 🎉</p>
+                    )}
                   </div>
                 </div>
               )}
