@@ -28,6 +28,20 @@
  }
  
  const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const toFunctionError = async (error: any) => {
+  let message = error?.message || 'Unable to complete this request';
+  const response = error?.context;
+  if (response && typeof response.clone === 'function') {
+    try {
+      const payload = await response.clone().json();
+      if (payload?.error) message = payload.error;
+    } catch {
+      // Keep the default function error message when the response is not JSON.
+    }
+  }
+  return new Error(message);
+};
  
  export const AuthProvider = ({ children }: { children: ReactNode }) => {
    const [user, setUser] = useState<User | null>(null);
@@ -76,7 +90,7 @@
     const { data, error } = await supabase.functions.invoke('signup-otp', {
       body: { action: 'send', email, password, fullName },
     });
-    if (error) return { error: new Error(error.message) };
+    if (error) return { error: await toFunctionError(error) };
     if (data?.error) return { error: new Error(data.error) };
     return { error: null };
    };
@@ -90,7 +104,7 @@
     const { data, error } = await supabase.functions.invoke('signup-otp', {
       body: { action: 'verify', email, otp: token },
     });
-    if (error) return { error: new Error(error.message) };
+    if (error) return { error: await toFunctionError(error) };
     if (data?.error) return { error: new Error(data.error) };
     return { error: null };
   };
@@ -99,7 +113,7 @@
     const { data, error } = await supabase.functions.invoke('signup-otp', {
       body: { action: 'send', email, password, fullName },
     });
-    if (error) return { error: new Error(error.message) };
+    if (error) return { error: await toFunctionError(error) };
     if (data?.error) return { error: new Error(data.error) };
     return { error: null };
   };
