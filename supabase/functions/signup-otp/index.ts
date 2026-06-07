@@ -45,6 +45,20 @@ function otpEmailHtml(name: string, otp: string) {
         <span style="display:inline-block;font-family:monospace;font-size:36px;letter-spacing:12px;font-weight:bold;color:#2f5d3a;background:#f4f7f5;padding:16px 28px;border-radius:12px;border:2px dashed #c9a44a">${otp}</span>
       </div>
       <p style="font-size:13px;color:#666;text-align:center">⏱ Expires in 10 minutes. If you didn't request this, please ignore.</p>
+      <div style="margin:26px 0 10px;padding:22px 20px;background:linear-gradient(135deg,#f4f7f5 0%,#fff8e6 100%);border-left:4px solid #c9a44a;border-radius:10px">
+        <p style="margin:0;font-family:'Playfair Display',Georgia,serif;font-size:17px;color:#2f5d3a;font-style:italic;line-height:1.6;text-align:center">
+          &ldquo;सर्वे भवन्तु सुखिनः, सर्वे सन्तु निरामयाः&rdquo;
+        </p>
+        <p style="margin:8px 0 0;font-size:12px;color:#7a5a14;text-align:center;letter-spacing:1px;text-transform:uppercase">
+          May all be happy • May all be free from illness
+        </p>
+        <p style="margin:10px 0 0;font-size:12px;color:#555;text-align:center;line-height:1.5">
+          From our soil to your kitchen — every Mittika powder is sun-dried, stone-ground, and NABL lab-tested. Welcome to a purer way of living. 🌱
+        </p>
+      </div>
+      <p style="margin:18px 0 0;text-align:center;font-size:12px;color:#888">
+        <strong style="color:#2f5d3a">Thanks for buying Mittika products</strong> — your journey to authentic Ayurveda begins here.
+      </p>
       <hr style="border:none;border-top:1px solid #eee;margin:22px 0 14px">
       <p style="font-size:12px;color:#888;margin:0;line-height:1.6">
         Warm regards,<br>
