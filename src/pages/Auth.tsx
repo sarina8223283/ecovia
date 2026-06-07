@@ -184,7 +184,7 @@ const Auth = () => {
                     <h1 className="font-serif text-2xl font-bold mb-2">You're verified! 🌿</h1>
                     <p className="text-muted-foreground text-sm mb-6">Welcome to the Mittika family, <strong className="text-foreground">{form.fullName || 'friend'}</strong>. Your account is ready.</p>
                     <div className="grid gap-3">
-                      <button onClick={() => navigate('/orders/track')} className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90">
+                      <button onClick={() => navigate('/account')} className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90">
                         <Package size={18} /> Track my orders
                       </button>
                       <button onClick={() => navigate(redirectTo)} className="w-full inline-flex items-center justify-center gap-2 bg-secondary text-secondary-foreground py-3 rounded-lg font-medium hover:bg-secondary/80">
