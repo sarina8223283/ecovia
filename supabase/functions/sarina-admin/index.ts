@@ -830,6 +830,27 @@ serve(async (req) => {
             },
           },
         },
+        {
+          type: "function",
+          function: {
+            name: "create_coupon",
+            description: "Create a REAL discount coupon stored in the live coupons table. Use this whenever the user asks you to create/generate a coupon, discount code, promo code, or offer code. The returned code is immediately usable by customers on the Payment page. NEVER fabricate a code without calling this tool — fake codes will be rejected by checkout.",
+            parameters: {
+              type: "object",
+              properties: {
+                code: { type: "string", description: "Optional custom code (uppercase, no spaces). If omitted, a unique code is generated." },
+                discount_type: { type: "string", enum: ["percent", "flat"], description: "percent = % off, flat = ₹ off. Default percent." },
+                discount_value: { type: "number", description: "Amount of discount. e.g. 10 for 10% or ₹10 flat." },
+                min_order: { type: "number", description: "Minimum order value in ₹ to apply (optional)." },
+                product_id: { type: "string", description: "Restrict coupon to a specific product slug (e.g. 'shikakai-powder'). Omit for sitewide." },
+                expires_in_days: { type: "number", description: "Coupon validity in days from now (optional)." },
+                expires_at: { type: "string", description: "Explicit ISO expiry date (optional, overrides expires_in_days)." },
+                description: { type: "string", description: "Short human description of the offer." },
+              },
+              required: ["discount_value"],
+            },
+          },
+        },
       ];
 
       const response = await chatWithFallback(LOVABLE_API_KEY, {
