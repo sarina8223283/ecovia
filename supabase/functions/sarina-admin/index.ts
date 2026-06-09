@@ -117,9 +117,17 @@ ${WEBSITE_STRUCTURE}
 11. When showing generated images, describe what was created so user can verify before it goes live
 12. **For significant changes (3+ fields or page redesigns), use preview_changes FIRST to show before/after, then deploy after approval**
 13. When user says "show me what you'll change" or "preview first", ALWAYS use preview_changes tool
+14. **Coupons**: When the user asks for a coupon, discount code, promo, or offer code (for a product or sitewide), you MUST call the create_coupon tool. The tool returns the live code — quote it verbatim in your reply (in backticks) and explain how customers redeem it on the Payment page. NEVER invent or guess a code without calling create_coupon.
 
 ## Brand Voice:
 Mittika = "from the earth." Premium natural herbal powders. Ayurvedic heritage. Lab-tested purity. Chemical-free.`;
+
+// Helper: generate a friendly coupon code
+function makeCouponCode(seed?: string): string {
+  const base = (seed || "MITTIKA").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8) || "MITTIKA";
+  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `${base}${rand}`;
+}
 
 // Image generation models in priority order (highest quality first)
 const IMAGE_MODELS = [
@@ -547,6 +555,71 @@ serve(async (req) => {
         });
       }
 
+      // ─── create_coupon ───
+      if (tool_name === "create_coupon") {
+        const {
+          code: providedCode,
+          discount_type,
+          discount_value,
+          min_order,
+          product_id,
+          expires_in_days,
+          expires_at,
+          description,
+        } = parameters || {};
+
+        const dType = (discount_type === "flat" ? "flat" : "percent");
+        const dValue = Number(discount_value);
+        if (!dValue || isNaN(dValue) || dValue <= 0) {
+          return new Response(JSON.stringify({ success: false, error: "discount_value must be a positive number" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        let code = (providedCode ? String(providedCode) : makeCouponCode(product_id))
+          .trim().toUpperCase().replace(/\s+/g, "");
+        if (!code) code = makeCouponCode(product_id);
+
+        // If code collision, append random suffix
+        const { data: existing } = await supabase.from("coupons").select("code").eq("code", code).maybeSingle();
+        if (existing) code = `${code}-${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
+
+        let expiresIso: string | null = expires_at || null;
+        if (!expiresIso && expires_in_days && Number(expires_in_days) > 0) {
+          const d = new Date();
+          d.setDate(d.getDate() + Number(expires_in_days));
+          expiresIso = d.toISOString();
+        }
+
+        const { data: inserted, error: insErr } = await supabase.from("coupons").insert({
+          code,
+          discount_type: dType,
+          discount_value: dValue,
+          min_order: Number(min_order || 0),
+          product_id: product_id || null,
+          expires_at: expiresIso,
+          description: description || (product_id ? `Exclusive offer on ${product_id}` : "Exclusive Mittika offer"),
+          active: true,
+        }).select().single();
+
+        if (insErr) {
+          return new Response(JSON.stringify({ success: false, error: insErr.message }), {
+            status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const valStr = dType === "percent" ? `${dValue}% OFF` : `Flat ₹${dValue} OFF`;
+        const scope = product_id ? ` on ${product_id}` : " sitewide";
+        const expLine = expiresIso ? ` Valid till ${new Date(expiresIso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}.` : "";
+
+        return new Response(JSON.stringify({
+          success: true,
+          deployed: true,
+          coupon: inserted,
+          message: `🎁 LIVE coupon created!\n\n• Code: **${code}**\n• Discount: ${valStr}${scope}\n• Min order: ₹${inserted.min_order}\n${expLine ? `• ${expLine.trim()}\n` : ""}\nCustomers can now enter \`${code}\` on the Payment page to redeem.`,
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+
       return new Response(JSON.stringify({ error: `Unknown tool: ${tool_name}` }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -755,6 +828,27 @@ serve(async (req) => {
                 group_by: { type: "string", enum: ["page", "referrer", "day", "device"], description: "Primary grouping dimension" },
               },
               required: ["period"],
+            },
+          },
+        },
+        {
+          type: "function",
+          function: {
+            name: "create_coupon",
+            description: "Create a REAL discount coupon stored in the live coupons table. Use this whenever the user asks you to create/generate a coupon, discount code, promo code, or offer code. The returned code is immediately usable by customers on the Payment page. NEVER fabricate a code without calling this tool — fake codes will be rejected by checkout.",
+            parameters: {
+              type: "object",
+              properties: {
+                code: { type: "string", description: "Optional custom code (uppercase, no spaces). If omitted, a unique code is generated." },
+                discount_type: { type: "string", enum: ["percent", "flat"], description: "percent = % off, flat = ₹ off. Default percent." },
+                discount_value: { type: "number", description: "Amount of discount. e.g. 10 for 10% or ₹10 flat." },
+                min_order: { type: "number", description: "Minimum order value in ₹ to apply (optional)." },
+                product_id: { type: "string", description: "Restrict coupon to a specific product slug (e.g. 'shikakai-powder'). Omit for sitewide." },
+                expires_in_days: { type: "number", description: "Coupon validity in days from now (optional)." },
+                expires_at: { type: "string", description: "Explicit ISO expiry date (optional, overrides expires_in_days)." },
+                description: { type: "string", description: "Short human description of the offer." },
+              },
+              required: ["discount_value"],
             },
           },
         },
