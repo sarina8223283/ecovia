@@ -59,6 +59,13 @@ const Payment = () => {
       toast.error(`Coupon "${code}" requires a minimum order of ₹${data.min_order}.`);
       return;
     }
+    if (data.product_id) {
+      const hasProduct = items.some(it => it.productId === data.product_id);
+      if (!hasProduct) {
+        toast.error(`Coupon "${code}" is only valid when "${data.product_id}" is in your cart.`);
+        return;
+      }
+    }
     let d = 0;
     if (data.discount_type === 'percent') d = (total * Number(data.discount_value)) / 100;
     else d = Number(data.discount_value);
