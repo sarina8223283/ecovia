@@ -554,6 +554,71 @@ serve(async (req) => {
         });
       }
 
+      // ─── create_coupon ───
+      if (tool_name === "create_coupon") {
+        const {
+          code: providedCode,
+          discount_type,
+          discount_value,
+          min_order,
+          product_id,
+          expires_in_days,
+          expires_at,
+          description,
+        } = parameters || {};
+
+        const dType = (discount_type === "flat" ? "flat" : "percent");
+        const dValue = Number(discount_value);
+        if (!dValue || isNaN(dValue) || dValue <= 0) {
+          return new Response(JSON.stringify({ success: false, error: "discount_value must be a positive number" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        let code = (providedCode ? String(providedCode) : makeCouponCode(product_id))
+          .trim().toUpperCase().replace(/\s+/g, "");
+        if (!code) code = makeCouponCode(product_id);
+
+        // If code collision, append random suffix
+        const { data: existing } = await supabase.from("coupons").select("code").eq("code", code).maybeSingle();
+        if (existing) code = `${code}-${Math.random().toString(36).slice(2, 5).toUpperCase()}`;
+
+        let expiresIso: string | null = expires_at || null;
+        if (!expiresIso && expires_in_days && Number(expires_in_days) > 0) {
+          const d = new Date();
+          d.setDate(d.getDate() + Number(expires_in_days));
+          expiresIso = d.toISOString();
+        }
+
+        const { data: inserted, error: insErr } = await supabase.from("coupons").insert({
+          code,
+          discount_type: dType,
+          discount_value: dValue,
+          min_order: Number(min_order || 0),
+          product_id: product_id || null,
+          expires_at: expiresIso,
+          description: description || (product_id ? `Exclusive offer on ${product_id}` : "Exclusive Mittika offer"),
+          active: true,
+        }).select().single();
+
+        if (insErr) {
+          return new Response(JSON.stringify({ success: false, error: insErr.message }), {
+            status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const valStr = dType === "percent" ? `${dValue}% OFF` : `Flat ₹${dValue} OFF`;
+        const scope = product_id ? ` on ${product_id}` : " sitewide";
+        const expLine = expiresIso ? ` Valid till ${new Date(expiresIso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}.` : "";
+
+        return new Response(JSON.stringify({
+          success: true,
+          deployed: true,
+          coupon: inserted,
+          message: `🎁 LIVE coupon created!\n\n• Code: **${code}**\n• Discount: ${valStr}${scope}\n• Min order: ₹${inserted.min_order}\n${expLine ? `• ${expLine.trim()}\n` : ""}\nCustomers can now enter \`${code}\` on the Payment page to redeem.`,
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+
       return new Response(JSON.stringify({ error: `Unknown tool: ${tool_name}` }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
