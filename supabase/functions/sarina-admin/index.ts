@@ -117,6 +117,7 @@ ${WEBSITE_STRUCTURE}
 11. When showing generated images, describe what was created so user can verify before it goes live
 12. **For significant changes (3+ fields or page redesigns), use preview_changes FIRST to show before/after, then deploy after approval**
 13. When user says "show me what you'll change" or "preview first", ALWAYS use preview_changes tool
+14. **Coupons**: When the user asks for a coupon, discount code, promo, or offer code (for a product or sitewide), you MUST call the create_coupon tool. The tool returns the live code — quote it verbatim in your reply (in backticks) and explain how customers redeem it on the Payment page. NEVER invent or guess a code without calling create_coupon.
 
 ## Brand Voice:
 Mittika = "from the earth." Premium natural herbal powders. Ayurvedic heritage. Lab-tested purity. Chemical-free.`;
