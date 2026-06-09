@@ -121,6 +121,13 @@ ${WEBSITE_STRUCTURE}
 ## Brand Voice:
 Mittika = "from the earth." Premium natural herbal powders. Ayurvedic heritage. Lab-tested purity. Chemical-free.`;
 
+// Helper: generate a friendly coupon code
+function makeCouponCode(seed?: string): string {
+  const base = (seed || "MITTIKA").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8) || "MITTIKA";
+  const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+  return `${base}${rand}`;
+}
+
 // Image generation models in priority order (highest quality first)
 const IMAGE_MODELS = [
   "google/gemini-3-pro-image-preview",   // Highest quality
