@@ -8,6 +8,8 @@ import TestimonialsSection from '@/components/ui/TestimonialsSection';
 import ProductFeedback from '@/components/ui/ProductFeedback';
 import { getProductById, products } from '@/data/products';
 import { productPricing } from '@/data/pricing';
+import { getClassification } from '@/data/classification';
+import ProductClassification from '@/components/product/ProductClassification';
 import { useCart } from '@/contexts/CartContext';
 import { useSiteContent } from '@/hooks/useSiteContent';
 import { toast } from 'sonner';
@@ -59,6 +61,7 @@ const ProductDetail = () => {
   // Get pricing tiers for this product
   const pricingTiers = id ? productPricing[id] || [] : [];
   const selectedTier = pricingTiers.find(t => t.grams === selectedQuantity);
+  const classification = id ? getClassification(id) : undefined;
 
   if (!product) {
     return (
@@ -118,7 +121,25 @@ const ProductDetail = () => {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": product.name,
-    "description": product.description,
+    "description": classification
+      ? `${product.name} — ${classification.grade}. ${classification.intendedUse} ${product.description}`
+      : product.description,
+    "category": classification?.grade || 'Cosmetic Grade Botanical Raw Material',
+    "image": product.image,
+    "material": classification?.partUsed,
+    "audience": {
+      "@type": "PeopleAudience",
+      "audienceType": "DIY formulators, soap makers, cosmetic brands, beauty enthusiasts"
+    },
+    "additionalProperty": classification ? [
+      { "@type": "PropertyValue", "name": "Grade", "value": classification.grade },
+      { "@type": "PropertyValue", "name": "Intended Use", "value": classification.intendedUse },
+      { "@type": "PropertyValue", "name": "Applications", "value": classification.applications.join(', ') },
+      { "@type": "PropertyValue", "name": "Format", "value": classification.formats.join(', ') },
+      { "@type": "PropertyValue", "name": "External Use Only", "value": classification.externalUseOnly ? 'Yes' : 'No' },
+      ...(classification.botanicalName ? [{ "@type": "PropertyValue", "name": "Botanical Name", "value": classification.botanicalName }] : []),
+      ...(classification.partUsed ? [{ "@type": "PropertyValue", "name": "Part Used", "value": classification.partUsed }] : []),
+    ] : undefined,
     "brand": {
       "@type": "Brand",
       "name": "Mittika"
@@ -142,7 +163,22 @@ const ProductDetail = () => {
     <Layout>
       <Helmet>
         <title>{product.name} | Mittika by Ecovia Enterprises</title>
-        <meta name="description" content={product.description} />
+        <meta
+          name="description"
+          content={
+            classification
+              ? `${product.name} — ${classification.grade}. ${classification.intendedUse} Sold by Ecovia Enterprises (Mittika) for DIY skin care, hair care, soap making and cosmetic formulations.`
+              : product.description
+          }
+        />
+        {classification && (
+          <meta name="keywords" content={classification.keywords.join(', ')} />
+        )}
+        <link rel="canonical" href={`https://ecovia.lovable.app/product/${product.id}`} />
+        <meta property="og:type" content="product" />
+        <meta property="og:title" content={`${product.name} | Cosmetic Grade Botanical Raw Material`} />
+        <meta property="og:url" content={`https://ecovia.lovable.app/product/${product.id}`} />
+        <meta property="og:image" content={product.image} />
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(productSchema)}</script>
       </Helmet>
@@ -455,6 +491,15 @@ const ProductDetail = () => {
             </motion.div>
           </div>
         </section>
+      )}
+
+      {/* Product Classification — AI-search optimised, compliance-aligned */}
+      {classification && (
+        <ProductClassification
+          productName={product.name}
+          classification={classification}
+          themeColor={product.themeColor}
+        />
       )}
 
       <section className="py-12">
