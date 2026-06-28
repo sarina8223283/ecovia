@@ -51,16 +51,16 @@
        'Enhances skin radiance when used topically'
      ],
      directions: [
-       'For Hair: Mix 2-3 tablespoons with water to form a paste. Apply to scalp and hair, leave for 30-45 minutes, then rinse.',
-       'For Skin: Mix 1 tablespoon with rose water or yogurt. Apply as face pack for 15-20 minutes.',
-       'For Wellness: Add 1 teaspoon to warm water or smoothies daily for immunity boost.',
-       'Storage: Keep in a cool, dry place away from direct sunlight.'
+      'Hair Mask: Mix 2-3 tablespoons with water to form a paste. Apply to scalp and hair, leave for 30-45 minutes, then rinse.',
+      'Face Pack: Mix 1 tablespoon with rose water or yogurt. Apply as face pack for 15-20 minutes.',
+      'Oil Infusion: Warm with coconut or sesame oil for 10 minutes, cool, strain and use as a DIY hair oil.',
+      'For external cosmetic use only. Store in a cool, dry place away from direct sunlight.'
      ],
      ingredients: '100% Pure Amla (Indian Gooseberry) Powder - No additives, no preservatives',
      faqs: [
        { question: 'Can I use Amla powder daily on my hair?', answer: 'Yes, you can use Amla powder 2-3 times a week for best results. Daily use as a hair oil with carrier oils is also beneficial.' },
        { question: 'Does Amla powder darken grey hair?', answer: 'Amla powder can help prevent premature greying and may gradually darken grey hair with regular use over several months.' },
-       { question: 'Is this Amla powder edible?', answer: 'Yes, our Amla powder is food-grade and can be consumed. Add to water, juices, or smoothies for immunity benefits.' },
+      { question: 'Is this Amla powder for cosmetic or food use?', answer: 'Mittika Amla Powder is supplied as a cosmetic-grade botanical raw material for DIY hair and skin formulations. It is for external use only and is not sold as a food or supplement.' },
        { question: 'How long does it take to see results on hair?', answer: 'With consistent use 2-3 times weekly, you may notice reduced hair fall within 4-6 weeks and improved hair texture within 8-12 weeks.' }
      ],
      themeColor: '85 45% 40%',
@@ -278,7 +278,7 @@
        { question: 'Is Coconut Powder good for protein-sensitive hair?', answer: 'Coconut actually helps prevent protein loss rather than adding protein. It\'s generally safe for most hair types including protein-sensitive hair.' },
        { question: 'Can I use this on my face?', answer: 'Yes! Coconut powder is excellent for facial masks, especially for dry skin. It may be comedogenic for acne-prone skin, so patch test first.' },
        { question: 'How is this different from coconut oil?', answer: 'Coconut powder contains the fiber and flesh of coconut, providing exfoliation along with moisturization. It\'s less greasy than pure oil.' },
-       { question: 'Can I cook with this powder?', answer: 'Yes, our coconut powder is food-grade and can be used in cooking, smoothies, and desserts.' }
+      { question: 'Is this Coconut Powder for cosmetic or culinary use?', answer: 'Mittika Coconut Powder is supplied as a cosmetic-grade raw material for DIY masks, scrubs and soap making. It is for external cosmetic use only.' }
      ],
      themeColor: '30 30% 75%',
      pricePerGram: 0.40
@@ -330,10 +330,10 @@
        'Improves quality of sleep'
      ],
      directions: [
-       'For Brain Health: Mix 1/2 teaspoon in warm milk or water. Consume once daily, preferably in the morning.',
-       'Hair Treatment: Mix 2 tablespoons with coconut oil, apply to scalp, leave for 30 minutes, then wash.',
-       'Stress Relief: Add to herbal tea with honey for calming effects.',
-       'Best taken consistently for 2-3 months for full cognitive benefits.'
+      'Hair Mask: Mix 2 tablespoons with water or yogurt; apply to scalp, leave for 30 minutes, then wash.',
+      'Scalp Oil: Mix 2 tablespoons with coconut oil, warm gently, apply to scalp and leave overnight.',
+      'Herbal Blend: Combine with Amla and Bhringraj powders for a traditional hair pack.',
+      'For external cosmetic use only. Patch test before first use.'
      ],
      ingredients: '100% Pure Brahmi (Bacopa monnieri) Powder - Organically cultivated',
      faqs: [
@@ -361,10 +361,10 @@
        'Supports immune system function'
      ],
      directions: [
-       'Daily Supplement: Add 1 teaspoon to smoothies, juices, or water. Start with small doses.',
-       'Energy Boost: Mix in morning tea or coffee for sustained energy.',
-       'Face Mask: Combine with honey for an antioxidant-rich facial.',
-       'Tip: Start with 1/2 teaspoon and gradually increase to 1-2 teaspoons daily.'
+      'Face Mask: Combine 1 tablespoon with honey or yogurt for an antioxidant-rich facial.',
+      'Hair Mask: Mix with water to a paste, apply to scalp and hair for 20-30 minutes, rinse well.',
+      'Soap Making: Add as a natural green colorant and skin-conditioning input in cold-process soap.',
+      'For external cosmetic use only.'
      ],
      ingredients: '100% Pure Moringa Leaf Powder - Shade-dried to preserve nutrients',
      faqs: [
@@ -394,12 +394,12 @@
      directions: [
        'Face Pack: Mix 1 tablespoon with rose water or yogurt. Apply to face, leave 15 minutes, rinse. Use 2x weekly.',
        'Scalp Treatment: Mix with coconut oil, apply to scalp, leave 30 minutes, wash with mild shampoo.',
-       'Internal Detox: Add 1/4 teaspoon to warm water, drink on empty stomach (consult practitioner first).',
-       'Caution: Neem is very potent; always dilute and patch test before use.'
+      'Soap Making: Use as a botanical input in handmade soap for its skin-conditioning profile.',
+      'For external cosmetic use only. Neem is potent — always dilute and patch test before use.'
      ],
      ingredients: '100% Pure Neem Leaf Powder - Organically grown, naturally dried',
      faqs: [
-       { question: 'Is Neem safe to consume?', answer: 'Small amounts are traditionally consumed for detox. Start with 1/4 teaspoon. Avoid during pregnancy. Consult an Ayurvedic practitioner.' },
+      { question: 'Is Mittika Neem Powder for internal use?', answer: 'No. Mittika Neem Powder is supplied as a cosmetic-grade botanical raw material for external DIY skin and scalp formulations only.' },
        { question: 'Can Neem cure acne?', answer: 'Neem\'s antibacterial properties can significantly reduce acne-causing bacteria. For severe acne, combine with professional treatment.' },
        { question: 'Is Neem safe for sensitive skin?', answer: 'Neem is potent and may irritate sensitive skin. Always do a patch test and mix with soothing ingredients like aloe vera or rose water.' },
        { question: 'How does Neem help with dandruff?', answer: 'Neem\'s antifungal properties target the fungus that causes dandruff while soothing scalp irritation and reducing flakiness.' }
