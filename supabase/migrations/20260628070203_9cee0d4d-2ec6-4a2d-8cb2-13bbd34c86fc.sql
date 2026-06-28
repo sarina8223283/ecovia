@@ -1,0 +1,1 @@
+DELETE FROM public.site_content WHERE content_key IN ('ritha-powder_benefits_image','ritha-powder_comparison_image');
