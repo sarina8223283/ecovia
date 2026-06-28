@@ -441,6 +441,7 @@ const ProductDetail = () => {
                 src={benefitsImageUrl}
                 alt={`${product.name} benefits infographic`}
                 loading="lazy"
+                onError={(e) => { (e.currentTarget.parentElement?.parentElement as HTMLElement | null)?.style.setProperty('display','none'); }}
                 className="w-full rounded-2xl shadow-elevated border border-border"
               />
             </motion.div>
@@ -465,6 +466,7 @@ const ProductDetail = () => {
                 src={comparisonImageUrl}
                 alt={`${product.name} - Mittika vs generic comparison`}
                 loading="lazy"
+                onError={(e) => { (e.currentTarget.closest('section') as HTMLElement | null)?.style.setProperty('display','none'); }}
                 className="w-full rounded-2xl shadow-elevated border border-border"
               />
             </motion.div>
@@ -486,6 +488,7 @@ const ProductDetail = () => {
                 src={midPageBannerUrl}
                 alt={`${product.name} promotional banner`}
                 loading="lazy"
+                onError={(e) => { (e.currentTarget.closest('section') as HTMLElement | null)?.style.setProperty('display','none'); }}
                 className="w-full rounded-2xl shadow-elevated border border-border"
               />
             </motion.div>
