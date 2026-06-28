@@ -493,6 +493,15 @@ const ProductDetail = () => {
         </section>
       )}
 
+      {/* Product Classification — AI-search optimised, compliance-aligned */}
+      {classification && (
+        <ProductClassification
+          productName={product.name}
+          classification={classification}
+          themeColor={product.themeColor}
+        />
+      )}
+
       <section className="py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mb-8 text-center">
