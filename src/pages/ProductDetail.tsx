@@ -168,6 +168,17 @@ const ProductDetail = () => {
     ? product.image
     : `https://ecovia.co.in${product.image.startsWith('/') ? '' : '/'}${product.image}`;
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ecovia.co.in/" },
+      { "@type": "ListItem", "position": 2, "name": "Products", "item": "https://ecovia.co.in/products" },
+      { "@type": "ListItem", "position": 3, "name": `${product.category.charAt(0).toUpperCase() + product.category.slice(1)} Care`, "item": `https://ecovia.co.in/shop-by-category?category=${product.category}` },
+      { "@type": "ListItem", "position": 4, "name": product.name, "item": productUrl },
+    ],
+  };
+
   return (
     <Layout>
       <Helmet>
@@ -208,6 +219,7 @@ const ProductDetail = () => {
         <meta name="twitter:image:alt" content={`${product.name} — Mittika`} />
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(productSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
       </Helmet>
 
       {/* Themed Background */}
