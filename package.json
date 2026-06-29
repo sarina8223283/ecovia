@@ -9,6 +9,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
+    "seo:audit": "tsx scripts/seo-audit.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
