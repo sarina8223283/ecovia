@@ -19,6 +19,7 @@ import {
 import CartDrawer from '@/components/ui/CartDrawer';
 import PowderScanner from '@/components/ui/PowderScanner';
 import LanguageSelector from '@/components/ui/LanguageSelector';
+import ProductSearch from '@/components/search/ProductSearch';
 import { useAuth } from '@/contexts/AuthContext';
 import ecoviaLogoIcon from '@/assets/ecovia-logo-icon.png';
 
@@ -88,6 +89,7 @@ const Navbar = () => {
 
           {/* Right Actions - Desktop (uniform 22px icons, p-2 buttons, primary green) */}
           <div className="hidden xl:flex items-center gap-1.5 ml-2">
+            <ProductSearch />
             <PowderScanner />
             <LanguageSelector />
             <a href="https://instagram.com/info.ecovia" target="_blank" rel="noopener noreferrer" className="p-2 hover:bg-primary/10 rounded-full transition-all duration-200 text-primary" aria-label="Instagram">
@@ -111,6 +113,7 @@ const Navbar = () => {
 
           {/* Mobile / Tablet Actions */}
           <div className="flex xl:hidden items-center gap-1">
+            <ProductSearch />
             <PowderScanner />
             <LanguageSelector />
             <CartDrawer />
