@@ -159,26 +159,53 @@ const ProductDetail = () => {
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
 
+  const ogDescription = classification
+    ? `${product.name} — ${classification.grade}${classification.botanicalName ? ` (${classification.botanicalName})` : ''}. ${classification.intendedUse} Applications: ${classification.applications.slice(0, 3).join(', ')}. By Mittika · Ecovia Enterprises.`
+    : product.description;
+  const ogTitle = `${product.name}${classification?.botanicalName ? ` — ${classification.botanicalName}` : ''} | Mittika`;
+  const productUrl = `https://ecovia.co.in/product/${product.id}`;
+  const absoluteImage = product.image.startsWith('http')
+    ? product.image
+    : `https://ecovia.co.in${product.image.startsWith('/') ? '' : '/'}${product.image}`;
+
   return (
     <Layout>
       <Helmet>
         <title>{product.name} | Mittika by Ecovia Enterprises</title>
         <meta
           name="description"
-          content={
-            classification
-              ? `${product.name} — ${classification.grade}. ${classification.intendedUse} Sold by Ecovia Enterprises (Mittika) for DIY skin care, hair care, soap making and cosmetic formulations.`
-              : product.description
-          }
+          content={ogDescription}
         />
         {classification && (
           <meta name="keywords" content={classification.keywords.join(', ')} />
         )}
-        <link rel="canonical" href={`https://ecovia.lovable.app/product/${product.id}`} />
+        <link rel="canonical" href={productUrl} />
+        {/* Open Graph */}
         <meta property="og:type" content="product" />
-        <meta property="og:title" content={`${product.name} | Cosmetic Grade Botanical Raw Material`} />
-        <meta property="og:url" content={`https://ecovia.lovable.app/product/${product.id}`} />
-        <meta property="og:image" content={product.image} />
+        <meta property="og:site_name" content="Mittika by Ecovia Enterprises" />
+        <meta property="og:title" content={ogTitle} />
+        <meta property="og:description" content={ogDescription} />
+        <meta property="og:url" content={productUrl} />
+        <meta property="og:image" content={absoluteImage} />
+        <meta property="og:image:alt" content={`${product.name} — ${classification?.grade || 'Mittika herbal powder'}`} />
+        <meta property="og:locale" content="en_IN" />
+        <meta property="product:brand" content="Mittika" />
+        <meta property="product:availability" content="in stock" />
+        <meta property="product:condition" content="new" />
+        <meta property="product:category" content={classification?.grade || 'Cosmetic Grade Botanical Raw Material'} />
+        {selectedTier && (
+          <>
+            <meta property="product:price:amount" content={String(selectedTier.discountedPrice)} />
+            <meta property="product:price:currency" content="INR" />
+          </>
+        )}
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@ecovia_india" />
+        <meta name="twitter:title" content={ogTitle} />
+        <meta name="twitter:description" content={ogDescription} />
+        <meta name="twitter:image" content={absoluteImage} />
+        <meta name="twitter:image:alt" content={`${product.name} — Mittika`} />
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(productSchema)}</script>
       </Helmet>
