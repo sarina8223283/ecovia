@@ -34,6 +34,7 @@ import WebhookUninstall from "./pages/WebhookUninstall";
 import WebhookDelete from "./pages/WebhookDelete";
 import AuthCallback from "./pages/AuthCallback";
 import CustomerOutreach from "./pages/CustomerOutreach";
+import CosmeticGrade from "./pages/CosmeticGrade";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,8 @@ const App = () => (
                 <Route path="/bulk-orders" element={<BulkOrders />} />
                 <Route path="/export" element={<Export />} />
                 <Route path="/shop-by-category" element={<ShopByCategory />} />
+                <Route path="/cosmetic-grade" element={<CosmeticGrade />} />
+                <Route path="/cosmetic-grade/:category" element={<CosmeticGrade />} />
                 <Route path="/purity" element={<PurityVerification />} />
                 <Route path="/directions" element={<DirectionsOfUse />} />
                 <Route path="/visitors" element={<Visitors />} />
