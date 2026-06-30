@@ -14,3 +14,5 @@ User-agent: *
 Allow: /
 
 Sitemap: https://ecovia.co.in/sitemap.xml
+Sitemap: https://ecovia.co.in/sitemap-images.xml
+Sitemap: https://ecovia.co.in/sitemap-index.xml
