@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Mail, MapPin, Phone } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
+import CanonicalSEO from '@/components/seo/CanonicalSEO';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { useSiteContent, getContent } from '@/hooks/useSiteContent';
 
@@ -9,6 +10,11 @@ const Contact = () => {
 
   return (
     <Layout>
+      <CanonicalSEO
+        path="/contact"
+        title="Contact Mittika & Ecovia Enterprises"
+        description="Reach Ecovia Enterprises for wholesale, bulk, export and partnership enquiries on Mittika cosmetic grade botanical raw materials."
+      />
       {/* Hero Section */}
       <section className="py-20 bg-hero-pattern relative overflow-hidden">
         <div className="absolute inset-0 nature-bg opacity-30" />
