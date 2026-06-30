@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Layout from '@/components/layout/Layout';
+import CanonicalSEO from '@/components/seo/CanonicalSEO';
 import ProductCard from '@/components/ui/ProductCard';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { products } from '@/data/products';
@@ -26,6 +27,11 @@ const Products = () => {
 
   return (
     <Layout>
+      <CanonicalSEO
+        path="/products"
+        title="All Mittika Products — Cosmetic Grade Botanical Raw Materials"
+        description="Browse the complete Mittika catalogue of NABL-tested cosmetic grade botanical powders for DIY skin, hair and wellness formulations."
+      />
       {/* Hero Section with strong herbal background */}
       <section className="relative py-16 sm:py-24 overflow-hidden">
         <div className="absolute inset-0 z-0">
