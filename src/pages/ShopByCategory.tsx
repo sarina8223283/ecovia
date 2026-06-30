@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sparkles, Leaf, Heart } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
+import CanonicalSEO from '@/components/seo/CanonicalSEO';
 import ProductCard from '@/components/ui/ProductCard';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { products } from '@/data/products';
@@ -39,6 +40,11 @@ const categories = [
 const ShopByCategory = () => {
   return (
     <Layout>
+      <CanonicalSEO
+        path="/shop-by-category"
+        title="Shop by Category — Skin, Hair & Wellness | Mittika"
+        description="Explore Mittika's curated collections of cosmetic grade botanical raw materials by category — Skin Care, Hair Care, and Wellness powders."
+      />
       {/* Hero */}
       <section className="py-16 sm:py-24 bg-hero-pattern">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">

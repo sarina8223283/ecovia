@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Leaf, Shield, Heart } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
+import CanonicalSEO from '@/components/seo/CanonicalSEO';
 import ProductCard from '@/components/ui/ProductCard';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import HeroProductStrip from '@/components/home/HeroProductStrip';
@@ -15,6 +16,11 @@ const Index = () => {
 
   return (
     <Layout>
+      <CanonicalSEO
+        path="/"
+        title="Mittika — Pure Natural Ayurvedic Herbal Powders | Ecovia Enterprises"
+        description="Mittika by Ecovia Enterprises — 100% pure, NABL-tested cosmetic grade botanical raw materials for DIY skin care, hair care and soap making."
+      />
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-earth/5">
         {/* Background Image & Overlay */}
