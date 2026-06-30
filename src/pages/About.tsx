@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Leaf, Heart, Award, Shield, Globe, Users, MessageCircle, Instagram, Facebook, FileCheck } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
+import CanonicalSEO from '@/components/seo/CanonicalSEO';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { Link } from 'react-router-dom';
 import aboutHero from '@/assets/about-hero.jpg';
@@ -39,6 +40,11 @@ const About = () => {
 
   return (
     <Layout>
+      <CanonicalSEO
+        path="/about"
+        title="About Mittika & Ecovia Enterprises — Our Story"
+        description="Learn about Ecovia Enterprises and the Mittika brand — our mission to deliver 100% pure, NABL-tested cosmetic grade botanical raw materials rooted in Ayurveda."
+      />
       {/* Hero Section */}
       <section className="relative py-20 sm:py-32 overflow-hidden bg-hero-pattern">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
