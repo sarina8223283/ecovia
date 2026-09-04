@@ -179,11 +179,11 @@ const Export = () => {
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-foreground mb-6">
               {getContent(content, 'export_company_heading', 'About Ecovia Enterprises')}
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div><h4 className="font-semibold text-foreground mb-2">Company</h4><p className="text-muted-foreground">{getContent(content, 'export_company_name', 'Ecovia Enterprises OPC Pvt. Ltd.')}</p></div>
               <div><h4 className="font-semibold text-foreground mb-2">Brand</h4><p className="text-muted-foreground">{getContent(content, 'export_brand_name', 'MITTIKA')}</p></div>
-              <div><h4 className="font-semibold text-foreground mb-2">Director</h4><p className="text-muted-foreground">{getContent(content, 'export_director', 'Sagar Jadhav')}</p></div>
             </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div><h4 className="font-semibold text-foreground mb-2">Email</h4><a href="mailto:info@ecovia.co.in" className="text-primary hover:underline">info@ecovia.co.in</a></div>
               <div><h4 className="font-semibold text-foreground mb-2">Phone</h4><a href="tel:+918758808684" className="text-primary hover:underline">+91 8758808684</a></div>
