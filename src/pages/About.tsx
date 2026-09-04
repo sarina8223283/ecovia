@@ -1,11 +1,47 @@
 import { motion } from 'framer-motion';
-import { Leaf, Heart, Award, Shield, Globe, Users, MessageCircle, Instagram, Facebook, FileCheck } from 'lucide-react';
+import {
+  Leaf, Heart, Award, Shield, Globe, Users, MessageCircle, Instagram, Facebook, FileCheck,
+  ExternalLink, Layout as LayoutIcon, Server, Cloud, PenTool, Globe2, AppWindow, TestTube2,
+  ShoppingCart, Layers, Boxes, Smartphone, Lightbulb, Bot, Mic, FileStack,
+} from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import CanonicalSEO from '@/components/seo/CanonicalSEO';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
+import DemoRequestForm from '@/components/forms/DemoRequestForm';
 import { Link } from 'react-router-dom';
 import aboutHero from '@/assets/about-hero.jpg';
 import { useSiteContent, getContent } from '@/hooks/useSiteContent';
+
+const digitalProducts = [
+  { name: 'Ecovia ERP', url: 'https://erp.ecovia.co.in', desc: 'End-to-end ERP for inventory, purchase, production, sales and finance workflows.', icon: Boxes },
+  { name: 'Ecovia QMS', url: 'https://qms.ecovia.co.in', desc: 'Quality Management System digitalisation — SOPs, deviations, CAPA, audits and documents.', icon: FileStack },
+  { name: 'Ecovia Web Development', url: 'https://web.ecovia.co.in', desc: 'Websites, web apps and full-stack product engineering with SEO and performance built in.', icon: Globe2 },
+  { name: 'Ecovia Agents', url: 'https://agent.ecovia.co.in', desc: 'AI chatbot builders, voice agents and automation agents trained on your business data.', icon: Bot },
+  { name: 'Mittika by Ecovia', url: 'https://ecovia.co.in', desc: 'Cosmetic grade clay, herbal powders and botanical raw materials — the Mittika brand.', icon: Leaf },
+];
+
+const capabilities = [
+  { icon: Bot, title: 'Chatbot Builder Service', desc: 'Custom AI assistants trained on your catalogue, SOPs and customer history.' },
+  { icon: Mic, title: 'Voice Agent Service', desc: 'Inbound and outbound voice agents for support, qualification and follow-ups.' },
+  { icon: Smartphone, title: 'Android App Builder', desc: 'From idea to a released Android app — UX, prototype, MVP and store release.' },
+  { icon: Boxes, title: 'ERP & CRM Products', desc: 'Ready ERP and CRM platforms tailored to your operations, not generic templates.' },
+  { icon: FileStack, title: 'QMS Digitalisation', desc: 'Paper-based quality systems converted into audit-ready digital workflows.' },
+];
+
+const services = [
+  { no: '01', title: 'Frontend Development', tagline: 'Interfaces that perform.', desc: 'Responsive web interfaces, dashboards, SaaS surfaces, admin panels and customer portals — built with Next.js, React, TypeScript and modern component systems.', stack: ['Next.js', 'React', 'TypeScript', 'Tailwind', 'shadcn/ui'], icon: LayoutIcon },
+  { no: '02', title: 'Backend Development', tagline: 'Logic that survives contact with real users.', desc: 'REST APIs, business logic, authentication, authorization, database architecture, integrations, workflow engines, background jobs and notification systems.', stack: ['FastAPI', 'Node.js', 'PostgreSQL', 'Redis', 'Docker'], icon: Server },
+  { no: '03', title: 'Hosting & Deployment', tagline: 'Production-ready, not just pushed.', desc: 'VPS and cloud deployment, Docker, reverse proxy, SSL, DNS, backups, monitoring, CI/CD, staging and production environments.', stack: ['Docker', 'Nginx', 'PM2', 'Caddy', 'GitHub Actions'], icon: Cloud },
+  { no: '04', title: 'Web Designing', tagline: 'Design systems, not just screens.', desc: 'UI/UX design, design systems, responsive design, wireframes, prototypes, landing pages, dashboards, SaaS UX and ecommerce UX.', stack: ['Figma', 'Design Tokens', 'Storybook'], icon: PenTool },
+  { no: '05', title: 'Website Development', tagline: 'Sites that load fast and rank well.', desc: 'Business, corporate, service, portfolio, product and lead-generation websites with SEO, performance, responsive design, CMS readiness, analytics, forms, security and maintainability.', stack: ['Next.js', 'MDX', 'Tailwind', 'Vercel/PM2'], icon: Globe2 },
+  { no: '06', title: 'Web Application Development', tagline: 'Software that runs your business.', desc: 'SaaS, ERP interfaces, CRM systems, QMS systems, workflow applications, dashboards, internal business tools, customer portals and document management systems.', stack: ['Next.js', 'FastAPI', 'PostgreSQL', 'Redis', 'Zod'], icon: AppWindow },
+  { no: '07', title: 'Testing & Automation', tagline: 'Ship with evidence, not hope.', desc: 'Functional, regression, API, UI, browser, responsive, accessibility and performance testing — automated in CI so quality is repeatable, not lucky.', stack: ['Playwright', 'Vitest', 'Jest', 'GitHub Actions'], icon: TestTube2 },
+  { no: '08', title: 'Ecommerce Development', tagline: 'Catalogues, carts, checkout — done right.', desc: 'Product catalogue, categories, search, filters, product detail, cart, checkout, customer accounts, order management, payment & shipping integration, inventory, coupons, invoices and admin dashboard. Supports B2C, B2B and D2C.', stack: ['Next.js', 'FastAPI', 'PostgreSQL', 'Stripe/Razorpay'], icon: ShoppingCart },
+  { no: '09', title: 'Full-Stack Website Development', tagline: 'UI + Frontend + Backend + Database + Auth + Deploy + Test.', desc: 'The complete lifecycle. Ecovia owns the full technical implementation — interface, frontend, backend, database, authentication, deployment and testing — so you have one accountable partner, not a stack of vendors.', stack: ['Next.js', 'FastAPI', 'PostgreSQL', 'Redis', 'Docker'], icon: Layers },
+  { no: '10', title: 'Web Apps', tagline: 'Software your business actually runs on.', desc: 'A dedicated category for SaaS products, workflow systems, enterprise dashboards, customer portals, internal tools, AI-powered applications, document systems and business automation.', stack: ['Next.js', 'FastAPI', 'PostgreSQL', 'Redis'], icon: AppWindow },
+  { no: '11', title: 'Android App Design & Prototype', tagline: 'Idea → UX → Prototype → MVP → Test → Release.', desc: 'Android UI design, app UX, wireframes, clickable prototypes, MVP development, API integration, authentication, push notification architecture, offline-ready architecture and app testing.', stack: ['React Native', 'Kotlin', 'Expo', 'REST'], icon: Smartphone },
+  { no: '12', title: 'Your Idea → Your Apps', tagline: 'Your Idea. Your Product. Your App.', desc: 'Bring an idea, a business problem, a workflow, a sketch, an Excel sheet, an existing website or application — Ecovia turns it into research, UX, prototype, web app, Android app, backend, deployment and tested software.', stack: ['Full Ecovia stack'], icon: Lightbulb },
+];
 
 const About = () => {
   const { data: content } = useSiteContent();
@@ -38,12 +74,17 @@ const About = () => {
     window.open(`https://wa.me/918758808684?text=${encodeURIComponent(message)}`, '_blank');
   };
 
+  const discussService = (title: string) => {
+    const message = `Hi Ecovia! I would like to discuss the "${title}" service.`;
+    window.open(`https://wa.me/918758808684?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
   return (
     <Layout>
       <CanonicalSEO
         path="/about"
-        title="About Mittika & Ecovia Enterprises — Our Story"
-        description="Learn about Ecovia Enterprises and the Mittika brand — our mission to deliver 100% pure, NABL-tested cosmetic grade botanical raw materials rooted in Ayurveda."
+        title="About Ecovia Enterprises — Mittika & Ecovia Digital"
+        description="Ecovia Enterprises runs Ecovia Digital (ERP, QMS, Web Development, AI Agents) and Mittika — 100% pure, NABL-tested cosmetic grade botanical raw materials."
       />
       {/* Hero Section */}
       <section className="relative py-20 sm:py-32 overflow-hidden bg-hero-pattern">
@@ -74,8 +115,135 @@ const About = () => {
         </div>
       </section>
 
-      {/* Image + Story Section */}
+      {/* The Ecovia Group */}
+      <section className="py-16 sm:py-24 bg-secondary/30">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 max-w-3xl mx-auto">
+            <span className="text-primary font-medium text-sm uppercase tracking-wider">The Ecovia Group</span>
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-foreground mt-2 mb-4">Five Products, One Company</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              Ecovia Enterprises operates five products across two brands — <strong className="text-foreground">Ecovia Digital</strong> for software,
+              AI and quality systems, and <strong className="text-foreground">Mittika</strong> for cosmetic grade clay and botanical raw materials.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {digitalProducts.map((p, i) => (
+              <motion.a
+                key={p.name}
+                href={p.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.06 }}
+                className="group p-6 bg-card rounded-2xl shadow-soft hover:shadow-card transition-all border border-border/60"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 text-primary">
+                    <p.icon size={22} />
+                  </span>
+                  <h3 className="font-serif text-lg font-semibold text-foreground">{p.name}</h3>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">{p.desc}</p>
+                <span className="inline-flex items-center gap-1.5 text-sm font-medium text-primary group-hover:underline">
+                  {p.url.replace('https://', '')} <ExternalLink size={14} />
+                </span>
+              </motion.a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Ecovia Digital capabilities */}
       <section className="py-16 sm:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <span className="text-primary font-medium text-sm uppercase tracking-wider">Ecovia Digital</span>
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-foreground mt-2">What We Build</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            {capabilities.map((c, i) => (
+              <motion.div
+                key={c.title}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.06 }}
+                className="p-6 bg-card rounded-xl shadow-soft text-center"
+              >
+                <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-4">
+                  <c.icon size={24} />
+                </span>
+                <h3 className="font-semibold text-foreground mb-2">{c.title}</h3>
+                <p className="text-sm text-muted-foreground">{c.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Services 01-12 */}
+      <section className="py-16 sm:py-24 bg-secondary/30">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <span className="text-primary font-medium text-sm uppercase tracking-wider">Services</span>
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-foreground mt-2">Twelve Ways Ecovia Delivers</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {services.map((s, i) => (
+              <motion.article
+                key={s.no}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: (i % 3) * 0.06 }}
+                className="flex flex-col p-6 bg-card rounded-2xl shadow-soft border border-border/60"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-semibold tracking-[0.2em] text-primary/70">SERVICE {s.no}</span>
+                  <s.icon size={20} className="text-primary" />
+                </div>
+                <h3 className="font-serif text-xl font-semibold text-foreground mb-1">{s.title}</h3>
+                <p className="text-sm font-medium text-primary mb-3">{s.tagline}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-4">{s.desc}</p>
+                <div className="flex flex-wrap gap-2 mb-5 mt-auto">
+                  {s.stack.map((t) => (
+                    <span key={t} className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary">{t}</span>
+                  ))}
+                </div>
+                <button
+                  onClick={() => discussService(s.title)}
+                  className="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors"
+                >
+                  <MessageCircle size={16} /> Discuss this service
+                </button>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Demo request */}
+      <section id="demo" className="py-16 sm:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-10">
+              <span className="text-primary font-medium text-sm uppercase tracking-wider">Book a Demo</span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-foreground mt-2 mb-3">Show us what you need</h2>
+              <p className="text-muted-foreground">
+                Share your phone number and, if helpful, upload screenshots or sketches of your requirement. Our team responds within 24 hours.
+              </p>
+            </div>
+            <DemoRequestForm />
+          </div>
+        </div>
+      </section>
+
+      {/* Image + Story Section */}
+      <section className="py-16 sm:py-24 bg-secondary/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="relative">
@@ -100,7 +268,7 @@ const About = () => {
               </h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
                 <p>{getContent(content, 'about_story_p1', 'Every Mittika product begins its journey in the fields and forests of India, where skilled collectors handpick herbs, flowers, and plants at their peak potency. We work directly with farming communities who understand the rhythm of nature.')}</p>
-                <p><strong className="text-foreground">Why we\'re sure about our products:</strong> {getContent(content, 'about_story_p2', 'Our quality isn\'t just promised — it\'s proven. Every batch is tested at NABL-approved laboratories before reaching you.')}</p>
+                <p><strong className="text-foreground">Why we're sure about our products:</strong> {getContent(content, 'about_story_p2', 'Our quality isn\'t just promised — it\'s proven. Every batch is tested at NABL-approved laboratories before reaching you.')}</p>
                 <p><strong className="text-foreground">"The Luxury of Earthly Purity"</strong> {getContent(content, 'about_story_p3', 'isn\'t just our tagline — it\'s our philosophy. We believe true luxury comes from authenticity, from products that are as pure as nature intended.')}</p>
                 <p><strong className="text-foreground">Ecovia: Your Smart Path to Ecological Living</strong> — {getContent(content, 'about_story_p4', 'Our name reflects our mission: to create a path (via) that connects you to ecological (eco) wellness through smart, sustainable choices.')}</p>
               </div>
@@ -144,7 +312,7 @@ const About = () => {
               </p>
             </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
               <div className="text-center p-6 bg-card rounded-xl shadow-soft">
                 <h4 className="font-semibold text-foreground mb-2">Company</h4>
                 <p className="text-muted-foreground">{getContent(content, 'about_company_name', 'Ecovia Enterprises OPC Pvt. Ltd.')}</p>
@@ -152,10 +320,6 @@ const About = () => {
               <div className="text-center p-6 bg-card rounded-xl shadow-soft">
                 <h4 className="font-semibold text-foreground mb-2">Brand</h4>
                 <p className="text-muted-foreground">{getContent(content, 'about_brand_name', 'MITTIKA')}</p>
-              </div>
-              <div className="text-center p-6 bg-card rounded-xl shadow-soft">
-                <h4 className="font-semibold text-foreground mb-2">Director</h4>
-                <p className="text-muted-foreground">{getContent(content, 'about_director_name', 'Sagar Jadhav')}</p>
               </div>
             </div>
           </div>
