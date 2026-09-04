@@ -109,6 +109,45 @@ export type Database = {
         }
         Relationships: []
       }
+      demo_requests: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          image_paths: string[]
+          message: string | null
+          name: string
+          phone: string
+          service: string | null
+          status: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          image_paths?: string[]
+          message?: string | null
+          name: string
+          phone: string
+          service?: string | null
+          status?: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          image_paths?: string[]
+          message?: string | null
+          name?: string
+          phone?: string
+          service?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       meta_data_deletion_requests: {
         Row: {
           confirmation_code: string
