@@ -360,7 +360,7 @@ serve(async (req) => {
           products: PRODUCT_CATALOG,
           pages: WEBSITE_STRUCTURE,
           pricing: "Products: ₹0.30-0.65/g. Sizes: 50g-10kg. Bulk discounts up to 63%.",
-          company: "Mittika by Ecovia Enterprises. Director: Sagar Jadhav. Phone: +91 8758808684. Email: info@mittika.com. NABL lab testing.",
+          company: "Mittika by Ecovia Enterprises OPC Pvt. Ltd. Phone: +91 8758808684. Email: info@mittika.com. NABL lab testing. Sister products under Ecovia Digital: Ecovia ERP (erp.ecovia.co.in), Ecovia QMS (qms.ecovia.co.in), Ecovia Web Development (web.ecovia.co.in), Ecovia Agents (agent.ecovia.co.in). No individual/director names are published.",
           features: "AI chatbot (Sarina), Powder Scanner, Multi-language, Cart, Orders, Feedback, Purity verification, Export.",
           all: PRODUCT_CATALOG + "\n" + WEBSITE_STRUCTURE,
         };
