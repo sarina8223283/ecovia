@@ -287,6 +287,35 @@ serve(async (req) => {
       });
     }
 
+    // ─── Orders (admin only, service-role reads) ───
+    if (action === "list_orders" || action === "update_order") {
+      const { data: opw } = await supabase.from("admin_settings").select("setting_value").eq("setting_key", "admin_password").single();
+      if (!opw || opw.setting_value !== password) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (action === "list_orders") {
+        const { data, error } = await supabase
+          .from("orders").select("*").order("created_at", { ascending: false }).limit(200);
+        if (error) throw error;
+        const orders = (data || []).map(({ guest_token: _t, ...rest }: any) => rest);
+        return new Response(JSON.stringify({ success: true, orders }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { id, update } = tool_call || {};
+      const { error: ordErr } = await supabase.from("orders").update(update || {}).eq("id", id);
+      if (ordErr) throw ordErr;
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+
+
     // ─── Deploy a previewed image (confirm step) ───
     if (action === "deploy_image") {
       const { image_url, content_key } = tool_call;

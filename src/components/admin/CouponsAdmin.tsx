@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2, Plus, MessageCircle, Tag } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAdminOrders } from '@/lib/adminApi';
 import { toast } from '@/hooks/use-toast';
 import { waLink } from '@/lib/whatsapp';
 
@@ -21,7 +22,7 @@ export const CouponsAdmin = () => {
   const { data: customers = [] } = useQuery({
     queryKey: ['admin-customers'],
     queryFn: async () => {
-      const { data } = await supabase.from('orders').select('customer_name, customer_phone').not('customer_phone', 'is', null);
+      const data = (await fetchAdminOrders()).filter((o: any) => o.customer_phone);
       const seen = new Set<string>();
       return (data || []).filter(c => { if (seen.has(c.customer_phone)) return false; seen.add(c.customer_phone); return true; });
     },

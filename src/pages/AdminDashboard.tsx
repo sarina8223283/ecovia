@@ -4,6 +4,7 @@ import { Lock, LayoutDashboard, Users, FileText, Settings, Eye, BarChart3, Shiel
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAdminOrders } from '@/lib/adminApi';
 import { toast } from '@/hooks/use-toast';
 import Layout from '@/components/layout/Layout';
 
@@ -143,8 +144,8 @@ const DashboardContent = () => {
   const { data: orderCount } = useQuery({
     queryKey: ['admin-dashboard-orders'],
     queryFn: async () => {
-      const { count } = await supabase.from('orders').select('*', { count: 'exact', head: true });
-      return count || 0;
+      const orders = await fetchAdminOrders();
+      return orders.length;
     },
   });
 

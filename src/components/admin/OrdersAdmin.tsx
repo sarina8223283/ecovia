@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2, MessageCircle, Truck, Package, ClipboardCheck, Home, Clock } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchAdminOrders, updateAdminOrder } from '@/lib/adminApi';
 import { toast } from '@/hooks/use-toast';
 import { openWhatsApp, OrderEvent } from '@/lib/whatsapp';
 
@@ -15,9 +15,7 @@ export const OrdersAdmin = () => {
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(100);
-      if (error) throw error;
-      return data as any[];
+      return await fetchAdminOrders();
     },
   });
 
@@ -33,9 +31,14 @@ export const OrdersAdmin = () => {
       if (trk.tracking_number) update.tracking_number = trk.tracking_number;
       if (trk.courier) update.courier = trk.courier;
     }
-    const { error } = await supabase.from('orders').update(update).eq('id', order.id);
+    try {
+      await updateAdminOrder(order.id, update);
+    } catch (e: any) {
+      setSavingId(null);
+      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+      return;
+    }
     setSavingId(null);
-    if (error) { toast({ title: 'Error', description: error.message, variant: 'destructive' }); return; }
     toast({ title: '✅ Updated', description: `Order ${order.order_number} → ${newStatus}` });
     qc.invalidateQueries({ queryKey: ['admin-orders'] });
 

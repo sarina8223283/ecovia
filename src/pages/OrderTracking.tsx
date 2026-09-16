@@ -28,14 +28,26 @@ const OrderTracking = () => {
     if (!orderNumber) return;
     if (!user && !guestToken) return;
     (async () => {
-      let q = supabase.from('orders').select('*').eq('order_number', orderNumber);
-      if (user) q = q.eq('user_id', user.id);
-      else if (guestToken) q = q.eq('guest_token', guestToken);
-      const { data: o } = await q.maybeSingle();
-      if (!o) { setLoading(false); return; }
-      setOrder(o);
-      const { data: it } = await supabase.from('order_items').select('*').eq('order_id', o.id);
-      setItems(it || []);
+      if (user) {
+        const { data: o } = await supabase
+          .from('orders').select('*')
+          .eq('order_number', orderNumber)
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (!o) { setLoading(false); return; }
+        setOrder(o);
+        const { data: it } = await supabase.from('order_items').select('*').eq('order_id', o.id);
+        setItems(it || []);
+      } else if (guestToken) {
+        const { data } = await supabase.rpc('get_guest_order', {
+          p_order_number: orderNumber,
+          p_guest_token: guestToken,
+        });
+        const payload = data as any;
+        if (!payload?.order) { setLoading(false); return; }
+        setOrder(payload.order);
+        setItems(payload.items || []);
+      }
       setLoading(false);
     })();
   }, [user, orderNumber, guestToken]);
