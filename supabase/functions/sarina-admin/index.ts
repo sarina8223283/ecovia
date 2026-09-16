@@ -256,6 +256,37 @@ serve(async (req) => {
       });
     }
 
+    // ─── Demo / enquiry requests (admin only) ───
+    if (action === "list_demo_requests" || action === "update_demo_request") {
+      const { data: pw } = await supabase.from("admin_settings").select("setting_value").eq("setting_key", "admin_password").single();
+      if (!pw || pw.setting_value !== password) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (action === "list_demo_requests") {
+        const { data, error } = await supabase
+          .from("demo_requests").select("*").order("created_at", { ascending: false }).limit(200);
+        if (error) throw error;
+        const requests = (data || []).map((r: any) => ({
+          ...r,
+          image_urls: (r.image_paths || []).map((p: string) =>
+            supabase.storage.from("demo-uploads").getPublicUrl(p).data.publicUrl),
+        }));
+        return new Response(JSON.stringify({ success: true, requests }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { id, status } = tool_call || {};
+      const { error: upErr } = await supabase.from("demo_requests").update({ status }).eq("id", id);
+      if (upErr) throw upErr;
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // ─── Deploy a previewed image (confirm step) ───
     if (action === "deploy_image") {
       const { image_url, content_key } = tool_call;
