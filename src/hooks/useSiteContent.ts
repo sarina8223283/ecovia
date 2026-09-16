@@ -28,6 +28,7 @@ export const useSiteContent = () => {
     },
     staleTime: 5_000, // 5 seconds for faster updates
     refetchOnWindowFocus: true,
+    refetchInterval: 30_000, // poll for CMS updates instead of realtime broadcasts
   });
 };
 
