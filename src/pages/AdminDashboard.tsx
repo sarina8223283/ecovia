@@ -186,6 +186,7 @@ const DashboardContent = () => {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           <QuickAction icon={Sparkles} title="Sarina AI Editor" description="Edit website content, generate images, manage everything with AI" to="/sarina-admin" />
           <QuickAction icon={Send} title="Email & Message Customers" description="Send branded offer emails & WhatsApp messages with auto-generated valid coupon codes" to="/admin/outreach" />
+          <QuickAction icon={FileText} title="Demo & Enquiry Requests" description="View demo form submissions with contact details, attachments and follow-up status" to="/admin/demo-requests" />
           <QuickAction icon={Users} title="Visitor Analytics" description="View detailed visitor statistics and traffic sources" to="/visitors" />
           <QuickAction icon={FileText} title="Products" description="Browse and manage your product catalog" to="/products" />
           <QuickAction icon={Shield} title="Purity Verification" description="Manage powder purity testing information" to="/purity" />

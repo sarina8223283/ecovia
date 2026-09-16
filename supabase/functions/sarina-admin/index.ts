@@ -82,7 +82,9 @@ footer_phone, footer_email, footer_address, footer_copyright
 Note: mid_page_banner appears on product detail page between the description/benefits section and "How to Use" section. Use this for promotional banners, seasonal offers, or highlight images.
 
 ## Company Info:
-Brand: Mittika by Ecovia Enterprises. Director: Sagar Jadhav. Phone: +91 8758808684. Email: info@mittika.com.
+Brand: Mittika by Ecovia Enterprises OPC Pvt. Ltd. Phone: +91 8758808684. Email: info@mittika.com.
+Never publish any director/founder/individual name anywhere on the site — all content stays under "Ecovia Enterprises".
+Ecovia Digital products: Ecovia ERP (erp.ecovia.co.in), Ecovia QMS (qms.ecovia.co.in), Ecovia Web Development (web.ecovia.co.in), Ecovia Agents (agent.ecovia.co.in). Mittika clay & herbal products (ecovia.co.in).
 `;
 
 const ADMIN_SYSTEM_PROMPT = `You are **Sarina**, the most advanced AI website editor. You have FULL control over every aspect of the Mittika website. You can edit ANY text, generate ANY image, redesign ANY page, update themes, and rebuild the entire site from scratch.
@@ -254,6 +256,37 @@ serve(async (req) => {
       });
     }
 
+    // ─── Demo / enquiry requests (admin only) ───
+    if (action === "list_demo_requests" || action === "update_demo_request") {
+      const { data: pw } = await supabase.from("admin_settings").select("setting_value").eq("setting_key", "admin_password").single();
+      if (!pw || pw.setting_value !== password) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (action === "list_demo_requests") {
+        const { data, error } = await supabase
+          .from("demo_requests").select("*").order("created_at", { ascending: false }).limit(200);
+        if (error) throw error;
+        const requests = (data || []).map((r: any) => ({
+          ...r,
+          image_urls: (r.image_paths || []).map((p: string) =>
+            supabase.storage.from("demo-uploads").getPublicUrl(p).data.publicUrl),
+        }));
+        return new Response(JSON.stringify({ success: true, requests }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { id, status } = tool_call || {};
+      const { error: upErr } = await supabase.from("demo_requests").update({ status }).eq("id", id);
+      if (upErr) throw upErr;
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // ─── Deploy a previewed image (confirm step) ───
     if (action === "deploy_image") {
       const { image_url, content_key } = tool_call;
@@ -358,7 +391,7 @@ serve(async (req) => {
           products: PRODUCT_CATALOG,
           pages: WEBSITE_STRUCTURE,
           pricing: "Products: ₹0.30-0.65/g. Sizes: 50g-10kg. Bulk discounts up to 63%.",
-          company: "Mittika by Ecovia Enterprises. Director: Sagar Jadhav. Phone: +91 8758808684. Email: info@mittika.com. NABL lab testing.",
+          company: "Mittika by Ecovia Enterprises OPC Pvt. Ltd. Phone: +91 8758808684. Email: info@mittika.com. NABL lab testing. Sister products under Ecovia Digital: Ecovia ERP (erp.ecovia.co.in), Ecovia QMS (qms.ecovia.co.in), Ecovia Web Development (web.ecovia.co.in), Ecovia Agents (agent.ecovia.co.in). No individual/director names are published.",
           features: "AI chatbot (Sarina), Powder Scanner, Multi-language, Cart, Orders, Feedback, Purity verification, Export.",
           all: PRODUCT_CATALOG + "\n" + WEBSITE_STRUCTURE,
         };
