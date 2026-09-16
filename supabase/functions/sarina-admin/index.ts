@@ -82,7 +82,9 @@ footer_phone, footer_email, footer_address, footer_copyright
 Note: mid_page_banner appears on product detail page between the description/benefits section and "How to Use" section. Use this for promotional banners, seasonal offers, or highlight images.
 
 ## Company Info:
-Brand: Mittika by Ecovia Enterprises. Director: Sagar Jadhav. Phone: +91 8758808684. Email: info@mittika.com.
+Brand: Mittika by Ecovia Enterprises OPC Pvt. Ltd. Phone: +91 8758808684. Email: info@mittika.com.
+Never publish any director/founder/individual name anywhere on the site — all content stays under "Ecovia Enterprises".
+Ecovia Digital products: Ecovia ERP (erp.ecovia.co.in), Ecovia QMS (qms.ecovia.co.in), Ecovia Web Development (web.ecovia.co.in), Ecovia Agents (agent.ecovia.co.in). Mittika clay & herbal products (ecovia.co.in).
 `;
 
 const ADMIN_SYSTEM_PROMPT = `You are **Sarina**, the most advanced AI website editor. You have FULL control over every aspect of the Mittika website. You can edit ANY text, generate ANY image, redesign ANY page, update themes, and rebuild the entire site from scratch.
