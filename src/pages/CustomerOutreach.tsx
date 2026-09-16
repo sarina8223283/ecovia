@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet-async';
 import { Lock, Send, Sparkles, Tag, MessageCircle, Mail, Users, Loader2, Check, ArrowLeft, Eye } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { fetchAdminOrders } from '@/lib/adminApi';
 import { toast } from 'sonner';
 import Layout from '@/components/layout/Layout';
 import { waLink } from '@/lib/whatsapp';
@@ -90,10 +91,7 @@ const OutreachPanel = () => {
   const { data: customers = [], isLoading } = useQuery({
     queryKey: ['outreach-customers'],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('orders')
-        .select('customer_name, customer_phone, customer_email')
-        .order('created_at', { ascending: false });
+      const data = await fetchAdminOrders();
       const seen = new Set<string>();
       const list: Customer[] = [];
       (data || []).forEach((c: any) => {

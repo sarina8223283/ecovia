@@ -45,8 +45,8 @@ const SarinaBot = () => {
   }, [messages]);
 
   const uploadImage = async (file: File): Promise<string | null> => {
-    const fileName = `chat-upload-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${file.name.split('.').pop()}`;
-    const { error } = await supabase.storage.from('site-images').upload(fileName, file, { contentType: file.type, upsert: true });
+    const fileName = `chat-uploads/chat-upload-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${file.name.split('.').pop()}`;
+    const { error } = await supabase.storage.from('site-images').upload(fileName, file, { contentType: file.type, upsert: false });
     if (error) { console.error('Upload error:', error); return null; }
     const { data } = supabase.storage.from('site-images').getPublicUrl(fileName);
     return data.publicUrl;
