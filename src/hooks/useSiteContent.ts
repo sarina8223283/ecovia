@@ -1,6 +1,5 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useEffect } from 'react';
 
 export interface SiteContent {
   content_key: string;
@@ -10,25 +9,7 @@ export interface SiteContent {
 }
 
 export const useSiteContent = () => {
-  const queryClient = useQueryClient();
 
-  // Subscribe to realtime changes for instant updates
-  useEffect(() => {
-    const channel = supabase
-      .channel('site-content-changes')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'site_content' },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['site-content'] });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]);
 
   return useQuery({
     queryKey: ['site-content'],
