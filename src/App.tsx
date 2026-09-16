@@ -23,6 +23,7 @@ import Visitors from "./pages/Visitors";
 import NotFound from "./pages/NotFound";
 import SarinaAdmin from "./pages/SarinaAdmin";
 import AdminDashboard from "./pages/AdminDashboard";
+import DemoRequests from "./pages/DemoRequests";
 import Payment from "./pages/Payment";
 import Checkout from "./pages/Checkout";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -77,6 +78,7 @@ const App = () => (
                 <Route path="/webhook/delete" element={<WebhookDelete />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/admin/outreach" element={<CustomerOutreach />} />
+                <Route path="/admin/demo-requests" element={<DemoRequests />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
