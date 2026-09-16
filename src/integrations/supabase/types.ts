@@ -491,45 +491,7 @@ export type Database = {
       }
     }
     Views: {
-      public_product_reviews: {
-        Row: {
-          created_at: string | null
-          delivery_rating: number | null
-          id: string | null
-          packaging_rating: number | null
-          product_id: string | null
-          product_quality: number | null
-          rating: number | null
-          review: string | null
-          reviewer_location: string | null
-          reviewer_name: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          delivery_rating?: number | null
-          id?: string | null
-          packaging_rating?: number | null
-          product_id?: string | null
-          product_quality?: number | null
-          rating?: number | null
-          review?: string | null
-          reviewer_location?: never
-          reviewer_name?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          delivery_rating?: number | null
-          id?: string | null
-          packaging_rating?: number | null
-          product_id?: string | null
-          product_quality?: number | null
-          rating?: number | null
-          review?: string | null
-          reviewer_location?: never
-          reviewer_name?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       get_guest_order: {
