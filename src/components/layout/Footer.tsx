@@ -15,7 +15,7 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <h3 className="font-serif text-2xl sm:text-3xl font-bold mb-2">
-              {getContent(content, 'footer_brand_name', 'Mittika')}
+              {getContent(content, 'footer_brand_name', 'Mrittika')}
             </h3>
             <p className="text-sm opacity-80 mb-4">
               {getContent(content, 'footer_brand_subtitle', 'by Ecovia Enterprises OPC Pvt. Ltd.')}
@@ -84,7 +84,7 @@ const Footer = () => {
 
         <div className="border-t border-primary-foreground/20 mt-10 pt-8 text-center">
           <p className="text-sm opacity-70">
-            {getContent(content, 'footer_copyright', `© ${currentYear} Ecovia Enterprises OPC Pvt. Ltd. – All Rights Reserved | Brand: Mittika`)}
+            {getContent(content, 'footer_copyright', `© ${currentYear} Ecovia Enterprises OPC Pvt. Ltd. – All Rights Reserved | Brand: Mrittika`)}
           </p>
         </div>
       </div>

@@ -17,7 +17,7 @@ const digitalProducts = [
   { name: 'Ecovia QMS', url: 'https://qms.ecovia.co.in', desc: 'Quality Management System digitalisation — SOPs, deviations, CAPA, audits and documents.', icon: FileStack },
   { name: 'Ecovia Web Development', url: 'https://web.ecovia.co.in', desc: 'Websites, web apps and full-stack product engineering with SEO and performance built in.', icon: Globe2 },
   { name: 'Ecovia Agents', url: 'https://agent.ecovia.co.in', desc: 'AI chatbot builders, voice agents and automation agents trained on your business data.', icon: Bot },
-  { name: 'Mittika by Ecovia', url: 'https://ecovia.co.in', desc: 'Cosmetic grade clay, herbal powders and botanical raw materials — the Mittika brand.', icon: Leaf },
+  { name: 'Mrittika by Ecovia', url: 'https://ecovia.co.in', desc: 'Cosmetic grade clay, herbal powders and botanical raw materials — the Mrittika brand.', icon: Leaf },
 ];
 
 const capabilities = [
@@ -70,7 +70,7 @@ const About = () => {
   ];
 
   const handleRequestCertificate = () => {
-    const message = `Hi! I would like to request the quality test certificates for Mittika products.`;
+    const message = `Hi! I would like to request the quality test certificates for Mrittika products.`;
     window.open(`https://wa.me/918758808684?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -83,8 +83,8 @@ const About = () => {
     <Layout>
       <CanonicalSEO
         path="/about"
-        title="About Ecovia Enterprises — Mittika & Ecovia Digital"
-        description="Ecovia Enterprises runs Ecovia Digital (ERP, QMS, Web Development, AI Agents) and Mittika — 100% pure, NABL-tested cosmetic grade botanical raw materials."
+        title="About Ecovia Enterprises — Mrittika & Ecovia Digital"
+        description="Ecovia Enterprises runs Ecovia Digital (ERP, QMS, Web Development, AI Agents) and Mrittika — 100% pure, NABL-tested cosmetic grade botanical raw materials."
       />
       {/* Hero Section */}
       <section className="relative py-20 sm:py-32 overflow-hidden bg-hero-pattern">
@@ -110,7 +110,7 @@ const About = () => {
             transition={{ delay: 0.2 }}
             className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto"
           >
-            {getContent(content, 'about_hero_description', 'Mittika by Ecovia Enterprises — Your Smart Path to Ecological Living. Bringing nature\'s purest essence directly to you.')}
+            {getContent(content, 'about_hero_description', 'Mrittika by Ecovia Enterprises — Your Smart Path to Ecological Living. Bringing nature\'s purest essence directly to you.')}
           </motion.p>
         </div>
       </section>
@@ -123,7 +123,7 @@ const About = () => {
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-foreground mt-2 mb-4">Five Products, One Company</h2>
             <p className="text-muted-foreground leading-relaxed">
               Ecovia Enterprises operates five products across two brands — <strong className="text-foreground">Ecovia Digital</strong> for software,
-              AI and quality systems, and <strong className="text-foreground">Mittika</strong> for cosmetic grade clay and botanical raw materials.
+              AI and quality systems, and <strong className="text-foreground">Mrittika</strong> for cosmetic grade clay and botanical raw materials.
             </p>
           </div>
 
@@ -248,7 +248,7 @@ const About = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="relative">
               <div className="aspect-[4/5] rounded-2xl overflow-hidden shadow-elevated bg-secondary relative">
-                <img src={content?.['about_hero_image']?.image_url || aboutHero} alt="Mittika natural herbal product collection" className="w-full h-full object-cover" />
+                <img src={content?.['about_hero_image']?.image_url || aboutHero} alt="Mrittika natural herbal product collection" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-2xl sm:text-3xl font-serif font-bold text-white drop-shadow-lg tracking-widest bg-foreground/30 backdrop-blur-sm px-6 py-3 rounded-xl">ECOVIA</span>
                 </div>
@@ -267,7 +267,7 @@ const About = () => {
                 {getContent(content, 'about_story_heading', 'From Earth to Your Hands')}
               </h2>
               <div className="space-y-4 text-muted-foreground leading-relaxed">
-                <p>{getContent(content, 'about_story_p1', 'Every Mittika product begins its journey in the fields and forests of India, where skilled collectors handpick herbs, flowers, and plants at their peak potency. We work directly with farming communities who understand the rhythm of nature.')}</p>
+                <p>{getContent(content, 'about_story_p1', 'Every Mrittika product begins its journey in the fields and forests of India, where skilled collectors handpick herbs, flowers, and plants at their peak potency. We work directly with farming communities who understand the rhythm of nature.')}</p>
                 <p><strong className="text-foreground">Why we're sure about our products:</strong> {getContent(content, 'about_story_p2', 'Our quality isn\'t just promised — it\'s proven. Every batch is tested at NABL-approved laboratories before reaching you.')}</p>
                 <p><strong className="text-foreground">"The Luxury of Earthly Purity"</strong> {getContent(content, 'about_story_p3', 'isn\'t just our tagline — it\'s our philosophy. We believe true luxury comes from authenticity, from products that are as pure as nature intended.')}</p>
                 <p><strong className="text-foreground">Ecovia: Your Smart Path to Ecological Living</strong> — {getContent(content, 'about_story_p4', 'Our name reflects our mission: to create a path (via) that connects you to ecological (eco) wellness through smart, sustainable choices.')}</p>
@@ -286,7 +286,7 @@ const About = () => {
               {getContent(content, 'about_vision_heading', 'Our Vision')}
             </h2>
             <p className="text-lg text-primary-foreground/90 max-w-3xl mx-auto leading-relaxed">
-              {getContent(content, 'about_vision_text', 'To serve each customer the natural essence directly from earth. We know that today\'s conscious consumer seeks products that are truly natural, free from adverse effects, and rich in inherent benefits. Mittika exists to fulfill this need with unwavering commitment to purity.')}
+              {getContent(content, 'about_vision_text', 'To serve each customer the natural essence directly from earth. We know that today\'s conscious consumer seeks products that are truly natural, free from adverse effects, and rich in inherent benefits. Mrittika exists to fulfill this need with unwavering commitment to purity.')}
             </p>
           </motion.div>
         </div>
@@ -308,7 +308,7 @@ const About = () => {
                 {getContent(content, 'about_ecovia_p1', 'Ecovia Enterprises is a trusted trader and supplier of premium-quality herbal powders, natural seeds, fruit & peel extracts, clays, and essential plant-based products. We are dedicated to bringing the purity of nature to our customers by sourcing and supplying authentic, chemical-free, and finely processed herbal solutions.')}
               </p>
               <p className="text-lg leading-relaxed">
-                {getContent(content, 'about_ecovia_p2', 'Mittika is dedicated to delivering quality, purity, and consistency, ensuring that our clients receive products that align with traditional Ayurvedic wisdom as well as modern herbal applications.')}
+                {getContent(content, 'about_ecovia_p2', 'Mrittika is dedicated to delivering quality, purity, and consistency, ensuring that our clients receive products that align with traditional Ayurvedic wisdom as well as modern herbal applications.')}
               </p>
             </motion.div>
 
@@ -319,7 +319,7 @@ const About = () => {
               </div>
               <div className="text-center p-6 bg-card rounded-xl shadow-soft">
                 <h4 className="font-semibold text-foreground mb-2">Brand</h4>
-                <p className="text-muted-foreground">{getContent(content, 'about_brand_name', 'MITTIKA')}</p>
+                <p className="text-muted-foreground">{getContent(content, 'about_brand_name', 'MRITTIKA')}</p>
               </div>
             </div>
           </div>
@@ -357,10 +357,10 @@ const About = () => {
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
               <FileCheck size={48} className="mx-auto text-primary mb-6" />
               <h2 className="font-serif text-3xl sm:text-4xl font-bold text-foreground mb-6">
-                {getContent(content, 'about_promise_heading', 'Mittika Brand Promise')}
+                {getContent(content, 'about_promise_heading', 'Mrittika Brand Promise')}
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed mb-6">
-                {getContent(content, 'about_promise_text', 'Every product that bears the Mittika name is backed by our unwavering commitment to quality assurance. We provide test certificates from NABL-approved laboratories for all our products.')}
+                {getContent(content, 'about_promise_text', 'Every product that bears the Mrittika name is backed by our unwavering commitment to quality assurance. We provide test certificates from NABL-approved laboratories for all our products.')}
               </p>
               <p className="text-xl font-serif font-semibold text-primary mb-8">
                 {getContent(content, 'about_promise_quote', '"Our price is higher because we promise quality."')}
@@ -396,7 +396,7 @@ const About = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Users size={48} className="mx-auto text-primary-foreground/80 mb-6" />
           <h2 className="font-serif text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">
-            {getContent(content, 'about_cta_heading', 'Ready to Experience Mittika?')}
+            {getContent(content, 'about_cta_heading', 'Ready to Experience Mrittika?')}
           </h2>
           <p className="text-primary-foreground/80 mb-8 max-w-2xl mx-auto">
             {getContent(content, 'about_cta_text', 'Explore our range of pure, natural herbal powders and experience the luxury of earthly purity.')}

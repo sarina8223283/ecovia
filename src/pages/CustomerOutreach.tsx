@@ -21,23 +21,23 @@ interface Customer {
 const SARINA_TEMPLATES = [
   {
     name: 'Festive Offer',
-    headline: '🌿 A Festive Gift from Mittika, Just for You',
-    body: `As one of our most cherished customers, we wanted to share a heartfelt token of appreciation this festive season.\n\nEnjoy an exclusive discount on your next order of our pure, hand-crafted Ayurvedic herbal powders — created with love at Ecovia Enterprises.\n\nUse your personal coupon code below at checkout. Best wishes from the entire Mittika family! 🪔`,
+    headline: '🌿 A Festive Gift from Mrittika, Just for You',
+    body: `As one of our most cherished customers, we wanted to share a heartfelt token of appreciation this festive season.\n\nEnjoy an exclusive discount on your next order of our pure, hand-crafted Ayurvedic herbal powders — created with love at Ecovia Enterprises.\n\nUse your personal coupon code below at checkout. Best wishes from the entire Mrittika family! 🪔`,
   },
   {
     name: 'Welcome Back',
     headline: '✨ We Miss You — Here\'s Something Special',
-    body: `It\'s been a while since your last order, and we\'d love to welcome you back to Mittika.\n\nWe\'ve prepared a personal discount just for you — a small thank-you for being part of our journey toward chemical-free, authentic Ayurvedic care.\n\nApply your exclusive code at checkout and rediscover the powders you love. 🌿`,
+    body: `It\'s been a while since your last order, and we\'d love to welcome you back to Mrittika.\n\nWe\'ve prepared a personal discount just for you — a small thank-you for being part of our journey toward chemical-free, authentic Ayurvedic care.\n\nApply your exclusive code at checkout and rediscover the powders you love. 🌿`,
   },
   {
     name: 'New Launch',
-    headline: '🌱 Be the First — New Mittika Launch',
-    body: `We\'re excited to share something new with you! Our latest hand-sourced herbal powder is now live on the Mittika store.\n\nAs a valued customer, here\'s an early-access coupon to try it before anyone else.\n\nWith warmth,\nThe Mittika Team`,
+    headline: '🌱 Be the First — New Mrittika Launch',
+    body: `We\'re excited to share something new with you! Our latest hand-sourced herbal powder is now live on the Mrittika store.\n\nAs a valued customer, here\'s an early-access coupon to try it before anyone else.\n\nWith warmth,\nThe Mrittika Team`,
   },
   {
     name: 'Thank You Reward',
-    headline: '💚 A Small Thank You from Mittika',
-    body: `Thank you for trusting Mittika for your wellness journey. Your support means the world to a small Indian brand like ours.\n\nAs a token of gratitude, please accept this exclusive discount on your next purchase.\n\nWith love & gratitude,\nEcovia Enterprises • Mittika`,
+    headline: '💚 A Small Thank You from Mrittika',
+    body: `Thank you for trusting Mrittika for your wellness journey. Your support means the world to a small Indian brand like ours.\n\nAs a token of gratitude, please accept this exclusive discount on your next purchase.\n\nWith love & gratitude,\nEcovia Enterprises • Mrittika`,
   },
 ];
 
@@ -131,7 +131,7 @@ const OutreachPanel = () => {
     if (includeCoupon && !coupon.code) {
       // Auto-generate a unique-ish code
       const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
-      setCoupon(p => ({ ...p, code: `MITTIKA${rand}` }));
+      setCoupon(p => ({ ...p, code: `MRITTIKA${rand}` }));
     }
     toast.success('🌿 Sarina drafted your message');
   };
@@ -180,7 +180,7 @@ const OutreachPanel = () => {
           : '\n\nShop now: https://ecovia.co.in/products';
         phones.forEach((c, idx) => {
           setTimeout(() => {
-            const text = `*${headline}*\n\nHi ${c.customer_name || 'Customer'},\n\n${message}${couponLine}\n\n— Team Mittika`;
+            const text = `*${headline}*\n\nHi ${c.customer_name || 'Customer'},\n\n${message}${couponLine}\n\n— Team Mrittika`;
             window.open(waLink(c.customer_phone, text), '_blank');
           }, idx * 250);
         });
@@ -233,7 +233,7 @@ const OutreachPanel = () => {
         const couponLine = includeCoupon
           ? `\n\n🎁 Coupon (PREVIEW): *${(coupon.code || 'PREVIEW').toUpperCase()}* (${coupon.discount_type === 'percent' ? (coupon.discount_value || 0) + '% OFF' : '₹' + (coupon.discount_value || 0) + ' OFF'})`
           : '';
-        const text = `[PREVIEW] *${headline}*\n\nHi Sarina,\n\n${message}${couponLine}\n\n— Team Mittika`;
+        const text = `[PREVIEW] *${headline}*\n\nHi Sarina,\n\n${message}${couponLine}\n\n— Team Mrittika`;
         window.open(waLink(testPhone.trim(), text), '_blank');
         toast.success('📱 WhatsApp preview opened');
       }

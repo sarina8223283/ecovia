@@ -1,7 +1,7 @@
 import { SVGProps } from 'react';
 
 /**
- * Hand-drawn botanical icon set for Mittika top navigation.
+ * Hand-drawn botanical icon set for Mrittika top navigation.
  * Each icon is built on a 24x24 viewBox with organic curves
  * and gold accents. Use `currentColor` for stroke and `text-primary`
  * (or any text-* class) on the parent.

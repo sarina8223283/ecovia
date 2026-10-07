@@ -26,14 +26,14 @@ const MetaWebhook = () => {
     <Layout>
       <Helmet>
         <title>Meta API Webhook – Ecovia Enterprises</title>
-        <meta name="description" content="Meta (Facebook & Instagram) webhook endpoint for Ecovia Enterprises / Mittika." />
+        <meta name="description" content="Meta (Facebook & Instagram) webhook endpoint for Ecovia Enterprises / Mrittika." />
         <link rel="canonical" href="https://ecovia.co.in/webhook" />
       </Helmet>
       <section className="py-16 min-h-[70vh] bg-hero-pattern">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
           <div className="bg-card rounded-2xl shadow-elevated p-8">
             <h1 className="font-serif text-3xl font-bold text-primary mb-3">Meta API Webhook</h1>
-            <p className="text-muted-foreground mb-6">This endpoint is used by Meta (Facebook &amp; Instagram) to deliver webhook events to <strong>Ecovia Enterprises</strong> for the Mittika brand app.</p>
+            <p className="text-muted-foreground mb-6">This endpoint is used by Meta (Facebook &amp; Instagram) to deliver webhook events to <strong>Ecovia Enterprises</strong> for the Mrittika brand app.</p>
             {status === 'verifying' && <p className="text-amber-600">Verifying with Meta…</p>}
             {status === 'verified' && <p className="text-primary font-medium">✓ Verification challenge returned successfully.</p>}
             {status === 'failed' && <p className="text-destructive">Verification failed. Token mismatch.</p>}

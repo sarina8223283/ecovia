@@ -75,7 +75,7 @@ const Auth = () => {
     const { error: signInError } = await signIn(form.email, form.password);
     setLoading(false);
     if (signInError) { toast.error('Verified, but sign-in failed. Please log in.'); return; }
-    toast.success('Email verified! Welcome to Mittika 🌿');
+    toast.success('Email verified! Welcome to Mrittika 🌿');
     setVerified(true);
   };
 
@@ -125,7 +125,7 @@ const Auth = () => {
                       {deliveryStatus === 'failed' && <HelpCircle size={14} />}
                       <span>
                         {deliveryStatus === 'sending' && 'Sending OTP to your inbox…'}
-                        {deliveryStatus === 'sent' && 'OTP delivered from Ecovia Enterprises • Mittika 🌿'}
+                        {deliveryStatus === 'sent' && 'OTP delivered from Ecovia Enterprises • Mrittika 🌿'}
                         {deliveryStatus === 'failed' && 'Delivery failed. Please retry.'}
                         {deliveryStatus === 'idle' && 'Waiting for delivery status…'}
                       </span>
@@ -167,7 +167,7 @@ const Auth = () => {
                       {showHelp && (
                         <ul className="mt-3 space-y-2 text-xs text-muted-foreground list-disc pl-5 leading-relaxed">
                           <li>The code arrives from <strong>Ecovia Enterprises &lt;onboarding@resend.dev&gt;</strong> — please check your <strong>Spam / Promotions</strong> folder.</li>
-                          <li>Search your inbox for <em>"Mittika OTP"</em> or <em>"Ecovia"</em>.</li>
+                          <li>Search your inbox for <em>"Mrittika OTP"</em> or <em>"Ecovia"</em>.</li>
                           <li>Add <strong>info@ecovia.co.in</strong> to your contacts to avoid filters next time.</li>
                           <li>Confirm the email <strong>{form.email}</strong> is correct — typos are the #1 cause.</li>
                           <li>Wait ~30 seconds; some providers (Gmail, Outlook, Yahoo) batch delivery.</li>
@@ -182,7 +182,7 @@ const Auth = () => {
                       <CheckCircle2 className="w-9 h-9 text-emerald-600" />
                     </div>
                     <h1 className="font-serif text-2xl font-bold mb-2">You're verified! 🌿</h1>
-                    <p className="text-muted-foreground text-sm mb-6">Welcome to the Mittika family, <strong className="text-foreground">{form.fullName || 'friend'}</strong>. Your account is ready.</p>
+                    <p className="text-muted-foreground text-sm mb-6">Welcome to the Mrittika family, <strong className="text-foreground">{form.fullName || 'friend'}</strong>. Your account is ready.</p>
                     <div className="grid gap-3">
                       <button onClick={() => navigate('/account')} className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3 rounded-lg font-medium hover:bg-primary/90">
                         <Package size={18} /> Track my orders

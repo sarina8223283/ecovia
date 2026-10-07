@@ -61,7 +61,7 @@ const Navbar = () => {
             <img src={ecoviaLogoIcon} alt="Ecovia Logo" className="h-9 sm:h-11 w-auto object-contain" />
             <div className="flex flex-col leading-none">
               <span className="font-serif text-base sm:text-lg lg:text-xl font-bold text-primary leading-tight">Ecovia Enterprises</span>
-              <span className="text-[9px] sm:text-[11px] text-muted-foreground font-sans leading-tight">Brand: MITTIKA</span>
+              <span className="text-[9px] sm:text-[11px] text-muted-foreground font-sans leading-tight">Brand: MRITTIKA</span>
             </div>
           </a>
 

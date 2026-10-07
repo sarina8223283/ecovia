@@ -148,7 +148,7 @@ const Checkout = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Checkout — Mittika by Ecovia Enterprises</title>
+        <title>Checkout — Mrittika by Ecovia Enterprises</title>
       </Helmet>
       <div className="container mx-auto px-4 py-12 max-w-5xl">
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8">
@@ -267,7 +267,7 @@ const Checkout = () => {
             </div>
             <div className="flex items-start gap-2 text-xs text-muted-foreground pt-2">
               <ShieldCheck size={16} className="text-primary flex-shrink-0 mt-0.5" />
-              <span>Your details are saved securely to your Mittika account.</span>
+              <span>Your details are saved securely to your Mrittika account.</span>
             </div>
           </motion.div>
         </div>

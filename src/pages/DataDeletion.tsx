@@ -28,8 +28,8 @@ const DataDeletion = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Data Deletion – Mittika by Ecovia</title>
-        <meta name="description" content="Request deletion of your personal data and Meta (Facebook/Instagram) API data from Mittika." />
+        <title>Data Deletion – Mrittika by Ecovia</title>
+        <meta name="description" content="Request deletion of your personal data and Meta (Facebook/Instagram) API data from Mrittika." />
         <link rel="canonical" href="https://ecovia.co.in/data-deletion" />
       </Helmet>
       <section className="py-12 bg-hero-pattern min-h-[80vh]">
@@ -39,7 +39,7 @@ const DataDeletion = () => {
             <p className="text-sm text-muted-foreground">Compliant with Meta Platform "User Data Deletion Callback URL" requirement for Facebook Login, Messenger, and Instagram APIs.</p>
 
             <h2>How to Delete Your Data</h2>
-            <p>You can permanently delete the data Mittika holds about you — including your profile, address, order history, and any data received from Meta APIs (Facebook / Instagram) — by submitting the form below.</p>
+            <p>You can permanently delete the data Mrittika holds about you — including your profile, address, order history, and any data received from Meta APIs (Facebook / Instagram) — by submitting the form below.</p>
 
             <h3>What Gets Deleted</h3>
             <ul>
@@ -57,7 +57,7 @@ const DataDeletion = () => {
             <p>Requests are processed within <strong>30 days</strong>. You will receive a confirmation email when complete. The confirmation code below lets you track your request.</p>
 
             <h3>Alternative for Facebook / Instagram users</h3>
-            <p>You may also remove our app entirely from your Meta account: <em>Settings → Apps and Websites → Mittika → Remove</em>. This automatically triggers our deletion callback.</p>
+            <p>You may also remove our app entirely from your Meta account: <em>Settings → Apps and Websites → Mrittika → Remove</em>. This automatically triggers our deletion callback.</p>
           </div>
 
           {submitted ? (

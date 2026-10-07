@@ -6,7 +6,7 @@ import ProductCard from '@/components/ui/ProductCard';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { products } from '@/data/products';
 import { useSiteContent, getContent } from '@/hooks/useSiteContent';
-import herbalThemeBg from '@/assets/herbal-theme-bg.png';
+import herbalThemeBg from '@/assets/herbal-theme-bg.webp';
 
 type Category = 'all' | 'skin' | 'hair' | 'wellness';
 
@@ -29,8 +29,8 @@ const Products = () => {
     <Layout>
       <CanonicalSEO
         path="/products"
-        title="All Mittika Products — Cosmetic Grade Botanical Raw Materials"
-        description="Browse the complete Mittika catalogue of NABL-tested cosmetic grade botanical powders for DIY skin, hair and wellness formulations."
+        title="All Mrittika Products — Cosmetic Grade Botanical Raw Materials"
+        description="Browse the complete Mrittika catalogue of NABL-tested cosmetic grade botanical powders for DIY skin, hair and wellness formulations."
       />
       {/* Hero Section with strong herbal background */}
       <section className="relative py-16 sm:py-24 overflow-hidden">
@@ -44,7 +44,7 @@ const Products = () => {
             animate={{ opacity: 1, y: 0 }}
             className="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium mb-6"
           >
-            {getContent(content, 'products_badge', 'Mittika Collection')}
+            {getContent(content, 'products_badge', 'Mrittika Collection')}
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}

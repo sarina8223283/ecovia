@@ -52,12 +52,12 @@ const MANUAL_OVERRIDES: Record<string, Record<string, string>> = {
     'Earthly Purity': 'पृथ्वीच्या शुद्धतेचा',
     'The Luxury of Earthly Purity': 'अनुभव घ्या पृथ्वीच्या लक्जरी शुद्धतेचा',
     '100% Pure & Natural': '१००% शुद्ध आणि नैसर्गिक',
-    'Mittika brings you authentic, chemical-free herbal powders rooted in ancient Ayurvedic traditions. Elevate your wellness journey naturally.':
+    'Mrittika brings you authentic, chemical-free herbal powders rooted in ancient Ayurvedic traditions. Elevate your wellness journey naturally.':
       'मिटिका तुम्हाला प्राचीन आयुर्वेदिक परंपरांवर आधारित अस्सल, रसायनमुक्त हर्बल पावडर देते. तुमचा निरोगीपणाचा प्रवास नैसर्गिकरित्या उंचावा.',
     'Explore Products': 'उत्पादने एक्सप्लोर करा',
     'Contact Us': 'आमच्याशी संपर्क साधा',
     'Our Products': 'आमची उत्पादने',
-    'Mittika Collection': 'मिटिका संग्रह',
+    'Mrittika Collection': 'मिटिका संग्रह',
     'Quick Links': 'द्रुत दुवे',
     'Home': 'मुख्यपृष्ठ',
     'Products': 'उत्पादने',
@@ -87,12 +87,12 @@ const MANUAL_OVERRIDES: Record<string, Record<string, string>> = {
     'Earthly Purity': 'पृथ्वी की शुद्धता',
     'The Luxury of Earthly Purity': 'पृथ्वी की शुद्धता की विलासिता का अनुभव करें',
     '100% Pure & Natural': '100% शुद्ध और प्राकृतिक',
-    'Mittika brings you authentic, chemical-free herbal powders rooted in ancient Ayurvedic traditions. Elevate your wellness journey naturally.':
+    'Mrittika brings you authentic, chemical-free herbal powders rooted in ancient Ayurvedic traditions. Elevate your wellness journey naturally.':
       'मिट्टिका आपके लिए प्राचीन आयुर्वेदिक परंपराओं पर आधारित प्रामाणिक, रसायन-मुक्त हर्बल पाउडर लाता है। अपनी स्वास्थ्य यात्रा को स्वाभाविक रूप से ऊंचा उठाएं।',
     'Explore Products': 'उत्पाद देखें',
     'Contact Us': 'संपर्क करें',
     'Our Products': 'हमारे उत्पाद',
-    'Mittika Collection': 'मिट्टिका संग्रह',
+    'Mrittika Collection': 'मिट्टिका संग्रह',
     'Quick Links': 'त्वरित लिंक',
     'Home': 'होम',
     'Products': 'उत्पाद',

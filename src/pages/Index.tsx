@@ -18,8 +18,8 @@ const Index = () => {
     <Layout>
       <CanonicalSEO
         path="/"
-        title="Mittika — Pure Natural Ayurvedic Herbal Powders | Ecovia Enterprises"
-        description="Mittika by Ecovia Enterprises — 100% pure, NABL-tested cosmetic grade botanical raw materials for DIY skin care, hair care and soap making."
+        title="Mrittika — Pure Natural Ayurvedic Herbal Powders | Ecovia Enterprises"
+        description="Mrittika by Ecovia Enterprises — 100% pure, NABL-tested cosmetic grade botanical raw materials for DIY skin care, hair care and soap making."
       />
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-earth/5">
@@ -69,7 +69,7 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl sm:text-2xl text-foreground/80 mb-10 leading-relaxed font-light max-w-2xl"
             >
-              {getContent(content, 'hero_description', 'Mittika brings you authentic, chemical-free herbal powders rooted in ancient Ayurvedic traditions. Elevate your wellness journey naturally.')}
+              {getContent(content, 'hero_description', 'Mrittika brings you authentic, chemical-free herbal powders rooted in ancient Ayurvedic traditions. Elevate your wellness journey naturally.')}
             </motion.p>
 
             <motion.div
@@ -215,13 +215,13 @@ const Index = () => {
               transition={{ duration: 0.6 }}
             >
               <span className="text-primary font-medium text-sm uppercase tracking-wider">
-                About Mittika
+                About Mrittika
               </span>
               <h2 className="font-serif text-3xl sm:text-4xl font-bold text-foreground mt-2 mb-6">
                 Rooted in Nature, Crafted with Care
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                Mittika, by Ecovia Enterprises, is dedicated to bringing you the 
+                Mrittika, by Ecovia Enterprises, is dedicated to bringing you the 
                 purest form of Ayurvedic wellness. Our products are sourced from 
                 trusted farmers who share our commitment to sustainability and quality.
               </p>

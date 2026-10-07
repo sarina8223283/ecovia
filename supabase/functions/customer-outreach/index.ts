@@ -11,7 +11,7 @@ const FROM = 'Ecovia Enterprises <onboarding@resend.dev>';
 const BRAND_HEADER = `
   <div style="background:linear-gradient(135deg,#2f5d3a 0%,#4d7a5e 55%,#c9a44a 100%);color:#fff;padding:28px 24px;border-radius:14px 14px 0 0;text-align:center">
     <p style="margin:0;font-size:11px;letter-spacing:4px;text-transform:uppercase;opacity:.9">Ecovia Enterprises</p>
-    <h1 style="margin:6px 0 4px;font-family:'Playfair Display',Georgia,serif;font-size:30px;letter-spacing:1px">Mittika</h1>
+    <h1 style="margin:6px 0 4px;font-family:'Playfair Display',Georgia,serif;font-size:30px;letter-spacing:1px">Mrittika</h1>
     <p style="margin:0;font-size:13px;opacity:.92;font-style:italic">Pure Herbal Powders • Rooted in Ayurveda</p>
   </div>`;
 
@@ -20,7 +20,7 @@ const SIGNATURE = `
   <p style="font-size:12px;color:#888;margin:0;line-height:1.6">
     Warm regards,<br>
     <strong style="color:#2f5d3a">Ecovia Enterprises OPC Pvt. Ltd.</strong><br>
-    Brand: <em>Mittika</em> — Pure Herbal Powders<br>
+    Brand: <em>Mrittika</em> — Pure Herbal Powders<br>
     📧 info@ecovia.co.in &nbsp;•&nbsp; 📞 +91 87588 08684<br>
     🌐 <a href="https://ecovia.co.in" style="color:#4d7a5e;text-decoration:none">ecovia.co.in</a>
   </p>`;
@@ -42,7 +42,7 @@ function buildOfferHtml(opts: {
       <a href="https://ecovia.co.in/products" style="display:inline-block;margin-top:14px;background:#2f5d3a;color:#fff;padding:11px 26px;border-radius:999px;text-decoration:none;font-weight:600;font-size:14px">Shop Now & Apply Code</a>
     </div>` : `
     <div style="text-align:center;margin:20px 0">
-      <a href="https://ecovia.co.in/products" style="display:inline-block;background:#2f5d3a;color:#fff;padding:12px 28px;border-radius:999px;text-decoration:none;font-weight:600;font-size:14px">Shop Mittika Products</a>
+      <a href="https://ecovia.co.in/products" style="display:inline-block;background:#2f5d3a;color:#fff;padding:12px 28px;border-radius:999px;text-decoration:none;font-weight:600;font-size:14px">Shop Mrittika Products</a>
     </div>`;
 
   return `<!doctype html><html><body style="margin:0;background:#f5f3ee;font-family:'Helvetica Neue',Arial,sans-serif;color:#2a2a2a">
@@ -97,7 +97,7 @@ serve(async (req) => {
           discount_value: Number(coupon.discount_value),
           min_order: Number(coupon.min_order || 0),
           expires_at: coupon.expires_at || null,
-          description: coupon.description || `Exclusive offer for select Mittika customers`,
+          description: coupon.description || `Exclusive offer for select Mrittika customers`,
           active: true,
         }).select().single();
         if (insErr) {

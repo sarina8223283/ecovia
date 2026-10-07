@@ -4,8 +4,8 @@ import { Helmet } from 'react-helmet-async';
 const Terms = () => (
   <Layout>
     <Helmet>
-      <title>Terms of Service – Mittika by Ecovia</title>
-      <meta name="description" content="Terms of service for Mittika herbal powders, including statutory norms for herbal brands and Meta API compliance." />
+      <title>Terms of Service – Mrittika by Ecovia</title>
+      <meta name="description" content="Terms of service for Mrittika herbal powders, including statutory norms for herbal brands and Meta API compliance." />
       <link rel="canonical" href="https://ecovia.co.in/terms" />
     </Helmet>
     <section className="py-12 bg-hero-pattern min-h-[80vh]">
@@ -13,10 +13,10 @@ const Terms = () => (
         <h1 className="font-serif text-3xl sm:text-4xl font-bold mb-4">Terms of Service</h1>
         <p className="text-sm text-muted-foreground">Effective: May 7, 2026</p>
 
-        <p>By using ecovia.co.in or any Mittika service, you agree to these Terms.</p>
+        <p>By using ecovia.co.in or any Mrittika service, you agree to these Terms.</p>
 
         <h2>1. About Us</h2>
-        <p>Mittika is a brand of <strong>Ecovia Enterprises OPC Pvt. Ltd.</strong>, registered in India, selling 100% natural herbal powders sourced and packed in India.</p>
+        <p>Mrittika is a brand of <strong>Ecovia Enterprises OPC Pvt. Ltd.</strong>, registered in India, selling 100% natural herbal powders sourced and packed in India.</p>
 
         <h2>2. Products & Statutory Compliance (Herbal Brand Norms)</h2>
         <ul>
@@ -54,7 +54,7 @@ const Terms = () => (
         </ul>
 
         <h2>8. Intellectual Property</h2>
-        <p>The Mittika name, logo, product photos, and copy are the property of Ecovia Enterprises OPC Pvt. Ltd. and may not be reused without written permission.</p>
+        <p>The Mrittika name, logo, product photos, and copy are the property of Ecovia Enterprises OPC Pvt. Ltd. and may not be reused without written permission.</p>
 
         <h2>9. Limitation of Liability</h2>
         <p>To the maximum extent permitted by Indian law, Ecovia Enterprises' liability for any claim arising from product use is limited to the amount paid for that specific order. We are not liable for indirect or consequential damages.</p>

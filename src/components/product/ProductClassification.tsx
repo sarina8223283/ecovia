@@ -36,7 +36,7 @@ const ProductClassification = ({ productName, classification, themeColor }: Prop
           <div className="px-6 py-5">
             <p className="text-sm text-muted-foreground mb-5">
               <strong className="text-foreground">{productName}</strong> is sold by
-              Ecovia Enterprises (Mittika) as a{' '}
+              Ecovia Enterprises (Mrittika) as a{' '}
               <strong className="text-foreground">{c.grade}</strong> — a premium
               botanical raw material for DIY skin care, hair care, soap making,
               cosmetic formulations and traditional beauty applications.

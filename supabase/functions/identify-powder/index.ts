@@ -5,7 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SYSTEM_PROMPT = `You are a powder identification expert for Mittika herbal products. Analyze the image of a powder and identify which of these 15 products it most likely is:
+const SYSTEM_PROMPT = `You are a powder identification expert for Mrittika herbal products. Analyze the image of a powder and identify which of these 15 products it most likely is:
 
 1. amla-powder - Amla Powder (greenish-brown, fine)
 2. shikakai-powder - Shikakai Powder (brown, slightly coarse)

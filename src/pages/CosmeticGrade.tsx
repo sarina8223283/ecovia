@@ -43,10 +43,10 @@ const CosmeticGrade = () => {
   const pageUrl = cat === 'all' ? `${baseUrl}/cosmetic-grade` : `${baseUrl}/cosmetic-grade/${cat}`;
 
   const heading = cat === 'all'
-    ? 'Mittika Cosmetic Grade Botanical Raw Materials'
+    ? 'Mrittika Cosmetic Grade Botanical Raw Materials'
     : meta[cat].title;
   const intro = cat === 'all'
-    ? 'The complete Mittika catalogue of premium cosmetic-grade botanical raw materials — single-ingredient powders for DIY skin care, hair care, soap making and cosmetic formulations. 100% pure, NABL-tested, external use only.'
+    ? 'The complete Mrittika catalogue of premium cosmetic-grade botanical raw materials — single-ingredient powders for DIY skin care, hair care, soap making and cosmetic formulations. 100% pure, NABL-tested, external use only.'
     : meta[cat].copy;
 
   const itemList = {
@@ -82,7 +82,7 @@ const CosmeticGrade = () => {
   return (
     <Layout>
       <Helmet>
-        <title>{heading} | Mittika by Ecovia Enterprises</title>
+        <title>{heading} | Mrittika by Ecovia Enterprises</title>
         <meta name="description" content={intro} />
         <link rel="canonical" href={pageUrl} />
         <meta property="og:type" content="website" />
@@ -136,7 +136,7 @@ const CosmeticGrade = () => {
           <div className="mt-16 prose prose-sm max-w-3xl mx-auto text-muted-foreground">
             <h2 className="font-serif text-2xl text-foreground">About Cosmetic Grade Botanical Raw Materials</h2>
             <p>
-              Every Mittika SKU on this page is supplied as a <strong>Cosmetic Grade Botanical Raw Material</strong> —
+              Every Mrittika SKU on this page is supplied as a <strong>Cosmetic Grade Botanical Raw Material</strong> —
               a single-ingredient powder with no additives or preservatives, intended for external use only in DIY
               skin care, hair care, soap making, and cosmetic formulations. We do not sell food, supplements, or
               ingestible products. Each batch is NABL-tested for purity and milled in small lots to preserve

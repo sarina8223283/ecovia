@@ -61,7 +61,7 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Mittika custom colors
+        // Mrittika custom colors
         leaf: {
           DEFAULT: "hsl(var(--leaf))",
           light: "hsl(var(--leaf-light))",

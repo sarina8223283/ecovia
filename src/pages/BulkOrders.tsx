@@ -62,13 +62,13 @@ const BulkOrders = () => {
 
   const handleBulkQuote = () => {
     openWhatsApp(
-      `Hello Ecovia Enterprises, I would like a B2B bulk quote for Mittika botanical ingredients.\n\nProduct(s):\nQuantity required (minimum 10 kg total):\nBusiness name:\nDelivery location:\nRegular supply requirement:\nDocumentation required: COA / specifications / batch traceability\n\nPlease share pricing and availability.`,
+      `Hello Ecovia Enterprises, I would like a B2B bulk quote for Mrittika botanical ingredients.\n\nProduct(s):\nQuantity required (minimum 10 kg total):\nBusiness name:\nDelivery location:\nRegular supply requirement:\nDocumentation required: COA / specifications / batch traceability\n\nPlease share pricing and availability.`,
     );
   };
 
   const handleSampleRequest = () => {
     openWhatsApp(
-      `Hello Ecovia Enterprises, I would like to request B2B samples of Mittika botanical ingredients.\n\nProduct(s):\nBusiness name:\nApplication or use case:\nDelivery location:\n\nI understand the samples are provided at no cost and delivery charges apply.`,
+      `Hello Ecovia Enterprises, I would like to request B2B samples of Mrittika botanical ingredients.\n\nProduct(s):\nBusiness name:\nApplication or use case:\nDelivery location:\n\nI understand the samples are provided at no cost and delivery charges apply.`,
     );
   };
 
@@ -91,7 +91,7 @@ const BulkOrders = () => {
               transition={{ delay: 0.08 }}
               className="mb-6 max-w-3xl font-serif text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-6xl"
             >
-              Mittika for dependable bulk ingredient supply
+              Mrittika for dependable bulk ingredient supply
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -132,7 +132,7 @@ const BulkOrders = () => {
             <PackageCheck className="mt-0.5 shrink-0 text-primary" size={24} />
             <div>
               <p className="font-semibold text-foreground">Powder form available</p>
-              <p className="text-sm text-muted-foreground">Across the Mittika ingredient range</p>
+              <p className="text-sm text-muted-foreground">Across the Mrittika ingredient range</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -148,7 +148,7 @@ const BulkOrders = () => {
       <section className="py-16 sm:py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-12 max-w-2xl text-center">
-            <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-primary">The Mittika B2B Standard</p>
+            <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-primary">The Mrittika B2B Standard</p>
             <h2 className="font-serif text-3xl font-bold text-foreground sm:text-4xl">
               Built around what professional buyers need
             </h2>

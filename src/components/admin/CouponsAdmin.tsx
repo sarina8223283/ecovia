@@ -50,7 +50,7 @@ export const CouponsAdmin = () => {
 
   const sendCouponWA = (coupon: any, customer: any) => {
     const valStr = coupon.discount_type === 'percent' ? `${coupon.discount_value}% OFF` : `₹${coupon.discount_value} OFF`;
-    const msg = `🎁 *Mittika Exclusive Offer for you!*\n\nHi ${customer.customer_name},\nUse code *${coupon.code}* and get *${valStr}* on your next order.${coupon.description ? `\n\n${coupon.description}` : ''}\n\nShop now: https://ecovia.co.in/products`;
+    const msg = `🎁 *Mrittika Exclusive Offer for you!*\n\nHi ${customer.customer_name},\nUse code *${coupon.code}* and get *${valStr}* on your next order.${coupon.description ? `\n\n${coupon.description}` : ''}\n\nShop now: https://ecovia.co.in/products`;
     window.open(waLink(customer.customer_phone, msg), '_blank');
   };
 
@@ -62,7 +62,7 @@ export const CouponsAdmin = () => {
 
       <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 space-y-2">
         <div className="grid grid-cols-2 gap-2">
-          <input value={form.code} onChange={e => setForm(p => ({...p, code: e.target.value.toUpperCase()}))} placeholder="CODE (e.g. MITTIKA10)" className="px-3 py-2 text-sm rounded-lg border border-border bg-background uppercase"/>
+          <input value={form.code} onChange={e => setForm(p => ({...p, code: e.target.value.toUpperCase()}))} placeholder="CODE (e.g. MRITTIKA10)" className="px-3 py-2 text-sm rounded-lg border border-border bg-background uppercase"/>
           <select value={form.discount_type} onChange={e => setForm(p => ({...p, discount_type: e.target.value}))} className="px-3 py-2 text-sm rounded-lg border border-border bg-background">
             <option value="percent">% Percent</option>
             <option value="flat">₹ Flat</option>

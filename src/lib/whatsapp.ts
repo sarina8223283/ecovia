@@ -17,15 +17,15 @@ export function buildOrderMessage(event: OrderEvent, info: OrderInfo): string {
   const total = info.total ? `₹${Number(info.total).toFixed(2)}` : '';
   switch (event) {
     case 'placed':
-      return `🌿 *Mittika by Ecovia*\n\nHi ${name}, your order *${id}* has been *placed* successfully${total ? ` for ${total}` : ''}.\n\nWe will confirm acceptance shortly. Thank you for choosing Mittika! 💚`;
+      return `🌿 *Mrittika by Ecovia*\n\nHi ${name}, your order *${id}* has been *placed* successfully${total ? ` for ${total}` : ''}.\n\nWe will confirm acceptance shortly. Thank you for choosing Mrittika! 💚`;
     case 'accepted':
-      return `✅ *Order Accepted*\n\nHi ${name}, your order *${id}* has been *accepted* and is being prepared. Packing starts shortly.\n\n— Team Mittika`;
+      return `✅ *Order Accepted*\n\nHi ${name}, your order *${id}* has been *accepted* and is being prepared. Packing starts shortly.\n\n— Team Mrittika`;
     case 'shipped':
-      return `📦 *Order Dispatched*\n\nHi ${name}, your order *${id}* has been *shipped*${info.courier ? ` via *${info.courier}*` : ''}${info.tracking ? `.\nTracking: *${info.tracking}*` : ''}.\n\nExpect delivery soon. — Team Mittika`;
+      return `📦 *Order Dispatched*\n\nHi ${name}, your order *${id}* has been *shipped*${info.courier ? ` via *${info.courier}*` : ''}${info.tracking ? `.\nTracking: *${info.tracking}*` : ''}.\n\nExpect delivery soon. — Team Mrittika`;
     case 'delivered':
-      return `🎉 *Order Delivered*\n\nHi ${name}, your order *${id}* has been *delivered*. Hope you love it!${info.invoiceUrl ? `\n\nDownload invoice: ${info.invoiceUrl}` : ''}\n\nThank you for trusting Mittika 🌿`;
+      return `🎉 *Order Delivered*\n\nHi ${name}, your order *${id}* has been *delivered*. Hope you love it!${info.invoiceUrl ? `\n\nDownload invoice: ${info.invoiceUrl}` : ''}\n\nThank you for trusting Mrittika 🌿`;
     case 'coupon':
-      return `🎁 Hi ${name}, exclusive Mittika coupon for you. Check your account to apply.`;
+      return `🎁 Hi ${name}, exclusive Mrittika coupon for you. Check your account to apply.`;
   }
 }
 
