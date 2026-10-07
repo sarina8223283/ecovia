@@ -12,8 +12,8 @@ const Contact = () => {
     <Layout>
       <CanonicalSEO
         path="/contact"
-        title="Contact Mittika & Ecovia Enterprises"
-        description="Reach Ecovia Enterprises for wholesale, bulk, export and partnership enquiries on Mittika cosmetic grade botanical raw materials."
+        title="Contact Mrittika & Ecovia Enterprises"
+        description="Reach Ecovia Enterprises for wholesale, bulk, export and partnership enquiries on Mrittika cosmetic grade botanical raw materials."
       />
       {/* Hero Section */}
       <section className="py-20 bg-hero-pattern relative overflow-hidden">

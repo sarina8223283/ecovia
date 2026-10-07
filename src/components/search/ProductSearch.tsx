@@ -134,7 +134,7 @@ const ProductSearch = ({ className }: Props) => {
               )}
             </div>
           </CommandEmpty>
-          <CommandGroup heading="Mittika Cosmetic Grade Botanical Raw Materials">
+          <CommandGroup heading="Mrittika Cosmetic Grade Botanical Raw Materials">
             {items.map((p) => (
               <CommandItem key={p.id} value={p.value} onSelect={() => go(p.id)}>
                 <img

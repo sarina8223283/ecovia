@@ -82,12 +82,12 @@ footer_phone, footer_email, footer_address, footer_copyright
 Note: mid_page_banner appears on product detail page between the description/benefits section and "How to Use" section. Use this for promotional banners, seasonal offers, or highlight images.
 
 ## Company Info:
-Brand: Mittika by Ecovia Enterprises OPC Pvt. Ltd. Phone: +91 8758808684. Email: info@mittika.com.
+Brand: Mrittika by Ecovia Enterprises OPC Pvt. Ltd. Phone: +91 8758808684. Email: info@mittika.com.
 Never publish any director/founder/individual name anywhere on the site — all content stays under "Ecovia Enterprises".
-Ecovia Digital products: Ecovia ERP (erp.ecovia.co.in), Ecovia QMS (qms.ecovia.co.in), Ecovia Web Development (web.ecovia.co.in), Ecovia Agents (agent.ecovia.co.in). Mittika clay & herbal products (ecovia.co.in).
+Ecovia Digital products: Ecovia ERP (erp.ecovia.co.in), Ecovia QMS (qms.ecovia.co.in), Ecovia Web Development (web.ecovia.co.in), Ecovia Agents (agent.ecovia.co.in). Mrittika clay & herbal products (ecovia.co.in).
 `;
 
-const ADMIN_SYSTEM_PROMPT = `You are **Sarina**, the most advanced AI website editor. You have FULL control over every aspect of the Mittika website. You can edit ANY text, generate ANY image, redesign ANY page, update themes, and rebuild the entire site from scratch.
+const ADMIN_SYSTEM_PROMPT = `You are **Sarina**, the most advanced AI website editor. You have FULL control over every aspect of the Mrittika website. You can edit ANY text, generate ANY image, redesign ANY page, update themes, and rebuild the entire site from scratch.
 
 ## Your Superpowers:
 1. **Instant Live Deployment** - Every change goes live IMMEDIATELY
@@ -111,7 +111,7 @@ ${WEBSITE_STRUCTURE}
 3. For batch image requests, use generate_product_images tool
 4. For single high-quality images, use generate_image tool (auto-selects best model)
 5. Always confirm what was deployed and where it appears
-6. Keep Mittika's brand voice: premium, natural, Ayurvedic, earthy
+6. Keep Mrittika's brand voice: premium, natural, Ayurvedic, earthy
 7. When rebranding for a new brand, update ALL content keys across ALL pages
 8. You can create NEW content keys for any new section needed
 9. For complex multi-step tasks, execute ALL tool calls needed, don't hold back
@@ -122,11 +122,11 @@ ${WEBSITE_STRUCTURE}
 14. **Coupons**: When the user asks for a coupon, discount code, promo, or offer code (for a product or sitewide), you MUST call the create_coupon tool. The tool returns the live code — quote it verbatim in your reply (in backticks) and explain how customers redeem it on the Payment page. NEVER invent or guess a code without calling create_coupon.
 
 ## Brand Voice:
-Mittika = "from the earth." Premium natural herbal powders. Ayurvedic heritage. Lab-tested purity. Chemical-free.`;
+Mrittika = "from the earth." Premium natural herbal powders. Ayurvedic heritage. Lab-tested purity. Chemical-free.`;
 
 // Helper: generate a friendly coupon code
 function makeCouponCode(seed?: string): string {
-  const base = (seed || "MITTIKA").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8) || "MITTIKA";
+  const base = (seed || "MRITTIKA").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8) || "MRITTIKA";
   const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
   return `${base}${rand}`;
 }
@@ -420,7 +420,7 @@ serve(async (req) => {
           products: PRODUCT_CATALOG,
           pages: WEBSITE_STRUCTURE,
           pricing: "Products: ₹0.30-0.65/g. Sizes: 50g-10kg. Bulk discounts up to 63%.",
-          company: "Mittika by Ecovia Enterprises OPC Pvt. Ltd. Phone: +91 8758808684. Email: info@mittika.com. NABL lab testing. Sister products under Ecovia Digital: Ecovia ERP (erp.ecovia.co.in), Ecovia QMS (qms.ecovia.co.in), Ecovia Web Development (web.ecovia.co.in), Ecovia Agents (agent.ecovia.co.in). No individual/director names are published.",
+          company: "Mrittika by Ecovia Enterprises OPC Pvt. Ltd. Phone: +91 8758808684. Email: info@mittika.com. NABL lab testing. Sister products under Ecovia Digital: Ecovia ERP (erp.ecovia.co.in), Ecovia QMS (qms.ecovia.co.in), Ecovia Web Development (web.ecovia.co.in), Ecovia Agents (agent.ecovia.co.in). No individual/director names are published.",
           features: "AI chatbot (Sarina), Powder Scanner, Multi-language, Cart, Orders, Feedback, Purity verification, Export.",
           all: PRODUCT_CATALOG + "\n" + WEBSITE_STRUCTURE,
         };
@@ -595,7 +595,7 @@ serve(async (req) => {
 
         const response = await chatWithFallback(LOVABLE_API_KEY, {
           messages: [
-            { role: "system", content: "You are Sarina, an AI that analyzes uploaded files (images, PDFs, documents) and extracts useful content for the Mittika herbal products website. Describe what you see and suggest how it can be used on the website." },
+            { role: "system", content: "You are Sarina, an AI that analyzes uploaded files (images, PDFs, documents) and extracts useful content for the Mrittika herbal products website. Describe what you see and suggest how it can be used on the website." },
             { role: "user", content: messageContent },
           ],
           stream: false,
@@ -660,7 +660,7 @@ serve(async (req) => {
           min_order: Number(min_order || 0),
           product_id: product_id || null,
           expires_at: expiresIso,
-          description: description || (product_id ? `Exclusive offer on ${product_id}` : "Exclusive Mittika offer"),
+          description: description || (product_id ? `Exclusive offer on ${product_id}` : "Exclusive Mrittika offer"),
           active: true,
         }).select().single();
 

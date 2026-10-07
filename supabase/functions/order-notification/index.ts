@@ -13,14 +13,14 @@ const FROM = 'Ecovia Enterprises <onboarding@resend.dev>';
 const BRAND_HEADER = `
   <div style="background:linear-gradient(135deg,#2f5d3a 0%,#4d7a5e 55%,#c9a44a 100%);color:#fff;padding:28px 24px;border-radius:14px 14px 0 0;text-align:center">
     <p style="margin:0;font-size:11px;letter-spacing:4px;text-transform:uppercase;opacity:.9">Ecovia Enterprises</p>
-    <h1 style="margin:6px 0 4px;font-family:'Playfair Display',Georgia,serif;font-size:30px;letter-spacing:1px">Mittika</h1>
+    <h1 style="margin:6px 0 4px;font-family:'Playfair Display',Georgia,serif;font-size:30px;letter-spacing:1px">Mrittika</h1>
     <p style="margin:0;font-size:13px;opacity:.92;font-style:italic">Pure Herbal Powders • Rooted in Ayurveda</p>
   </div>`;
 
 const THANK_YOU_BANNER = `
   <div style="background:#fff8e6;border:1px dashed #c9a44a;border-radius:12px;padding:18px;text-align:center;margin:18px 0 22px">
     <p style="margin:0;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:#7a5a14">A Heartfelt Thank You</p>
-    <h2 style="margin:6px 0 0;font-family:'Playfair Display',Georgia,serif;font-size:22px;color:#2f5d3a">Thanks for Buying Mittika Products 🌿</h2>
+    <h2 style="margin:6px 0 0;font-family:'Playfair Display',Georgia,serif;font-size:22px;color:#2f5d3a">Thanks for Buying Mrittika Products 🌿</h2>
     <p style="margin:8px 0 0;font-size:13px;color:#5b6b60">Every order supports authentic Ayurvedic traditions and small Indian farmers.</p>
   </div>`;
 
@@ -29,7 +29,7 @@ const SIGNATURE = `
   <p style="font-size:12px;color:#888;margin:0;line-height:1.6">
     Warm regards,<br>
     <strong style="color:#2f5d3a">Ecovia Enterprises OPC Pvt. Ltd.</strong><br>
-    Brand: <em>Mittika</em> — Pure Herbal Powders<br>
+    Brand: <em>Mrittika</em> — Pure Herbal Powders<br>
     📧 info@ecovia.co.in &nbsp;•&nbsp; 📞 +91 87588 08684<br>
     🌐 <a href="https://ecovia.co.in" style="color:#4d7a5e;text-decoration:none">ecovia.co.in</a>
   </p>
@@ -89,7 +89,7 @@ serve(async (req) => {
           </div>
         </div>`;
 
-      const out = await sendViaResend([to], `Your Mittika Invoice ${invoiceNumber}`, html, [ADMIN_EMAIL]);
+      const out = await sendViaResend([to], `Your Mrittika Invoice ${invoiceNumber}`, html, [ADMIN_EMAIL]);
       return new Response(JSON.stringify({ success: out.ok, provider: 'resend', result: out.result }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
@@ -127,7 +127,7 @@ serve(async (req) => {
         <div style="border:1px solid #eee;border-top:0;padding:24px;border-radius:0 0 14px 14px;background:#fff">
           ${THANK_YOU_BANNER}
           <p style="margin:0 0 8px">Dear <strong style="color:#2f5d3a">${customerName}</strong>,</p>
-          <p style="margin:0 0 16px;line-height:1.7">We have received your order with <strong>Ecovia Enterprises</strong> for the <em>Mittika</em> herbal collection. Each pouch is hand-packed with care, NABL-tested for purity, and blessed before it leaves our facility. We can't wait for you to experience it.</p>
+          <p style="margin:0 0 16px;line-height:1.7">We have received your order with <strong>Ecovia Enterprises</strong> for the <em>Mrittika</em> herbal collection. Each pouch is hand-packed with care, NABL-tested for purity, and blessed before it leaves our facility. We can't wait for you to experience it.</p>
           <div style="background:#f4f7f5;border-radius:10px;padding:16px;margin:0 0 18px">
             <p style="margin:0 0 8px;font-size:13px;color:#5b6b60;letter-spacing:2px;text-transform:uppercase">Order Summary</p>
             <p style="margin:0 0 6px"><strong>Order Number:</strong> ${orderNumber}</p>
@@ -138,7 +138,7 @@ serve(async (req) => {
             <h2 style="margin:6px 0 0;font-family:'Playfair Display',serif;font-size:28px">₹${Number(totalAmount).toFixed(2)}</h2>
           </div>
           <p style="margin:0 0 8px;line-height:1.6">You'll receive WhatsApp updates as your order is <strong>Accepted → Packed → Shipped → Delivered</strong>. You can track it any time at <a href="https://ecovia.co.in/order/${orderNumber}" style="color:#4d7a5e">ecovia.co.in/order/${orderNumber}</a>.</p>
-          <p style="margin:14px 0 0;font-style:italic;color:#7a5a14;text-align:center">"In every grain of Mittika, lies the wisdom of generations." 🌱</p>
+          <p style="margin:14px 0 0;font-style:italic;color:#7a5a14;text-align:center">"In every grain of Mrittika, lies the wisdom of generations." 🌱</p>
           ${SIGNATURE}
         </div>
       </div>`;
@@ -149,13 +149,13 @@ serve(async (req) => {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     
     // Send WhatsApp notification to admin
-    const whatsappMessage = `🌿 *NEW MITTIKA ORDER*\n\nOrder: ${orderNumber}\nCustomer: ${customerName}\nPhone: ${customerPhone}\nEmail: ${customerEmail}\n\n*Items:*\n${itemsList}\n\n*Total: ₹${Number(totalAmount).toFixed(2)}*\n\nPayment: UPI (sarina8223283@ptyes)\nStatus: Payment Pending ⏳`;
+    const whatsappMessage = `🌿 *NEW MRITTIKA ORDER*\n\nOrder: ${orderNumber}\nCustomer: ${customerName}\nPhone: ${customerPhone}\nEmail: ${customerEmail}\n\n*Items:*\n${itemsList}\n\n*Total: ₹${Number(totalAmount).toFixed(2)}*\n\nPayment: UPI (sarina8223283@ptyes)\nStatus: Payment Pending ⏳`;
 
     // Email admin
     const adminSend = await sendViaResend([ADMIN_EMAIL], `🌿 New Order ${orderNumber} — ${customerName}`, adminHtml);
     // Email customer confirmation
     if (customerEmail) {
-      await sendViaResend([customerEmail], `Thanks for Buying Mittika 🌿 — Order ${orderNumber}`, customerHtml);
+      await sendViaResend([customerEmail], `Thanks for Buying Mrittika 🌿 — Order ${orderNumber}`, customerHtml);
     }
 
     console.log(`📧 Order notification for ${orderNumber}:`, {

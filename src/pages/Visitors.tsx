@@ -138,8 +138,8 @@ const Visitors = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Visitors & Distribution | Mittika by Ecovia</title>
-        <meta name="description" content="Explore Mittika's presence across India. State-wise distribution and visitor insights for our natural herbal products." />
+        <title>Visitors & Distribution | Mrittika by Ecovia</title>
+        <meta name="description" content="Explore Mrittika's presence across India. State-wise distribution and visitor insights for our natural herbal products." />
       </Helmet>
 
       {/* Hero */}
@@ -167,7 +167,7 @@ const Visitors = () => {
             transition={{ delay: 0.2 }}
             className="text-muted-foreground max-w-2xl mx-auto text-lg"
           >
-            See how many people trust Mittika's natural Ayurvedic products across India.
+            See how many people trust Mrittika's natural Ayurvedic products across India.
           </motion.p>
         </div>
       </section>
@@ -400,7 +400,7 @@ const Visitors = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-muted-foreground max-w-2xl mx-auto">
             We're continuously expanding our reach. If you're from a region not listed above and interested in 
-            Mittika products, <a href="/contact" className="text-primary font-medium hover:underline">contact us</a> — 
+            Mrittika products, <a href="/contact" className="text-primary font-medium hover:underline">contact us</a> — 
             we deliver across India and are also open to distribution partnerships.
           </p>
         </div>

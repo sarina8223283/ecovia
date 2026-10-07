@@ -24,7 +24,7 @@ const CanonicalSEO = ({ path, title, description, image, type = 'website' }: Pro
       <meta name="description" content={description} />
       <link rel="canonical" href={url} />
       <meta property="og:type" content={type} />
-      <meta property="og:site_name" content="Mittika by Ecovia Enterprises" />
+      <meta property="og:site_name" content="Mrittika by Ecovia Enterprises" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={url} />

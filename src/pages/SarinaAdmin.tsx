@@ -657,7 +657,7 @@ const DeployConfirmBanner = ({ images, onConfirm, onReject, deploying }: {
 
 const AIChat = () => {
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website — changes appear **instantly** in real-time. Try:\n\n- ✏️ "Change hero heading to Welcome to Mittika"\n- 🖼️ "Generate a high-quality banner of herbal powders"\n- 🖼️ "Generate benefit images for all 15 products"\n- 📎 Upload PDFs, images, or documents as reference\n- 📋 "Show me all live content"\n- 📊 "Show me today\'s traffic analytics"\n- 🎨 "Set primary color to dark green"\n\n💡 **Preview mode** — I\'ll show you before/after changes for approval!\n💡 **Image thumbnails** load with smooth animations!' },
+    { role: 'assistant', content: '🌿 **Welcome to Sarina AI Editor!**\n\nI can **deploy changes live** to your website — changes appear **instantly** in real-time. Try:\n\n- ✏️ "Change hero heading to Welcome to Mrittika"\n- 🖼️ "Generate a high-quality banner of herbal powders"\n- 🖼️ "Generate benefit images for all 15 products"\n- 📎 Upload PDFs, images, or documents as reference\n- 📋 "Show me all live content"\n- 📊 "Show me today\'s traffic analytics"\n- 🎨 "Set primary color to dark green"\n\n💡 **Preview mode** — I\'ll show you before/after changes for approval!\n💡 **Image thumbnails** load with smooth animations!' },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -738,8 +738,8 @@ const AIChat = () => {
       setBatchProgress({ ...progress });
 
       const prompt = image_type === 'comparison'
-        ? `Professional clean product comparison infographic: Mittika ${name} (premium, natural, lab-tested, pure herbal) vs generic market ${name.toLowerCase()} (artificial, chemical additives, no testing). Side-by-side layout, earthy green and gold colors, modern minimalist design, professional quality.`
-        : `Professional infographic showing top 5 benefits of ${name} herbal powder. Beautiful icons for each benefit. Earthy natural colors (green, gold, brown). Clean premium modern design. Mittika brand style. High quality.`;
+        ? `Professional clean product comparison infographic: Mrittika ${name} (premium, natural, lab-tested, pure herbal) vs generic market ${name.toLowerCase()} (artificial, chemical additives, no testing). Side-by-side layout, earthy green and gold colors, modern minimalist design, professional quality.`
+        : `Professional infographic showing top 5 benefits of ${name} herbal powder. Beautiful icons for each benefit. Earthy natural colors (green, gold, brown). Clean premium modern design. Mrittika brand style. High quality.`;
 
       const contentKey = `${pid}_${image_type}_image`;
 

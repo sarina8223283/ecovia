@@ -3,7 +3,7 @@ import whatsappIcon from '@/assets/icons/whatsapp-icon.png';
 
 const WhatsAppButton = () => {
   const phoneNumber = '918758808684';
-  const message = encodeURIComponent('Hello, I would like to inquire about Mittika products.');
+  const message = encodeURIComponent('Hello, I would like to inquire about Mrittika products.');
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
 
   return (

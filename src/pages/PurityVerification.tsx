@@ -62,7 +62,7 @@ const purityTests = [
 
 const PurityVerification = () => {
   const handleRequestCertificate = () => {
-    const message = `Hi! I would like to request the NABL-approved lab test certificates for Mittika products. Please share the quality testing reports.`;
+    const message = `Hi! I would like to request the NABL-approved lab test certificates for Mrittika products. Please share the quality testing reports.`;
     window.open(`https://wa.me/918758808684?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -121,7 +121,7 @@ const PurityVerification = () => {
               Our Quality Promise
             </h2>
             <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
-              At Mittika, we understand that <strong>"Price is higher because we promise Quality."</strong> Every 
+              At Mrittika, we understand that <strong>"Price is higher because we promise Quality."</strong> Every 
               product undergoes rigorous testing at NABL-approved laboratories. We don't just claim purity—we 
               prove it with certified test reports that you can request anytime.
             </p>

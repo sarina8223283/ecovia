@@ -241,8 +241,8 @@ const Payment = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Payment - Mittika by Ecovia Enterprises</title>
-        <meta name="description" content="Complete your Mittika order payment via UPI. Secure advance payment for premium natural herbal powders." />
+        <title>Payment - Mrittika by Ecovia Enterprises</title>
+        <meta name="description" content="Complete your Mrittika order payment via UPI. Secure advance payment for premium natural herbal powders." />
       </Helmet>
 
       <div className="container mx-auto px-4 py-12 max-w-4xl">
@@ -267,7 +267,7 @@ const Payment = () => {
             <div className="bg-background rounded-xl p-4 mb-4 inline-block">
               <img
                 src="/images/payment-qr.jpg"
-                alt="Mittika UPI Payment QR Code - sarina8223283@ptyes"
+                alt="Mrittika UPI Payment QR Code - sarina8223283@ptyes"
                 className="w-64 h-auto mx-auto rounded-lg"
               />
             </div>
@@ -382,7 +382,7 @@ const Payment = () => {
                   </button>
                 </div>
               )}
-              <p className="text-[11px] text-muted-foreground mt-2">Only valid coupons issued by Mittika are accepted.</p>
+              <p className="text-[11px] text-muted-foreground mt-2">Only valid coupons issued by Mrittika are accepted.</p>
             </div>
 
             {/* Policies */}

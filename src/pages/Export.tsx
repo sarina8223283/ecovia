@@ -33,7 +33,7 @@ const Export = () => {
   const { data: content } = useSiteContent();
 
   const handleExportInquiry = () => {
-    const message = `Hi! I'm interested in importing Mittika products.\n\n*Company Details:*\n• Company Name: \n• Country: \n• Products Interested: \n• Estimated Quantity: \n\nPlease share your export catalog and pricing.`;
+    const message = `Hi! I'm interested in importing Mrittika products.\n\n*Company Details:*\n• Company Name: \n• Country: \n• Products Interested: \n• Estimated Quantity: \n\nPlease share your export catalog and pricing.`;
     window.open(`https://wa.me/918758808684?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -181,7 +181,7 @@ const Export = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div><h4 className="font-semibold text-foreground mb-2">Company</h4><p className="text-muted-foreground">{getContent(content, 'export_company_name', 'Ecovia Enterprises OPC Pvt. Ltd.')}</p></div>
-              <div><h4 className="font-semibold text-foreground mb-2">Brand</h4><p className="text-muted-foreground">{getContent(content, 'export_brand_name', 'MITTIKA')}</p></div>
+              <div><h4 className="font-semibold text-foreground mb-2">Brand</h4><p className="text-muted-foreground">{getContent(content, 'export_brand_name', 'MRITTIKA')}</p></div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

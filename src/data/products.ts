@@ -1,18 +1,18 @@
- import multaniMitti from '@/assets/products/multani-mitti.jpg';
- import kasturiHaldi from '@/assets/products/kasturi-haldi.jpg';
- import rithaPowder from '@/assets/products/ritha-powder.jpg';
- import moringaPowder from '@/assets/products/moringa-powder.jpg';
- import amlaPowder from '@/assets/products/amla-powder.jpg';
- import shikakaiPowder from '@/assets/products/shikakai-powder.jpg';
- import bhringrajPowder from '@/assets/products/bhringraj-powder.jpg';
- import hibiscusPowder from '@/assets/products/hibiscus-powder.jpg';
- import brahmiPowder from '@/assets/products/brahmi-powder.jpg';
- import neemPowder from '@/assets/products/neem-powder.jpg';
- import rosePetalsPowder from '@/assets/products/rose-petals-powder.jpg';
- import coconutPowder from '@/assets/products/coconut-powder.jpg';
- import onionPowder from '@/assets/products/onion-powder.jpg';
- import orangePeelPowder from '@/assets/products/orange-peel-powder.jpg';
- import rosemaryPowder from '@/assets/products/rosemary-powder.jpg';
+ const multaniMitti = '/images/products/multani-mitti.webp';
+ const kasturiHaldi = '/images/products/kasturi-haldi.webp';
+ const rithaPowder = '/images/products/ritha-powder.webp';
+ const moringaPowder = '/images/products/moringa-powder.webp';
+ const amlaPowder = '/images/products/amla-powder.webp';
+ const shikakaiPowder = '/images/products/shikakai-powder.webp';
+ const bhringrajPowder = '/images/products/bhringraj-powder.webp';
+ const hibiscusPowder = '/images/products/hibiscus-powder.webp';
+ const brahmiPowder = '/images/products/brahmi-powder.webp';
+ const neemPowder = '/images/products/neem-powder.webp';
+ const rosePetalsPowder = '/images/products/rose-petals-powder.webp';
+ const coconutPowder = '/images/products/coconut-powder.webp';
+ const onionPowder = '/images/products/onion-powder.webp';
+ const orangePeelPowder = '/images/products/orange-peel-powder.webp';
+ const rosemaryPowder = '/images/products/rosemary-powder.webp';
  
  export interface FAQ {
    question: string;
@@ -60,7 +60,7 @@
      faqs: [
        { question: 'Can I use Amla powder daily on my hair?', answer: 'Yes, you can use Amla powder 2-3 times a week for best results. Daily use as a hair oil with carrier oils is also beneficial.' },
        { question: 'Does Amla powder darken grey hair?', answer: 'Amla powder can help prevent premature greying and may gradually darken grey hair with regular use over several months.' },
-      { question: 'Is this Amla powder for cosmetic or food use?', answer: 'Mittika Amla Powder is supplied as a cosmetic-grade botanical raw material for DIY hair and skin formulations. It is for external use only and is not sold as a food or supplement.' },
+      { question: 'Is this Amla powder for cosmetic or food use?', answer: 'Mrittika Amla Powder is supplied as a cosmetic-grade botanical raw material for DIY hair and skin formulations. It is for external use only and is not sold as a food or supplement.' },
        { question: 'How long does it take to see results on hair?', answer: 'With consistent use 2-3 times weekly, you may notice reduced hair fall within 4-6 weeks and improved hair texture within 8-12 weeks.' }
      ],
      themeColor: '85 45% 40%',
@@ -278,7 +278,7 @@
        { question: 'Is Coconut Powder good for protein-sensitive hair?', answer: 'Coconut actually helps prevent protein loss rather than adding protein. It\'s generally safe for most hair types including protein-sensitive hair.' },
        { question: 'Can I use this on my face?', answer: 'Yes! Coconut powder is excellent for facial masks, especially for dry skin. It may be comedogenic for acne-prone skin, so patch test first.' },
        { question: 'How is this different from coconut oil?', answer: 'Coconut powder contains the fiber and flesh of coconut, providing exfoliation along with moisturization. It\'s less greasy than pure oil.' },
-      { question: 'Is this Coconut Powder for cosmetic or culinary use?', answer: 'Mittika Coconut Powder is supplied as a cosmetic-grade raw material for DIY masks, scrubs and soap making. It is for external cosmetic use only.' }
+      { question: 'Is this Coconut Powder for cosmetic or culinary use?', answer: 'Mrittika Coconut Powder is supplied as a cosmetic-grade raw material for DIY masks, scrubs and soap making. It is for external cosmetic use only.' }
      ],
      themeColor: '30 30% 75%',
      pricePerGram: 0.40
@@ -399,7 +399,7 @@
      ],
      ingredients: '100% Pure Neem Leaf Powder - Organically grown, naturally dried',
      faqs: [
-      { question: 'Is Mittika Neem Powder for internal use?', answer: 'No. Mittika Neem Powder is supplied as a cosmetic-grade botanical raw material for external DIY skin and scalp formulations only.' },
+      { question: 'Is Mrittika Neem Powder for internal use?', answer: 'No. Mrittika Neem Powder is supplied as a cosmetic-grade botanical raw material for external DIY skin and scalp formulations only.' },
        { question: 'Can Neem cure acne?', answer: 'Neem\'s antibacterial properties can significantly reduce acne-causing bacteria. For severe acne, combine with professional treatment.' },
        { question: 'Is Neem safe for sensitive skin?', answer: 'Neem is potent and may irritate sensitive skin. Always do a patch test and mix with soothing ingredients like aloe vera or rose water.' },
        { question: 'How does Neem help with dandruff?', answer: 'Neem\'s antifungal properties target the fungus that causes dandruff while soothing scalp irritation and reducing flakiness.' }

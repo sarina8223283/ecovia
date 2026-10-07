@@ -38,7 +38,7 @@ export function generateInvoicePDF(data: InvoiceData): jsPDF {
   doc.setTextColor(255, 255, 255);
   doc.setFont('times', 'bold');
   doc.setFontSize(20);
-  doc.text('Mittika by Ecovia Enterprises', 14, 14);
+  doc.text('Mrittika by Ecovia Enterprises', 14, 14);
   doc.setFontSize(10);
   doc.setFont('times', 'normal');
   doc.text('100% Natural Herbal Powders', 14, 21);
@@ -106,7 +106,7 @@ export function generateInvoicePDF(data: InvoiceData): jsPDF {
   doc.setFontSize(9);
   doc.setTextColor(100, 100, 100);
   doc.text(
-    'Thank you for choosing Mittika. 100% natural, no preservatives. No returns once dispatched.',
+    'Thank you for choosing Mrittika. 100% natural, no preservatives. No returns once dispatched.',
     pageWidth / 2, 285, { align: 'center' }
   );
 

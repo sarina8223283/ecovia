@@ -1,4 +1,4 @@
-// Mittika Cosmetic Grade Classification
+// Mrittika Cosmetic Grade Classification
 // Repositions catalog as "Premium Botanical Raw Materials for DIY Skin Care, Hair Care,
 // Soap Making, Cosmetic Formulations and Traditional Beauty Applications" — a safer
 // compliance posture that keeps marketing aligned with cosmetic / topical intended use.

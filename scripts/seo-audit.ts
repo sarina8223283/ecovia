@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Mittika SEO Audit — runs in CI before deployment.
+ * Mrittika SEO Audit — runs in CI before deployment.
  * Fails the build if any product is missing critical SEO content,
  * or any <img> in the source tree is missing an alt attribute.
  *

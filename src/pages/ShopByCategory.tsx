@@ -42,8 +42,8 @@ const ShopByCategory = () => {
     <Layout>
       <CanonicalSEO
         path="/shop-by-category"
-        title="Shop by Category — Skin, Hair & Wellness | Mittika"
-        description="Explore Mittika's curated collections of cosmetic grade botanical raw materials by category — Skin Care, Hair Care, and Wellness powders."
+        title="Shop by Category — Skin, Hair & Wellness | Mrittika"
+        description="Explore Mrittika's curated collections of cosmetic grade botanical raw materials by category — Skin Care, Hair Care, and Wellness powders."
       />
       {/* Hero */}
       <section className="py-16 sm:py-24 bg-hero-pattern">

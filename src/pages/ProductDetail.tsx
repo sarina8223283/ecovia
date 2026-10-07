@@ -142,7 +142,7 @@ const ProductDetail = () => {
     ] : undefined,
     "brand": {
       "@type": "Brand",
-      "name": "Mittika"
+      "name": "Mrittika"
     },
     "manufacturer": {
       "@type": "Organization",
@@ -160,9 +160,9 @@ const ProductDetail = () => {
     .slice(0, 4);
 
   const ogDescription = classification
-    ? `${product.name} — ${classification.grade}${classification.botanicalName ? ` (${classification.botanicalName})` : ''}. ${classification.intendedUse} Applications: ${classification.applications.slice(0, 3).join(', ')}. By Mittika · Ecovia Enterprises.`
+    ? `${product.name} — ${classification.grade}${classification.botanicalName ? ` (${classification.botanicalName})` : ''}. ${classification.intendedUse} Applications: ${classification.applications.slice(0, 3).join(', ')}. By Mrittika · Ecovia Enterprises.`
     : product.description;
-  const ogTitle = `${product.name}${classification?.botanicalName ? ` — ${classification.botanicalName}` : ''} | Mittika`;
+  const ogTitle = `${product.name}${classification?.botanicalName ? ` — ${classification.botanicalName}` : ''} | Mrittika`;
   const productUrl = `https://ecovia.co.in/product/${product.id}`;
   const absoluteImage = product.image.startsWith('http')
     ? product.image
@@ -182,7 +182,7 @@ const ProductDetail = () => {
   return (
     <Layout>
       <Helmet>
-        <title>{product.name} | Mittika by Ecovia Enterprises</title>
+        <title>{product.name} | Mrittika by Ecovia Enterprises</title>
         <meta
           name="description"
           content={ogDescription}
@@ -193,14 +193,14 @@ const ProductDetail = () => {
         <link rel="canonical" href={productUrl} />
         {/* Open Graph */}
         <meta property="og:type" content="product" />
-        <meta property="og:site_name" content="Mittika by Ecovia Enterprises" />
+        <meta property="og:site_name" content="Mrittika by Ecovia Enterprises" />
         <meta property="og:title" content={ogTitle} />
         <meta property="og:description" content={ogDescription} />
         <meta property="og:url" content={productUrl} />
         <meta property="og:image" content={absoluteImage} />
-        <meta property="og:image:alt" content={`${product.name} — ${classification?.grade || 'Mittika herbal powder'}`} />
+        <meta property="og:image:alt" content={`${product.name} — ${classification?.grade || 'Mrittika herbal powder'}`} />
         <meta property="og:locale" content="en_IN" />
-        <meta property="product:brand" content="Mittika" />
+        <meta property="product:brand" content="Mrittika" />
         <meta property="product:availability" content="in stock" />
         <meta property="product:condition" content="new" />
         <meta property="product:category" content={classification?.grade || 'Cosmetic Grade Botanical Raw Material'} />
@@ -216,7 +216,7 @@ const ProductDetail = () => {
         <meta name="twitter:title" content={ogTitle} />
         <meta name="twitter:description" content={ogDescription} />
         <meta name="twitter:image" content={absoluteImage} />
-        <meta name="twitter:image:alt" content={`${product.name} — Mittika`} />
+        <meta name="twitter:image:alt" content={`${product.name} — Mrittika`} />
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(productSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
@@ -283,9 +283,9 @@ const ProductDetail = () => {
                     />
                   )}
                 </AnimatePresence>
-                {/* Mittika Brand */}
+                {/* Mrittika Brand */}
                 <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                  <span className="text-xs font-serif font-semibold text-primary">MITTIKA</span>
+                  <span className="text-xs font-serif font-semibold text-primary">MRITTIKA</span>
                 </div>
                 {/* 100% Natural Badge */}
                 <div 
@@ -493,7 +493,7 @@ const ProductDetail = () => {
         <section className="py-12 bg-card">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mb-8 text-center">
-              Mittika vs Others
+              Mrittika vs Others
             </h2>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -503,7 +503,7 @@ const ProductDetail = () => {
             >
               <img
                 src={comparisonImageUrl}
-                alt={`${product.name} - Mittika vs generic comparison`}
+                alt={`${product.name} - Mrittika vs generic comparison`}
                 loading="lazy"
                 onError={(e) => { (e.currentTarget.closest('section') as HTMLElement | null)?.style.setProperty('display','none'); }}
                 className="w-full rounded-2xl shadow-elevated border border-border"

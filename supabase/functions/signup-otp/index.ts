@@ -31,16 +31,16 @@ function otpEmailHtml(name: string, otp: string) {
   <div style="font-family:Georgia,'Times New Roman',serif;max-width:560px;margin:0 auto;background:#fbfaf6;color:#333">
     <div style="background:linear-gradient(135deg,#2f5d3a 0%,#4d7a5e 55%,#c9a44a 100%);color:#fff;padding:28px 24px;border-radius:14px 14px 0 0;text-align:center">
       <p style="margin:0;font-size:11px;letter-spacing:4px;text-transform:uppercase;opacity:.9">Ecovia Enterprises</p>
-      <h1 style="margin:6px 0 4px;font-family:'Playfair Display',Georgia,serif;font-size:30px">Mittika</h1>
+      <h1 style="margin:6px 0 4px;font-family:'Playfair Display',Georgia,serif;font-size:30px">Mrittika</h1>
       <p style="margin:0;font-size:13px;opacity:.92;font-style:italic">Pure Herbal Powders • Rooted in Ayurveda</p>
     </div>
     <div style="border:1px solid #eee;border-top:0;padding:26px;border-radius:0 0 14px 14px;background:#fff">
       <div style="background:#fff8e6;border:1px dashed #c9a44a;border-radius:12px;padding:14px;text-align:center;margin-bottom:22px">
-        <h2 style="margin:0;font-family:'Playfair Display',Georgia,serif;font-size:20px;color:#2f5d3a">Welcome to the Mittika family 🌿</h2>
+        <h2 style="margin:0;font-family:'Playfair Display',Georgia,serif;font-size:20px;color:#2f5d3a">Welcome to the Mrittika family 🌿</h2>
         <p style="margin:6px 0 0;font-size:13px;color:#7a5a14">Thanks for choosing authentic, lab-tested herbal powders.</p>
       </div>
       <p>Dear <strong style="color:#2f5d3a">${name || 'Customer'}</strong>,</p>
-      <p style="line-height:1.6">Use the secure One-Time Password (OTP) below to verify your email and complete your Mittika account setup:</p>
+      <p style="line-height:1.6">Use the secure One-Time Password (OTP) below to verify your email and complete your Mrittika account setup:</p>
       <div style="text-align:center;margin:24px 0">
         <span style="display:inline-block;font-family:monospace;font-size:36px;letter-spacing:12px;font-weight:bold;color:#2f5d3a;background:#f4f7f5;padding:16px 28px;border-radius:12px;border:2px dashed #c9a44a">${otp}</span>
       </div>
@@ -53,17 +53,17 @@ function otpEmailHtml(name: string, otp: string) {
           May all be happy • May all be free from illness
         </p>
         <p style="margin:10px 0 0;font-size:12px;color:#555;text-align:center;line-height:1.5">
-          From our soil to your kitchen — every Mittika powder is sun-dried, stone-ground, and NABL lab-tested. Welcome to a purer way of living. 🌱
+          From our soil to your kitchen — every Mrittika powder is sun-dried, stone-ground, and NABL lab-tested. Welcome to a purer way of living. 🌱
         </p>
       </div>
       <p style="margin:18px 0 0;text-align:center;font-size:12px;color:#888">
-        <strong style="color:#2f5d3a">Thanks for buying Mittika products</strong> — your journey to authentic Ayurveda begins here.
+        <strong style="color:#2f5d3a">Thanks for buying Mrittika products</strong> — your journey to authentic Ayurveda begins here.
       </p>
       <hr style="border:none;border-top:1px solid #eee;margin:22px 0 14px">
       <p style="font-size:12px;color:#888;margin:0;line-height:1.6">
         Warm regards,<br>
         <strong style="color:#2f5d3a">Ecovia Enterprises OPC Pvt. Ltd.</strong><br>
-        Brand: <em>Mittika</em><br>
+        Brand: <em>Mrittika</em><br>
         📧 info@ecovia.co.in &nbsp;•&nbsp; 📞 +91 87588 08684<br>
         🌐 <a href="https://ecovia.co.in" style="color:#4d7a5e;text-decoration:none">ecovia.co.in</a>
       </p>
@@ -104,7 +104,7 @@ Deno.serve(async (req) => {
         attempts: 0,
       }, { onConflict: 'email' });
 
-      await sendEmail(email, 'Your Ecovia / Mittika OTP Code', otpEmailHtml(fullName, code));
+      await sendEmail(email, 'Your Ecovia / Mrittika OTP Code', otpEmailHtml(fullName, code));
       return new Response(JSON.stringify({ success: true }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 

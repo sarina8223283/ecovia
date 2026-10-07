@@ -24,7 +24,7 @@ const SERVICES = [
   'Android App Design & Prototype',
   'Ecommerce Development',
   'Testing & Automation',
-  'Mittika Clay & Herbal Products',
+  'Mrittika Clay & Herbal Products',
   'Other / Not sure yet',
 ];
 

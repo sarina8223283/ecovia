@@ -4,20 +4,20 @@ import { Helmet } from 'react-helmet-async';
 const PrivacyPolicy = () => (
   <Layout>
     <Helmet>
-      <title>Privacy Policy – Mittika by Ecovia</title>
-      <meta name="description" content="Mittika privacy policy covering customer data, Sarina AI chat handling, and Meta (Facebook/Instagram) Platform compliance." />
+      <title>Privacy Policy – Mrittika by Ecovia</title>
+      <meta name="description" content="Mrittika privacy policy covering customer data, Sarina AI chat handling, and Meta (Facebook/Instagram) Platform compliance." />
       <link rel="canonical" href="https://ecovia.co.in/privacy-policy" />
     </Helmet>
     <section className="py-12 bg-hero-pattern min-h-[80vh]">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
         <div className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-2xl p-8 mb-6 shadow-elevated">
-          <p className="text-xs uppercase tracking-widest opacity-80">Ecovia Enterprises • Brand: Mittika</p>
+          <p className="text-xs uppercase tracking-widest opacity-80">Ecovia Enterprises • Brand: Mrittika</p>
           <h1 className="font-serif text-3xl sm:text-4xl font-bold mt-1">Privacy Policy</h1>
           <p className="text-sm opacity-90 mt-2">Last updated: May 7, 2026</p>
         </div>
         <div className="bg-card rounded-2xl shadow-elevated p-8 prose prose-emerald dark:prose-invert max-w-none">
 
-        <p>Mittika is a brand operated by <strong>Ecovia Enterprises OPC Pvt. Ltd.</strong> ("Mittika", "we", "us"). This Privacy Policy explains how we collect, use, store, and protect your information when you use <a href="https://ecovia.co.in">ecovia.co.in</a> and our official Facebook and Instagram presence.</p>
+        <p>Mrittika is a brand operated by <strong>Ecovia Enterprises OPC Pvt. Ltd.</strong> ("Mrittika", "we", "us"). This Privacy Policy explains how we collect, use, store, and protect your information when you use <a href="https://ecovia.co.in">ecovia.co.in</a> and our official Facebook and Instagram presence.</p>
 
         <h2>1. Information We Collect</h2>
         <ul>
@@ -40,7 +40,7 @@ const PrivacyPolicy = () => (
         <h2>3. Meta Platform (Facebook & Instagram) Compliance</h2>
         <p>This page is provided to satisfy <strong>Meta Platform Terms</strong> and the <strong>Meta Developer Policies</strong>, including the Facebook Login, Messenger Platform, Instagram Graph API, and Instagram Messaging API requirements.</p>
         <ul>
-          <li><strong>App Name</strong>: Mittika by Ecovia</li>
+          <li><strong>App Name</strong>: Mrittika by Ecovia</li>
           <li><strong>Data Controller</strong>: Ecovia Enterprises OPC Pvt. Ltd., India</li>
           <li><strong>Contact</strong>: <a href="mailto:info@ecovia.co.in">info@ecovia.co.in</a></li>
           <li><strong>Permissions used</strong>: <code>pages_messaging</code>, <code>instagram_basic</code>, <code>instagram_manage_messages</code>, <code>pages_manage_metadata</code>, <code>public_profile</code> — solely to receive and respond to customer messages on Facebook and Instagram.</li>
