@@ -51,7 +51,9 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={16} className="opacity-80" />
-                <span className="text-sm opacity-80">{getContent(content, 'footer_email', 'info@mittika.com')}</span>
+                <a href={`mailto:${getContent(content, 'footer_email', 'info@ecovia.co.in')}`} className="text-sm opacity-80 hover:opacity-100 transition-opacity">
+                  {getContent(content, 'footer_email', 'info@ecovia.co.in')}
+                </a>
               </li>
               <li className="flex items-start gap-3">
                 <MapPin size={16} className="opacity-80 mt-1" />
