@@ -9,7 +9,7 @@ import CanonicalSEO from '@/components/seo/CanonicalSEO';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import DemoRequestForm from '@/components/forms/DemoRequestForm';
 import { Link } from 'react-router-dom';
-import aboutHero from '@/assets/about-hero.jpg';
+import aboutHero from '@/assets/about-hero.webp';
 import { useSiteContent, getContent } from '@/hooks/useSiteContent';
 
 const digitalProducts = [

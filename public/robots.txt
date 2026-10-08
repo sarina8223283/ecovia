@@ -16,3 +16,13 @@ Allow: /
 Sitemap: https://ecovia.co.in/sitemap.xml
 Sitemap: https://ecovia.co.in/sitemap-images.xml
 Sitemap: https://ecovia.co.in/sitemap-index.xml
+
+# AI crawlers welcome; summary at https://ecovia.co.in/llms.txt
+User-agent: GPTBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /

@@ -8,7 +8,7 @@ import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import HeroProductStrip from '@/components/home/HeroProductStrip';
 import { products } from '@/data/products';
 import { useSiteContent, getContent } from '@/hooks/useSiteContent';
-import heroBanner from '@/assets/hero-banner.jpg';
+import heroBanner from '@/assets/hero-banner.webp';
 
 const Index = () => {
   const featuredProducts = products.slice(0, 4);
