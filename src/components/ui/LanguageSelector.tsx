@@ -40,7 +40,7 @@ const EXCLUDED_TAGS = new Set([
   'SVG',
 ]);
 
-const TRANSLATION_CACHE_KEY = 'mittika_translation_cache_v2';
+const TRANSLATION_CACHE_KEY = 'mrittika_translation_cache_v3';
 const PREFERRED_LANGUAGE_KEY = 'preferred_language';
 
 // Manual overrides for key brand phrases where Google Translate is inaccurate
