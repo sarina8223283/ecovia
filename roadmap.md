@@ -1,4 +1,4 @@
-- [ ] Rename the brand throughout site content, SEO, and customer-facing messages.
-- [ ] Edit existing product and brand images to read Mrittika.
-- [ ] Reduce source asset size and remove safe duplicates.
-- [ ] Verify product images and brand presentation.
+- [x] Rename the brand throughout site content, SEO, and customer-facing messages.
+- [x] Edit all 15 existing catalog photos and the branded bowl image to read Mrittika.
+- [x] Reduce source asset size and remove safe duplicates (src + public: 12.3 MB → 4.0 MB).
+- [x] Verify product images, brand presentation, and Buy Now checkout; existing tests pass.
