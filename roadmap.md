@@ -2,5 +2,5 @@
 - [x] Edit all 15 existing catalog photos and the branded bowl image to read Mrittika.
 - [x] Reduce source asset size and remove safe duplicates (src + public: 12.3 MB → 4.0 MB).
 - [x] Verify product images, brand presentation, and Buy Now checkout; existing tests pass.
-- [ ] Restore the existing Amla comparison and Sarina-uploaded photos in admin and on the product page.
-- [ ] Replace the footer inquiry email with info@ecovia.co.in and verify its email link.
+- [ ] Restore the existing Amla comparison and Sarina-uploaded photos in admin and on the product page. Blocked: both original storage objects are missing; customer must reattach originals or approve recreated photos.
+- [x] Replace the footer inquiry email with info@ecovia.co.in and verify its email link.
