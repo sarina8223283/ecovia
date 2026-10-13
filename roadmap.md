@@ -4,3 +4,6 @@
 - [x] Verify product images, brand presentation, and Buy Now checkout; existing tests pass.
 - [ ] Restore the existing Amla comparison and Sarina-uploaded photos in admin and on the product page. Blocked: both original storage objects are missing; customer must reattach originals or approve recreated photos.
 - [x] Replace the footer inquiry email with info@ecovia.co.in and verify its email link.
+- [ ] Add uploaded packaging photos to matching official product galleries after brand-only edits pass label-accuracy checks; rejected edits must not be published.
+- [ ] Include new Amla, Hibiscus, Shikakai, Onion, Reetha, and Rose Petals uploads in the packaging update; missing photos await the customer's later uploads.
+- [ ] Add 10–15 genuine reviews per product only after the customer supplies actual messages and permission; do not present invented reviews or generated photos as customer evidence.
