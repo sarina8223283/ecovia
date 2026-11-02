@@ -8,6 +8,7 @@ import TestimonialsSection from '@/components/ui/TestimonialsSection';
 import ProductFeedback from '@/components/ui/ProductFeedback';
 import { getProductById, products } from '@/data/products';
 import { productPricing } from '@/data/pricing';
+import { packagingPhotos } from '@/data/packagingPhotos';
 import { getClassification } from '@/data/classification';
 import ProductClassification from '@/components/product/ProductClassification';
 import { useCart } from '@/contexts/CartContext';
@@ -49,6 +50,9 @@ const ProductDetail = () => {
     }
     const v2 = getEntry(`${id}_video_2`);
     if (v2) media.push({ type: 'video', src: v2 });
+    for (const photo of packagingPhotos[product.id] || []) {
+      media.push({ type: 'image', src: photo.src });
+    }
     return media;
   }, [product, siteContent, id]);
   const carouselImages = carouselMedia; // alias to minimize downstream changes
@@ -279,7 +283,7 @@ const ProductDetail = () => {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain bg-background"
                     />
                   )}
                 </AnimatePresence>
@@ -571,6 +575,25 @@ const ProductDetail = () => {
           </div>
         </div>
       </section>
+
+      {(packagingPhotos[product.id]?.length || 0) > 0 && (
+        <section className="py-12 border-t border-border" aria-label="Official product photos">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mb-6">
+              Official Product Photos
+            </h2>
+            <p className="text-sm text-muted-foreground mb-6">Brand-name edited packaging photo · not customer-submitted feedback</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {packagingPhotos[product.id].map(photo => (
+                <figure key={photo.src}>
+                  <img src={photo.src} alt={`Mrittika ${photo.label}`} loading="lazy" decoding="async" className="w-full aspect-[3/4] object-contain bg-background rounded-lg border border-border" />
+                  <figcaption className="mt-3 text-sm text-muted-foreground">{photo.label}</figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Customer Testimonials */}
       <TestimonialsSection productId={product.id} themeColor={product.themeColor} />
