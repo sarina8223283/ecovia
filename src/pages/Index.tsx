@@ -28,6 +28,10 @@ const Index = () => {
           <img
             src={heroBanner}
             alt="Natural herbal powders"
+            fetchPriority="high"
+            decoding="async"
+            width={1600}
+            height={900}
             className="w-full h-full object-cover opacity-100"
           />
           {/* Gradient overlay for better text readability and vibrant look */}
@@ -48,7 +52,7 @@ const Index = () => {
             </motion.div>
 
             <motion.h1
-              initial={{ opacity: 0, y: 30 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               className="font-serif text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-[1.1] drop-shadow-sm"
@@ -64,7 +68,7 @@ const Index = () => {
             </motion.h1>
 
             <motion.p
-              initial={{ opacity: 0, y: 30 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl sm:text-2xl text-foreground/80 mb-10 leading-relaxed font-light max-w-2xl"

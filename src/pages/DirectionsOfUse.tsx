@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, ChevronDown, ChevronUp, Leaf } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
+import CanonicalSEO from '@/components/seo/CanonicalSEO';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { products } from '@/data/products';
 import { Link } from 'react-router-dom';
@@ -11,6 +12,7 @@ const DirectionsOfUse = () => {
 
   return (
     <Layout>
+      <CanonicalSEO path="/directions" title="Mrittika Botanical Powder Directions of Use | Ecovia Enterprises" description="Explore product-specific Mrittika botanical powder usage directions, patch testing guidance and skin and hair care preparation methods." />
       {/* Hero Section */}
       <section className="py-16 sm:py-24 bg-hero-pattern relative overflow-hidden">
         <div className="absolute inset-0 nature-bg opacity-30" />
