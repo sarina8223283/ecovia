@@ -1,7 +1,7 @@
-import { ReactNode } from 'react';
+import { ReactNode, lazy, Suspense } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import SarinaBot from '@/components/chat/SarinaBot';
+const SarinaBot = lazy(() => import('@/components/chat/SarinaBot'));
 import usePageAnalytics from '@/hooks/usePageAnalytics';
 
 interface LayoutProps {
@@ -18,7 +18,7 @@ const Layout = ({ children }: LayoutProps) => {
         {children}
       </main>
       <Footer />
-      <SarinaBot />
+      <Suspense fallback={null}><SarinaBot /></Suspense>
     </div>
   );
 };

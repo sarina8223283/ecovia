@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Globe, Ship, Shield, Award, FlaskConical, MessageCircle, Check, ArrowRight } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
+import CanonicalSEO from '@/components/seo/CanonicalSEO';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { products } from '@/data/products';
 import { Link } from 'react-router-dom';
@@ -39,6 +40,7 @@ const Export = () => {
 
   return (
     <Layout>
+      <CanonicalSEO path="/export" title="Mrittika Botanical Ingredient Export | Ecovia Enterprises" description="Enquire about Mrittika botanical powder exports, product specifications, COA and international shipment documentation from Ecovia Enterprises." />
       {/* Hero Section */}
       <section className="py-16 sm:py-24 bg-hero-pattern relative overflow-hidden">
         <div className="absolute inset-0 opacity-5">

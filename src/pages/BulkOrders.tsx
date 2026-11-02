@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
+import CanonicalSEO from '@/components/seo/CanonicalSEO';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 import { Button } from '@/components/ui/button';
 import { products } from '@/data/products';
@@ -74,6 +75,7 @@ const BulkOrders = () => {
 
   return (
     <Layout>
+      <CanonicalSEO path="/bulk-orders" title="Mrittika B2B Botanical Ingredients & Bulk Supply | Ecovia Enterprises" description="Request bulk quotes and samples for Mrittika powder ingredients. Minimum 10 kg total, COA, specifications, batch traceability and regular supply support." />
       <section className="relative overflow-hidden bg-hero-pattern py-16 sm:py-24">
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl">

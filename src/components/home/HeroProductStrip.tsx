@@ -28,6 +28,10 @@ const HeroProductStrip = () => {
               <img
                 src={product.image}
                 alt={product.name}
+                loading="lazy"
+                decoding="async"
+                width={64}
+                height={64}
                 className="w-full h-full object-cover"
               />
             </div>

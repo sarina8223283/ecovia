@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Shield, FlaskConical, CheckCircle, FileCheck, MessageCircle, Eye, Droplets, Hand } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
+import CanonicalSEO from '@/components/seo/CanonicalSEO';
 import WhatsAppButton from '@/components/ui/WhatsAppButton';
 
 const purityTests = [
@@ -68,6 +69,7 @@ const PurityVerification = () => {
 
   return (
     <Layout>
+      <CanonicalSEO path="/purity" title="Mrittika Product Quality & Testing Reports | Ecovia Enterprises" description="Read Mrittika product quality information and request laboratory certificates, COA and testing documentation from Ecovia Enterprises." />
       {/* Hero Section */}
       <section className="py-16 sm:py-24 bg-hero-pattern relative overflow-hidden">
         <div className="absolute inset-0 opacity-5">
