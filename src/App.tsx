@@ -7,35 +7,36 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
+import { lazy, Suspense } from 'react';
 import Index from "./pages/Index";
-import Products from "./pages/Products";
-import ProductDetail from "./pages/ProductDetail";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import Auth from "./pages/Auth";
-import Account from "./pages/Account";
-import BulkOrders from "./pages/BulkOrders";
-import Export from "./pages/Export";
-import ShopByCategory from "./pages/ShopByCategory";
-import PurityVerification from "./pages/PurityVerification";
-import DirectionsOfUse from "./pages/DirectionsOfUse";
-import Visitors from "./pages/Visitors";
-import NotFound from "./pages/NotFound";
-import SarinaAdmin from "./pages/SarinaAdmin";
-import AdminDashboard from "./pages/AdminDashboard";
-import DemoRequests from "./pages/DemoRequests";
-import Payment from "./pages/Payment";
-import Checkout from "./pages/Checkout";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import Terms from "./pages/Terms";
-import DataDeletion from "./pages/DataDeletion";
-import OrderTracking from "./pages/OrderTracking";
-import MetaWebhook from "./pages/MetaWebhook";
-import WebhookUninstall from "./pages/WebhookUninstall";
-import WebhookDelete from "./pages/WebhookDelete";
-import AuthCallback from "./pages/AuthCallback";
-import CustomerOutreach from "./pages/CustomerOutreach";
-import CosmeticGrade from "./pages/CosmeticGrade";
+const Products = lazy(() => import('./pages/Products'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Auth = lazy(() => import('./pages/Auth'));
+const Account = lazy(() => import('./pages/Account'));
+const BulkOrders = lazy(() => import('./pages/BulkOrders'));
+const Export = lazy(() => import('./pages/Export'));
+const ShopByCategory = lazy(() => import('./pages/ShopByCategory'));
+const PurityVerification = lazy(() => import('./pages/PurityVerification'));
+const DirectionsOfUse = lazy(() => import('./pages/DirectionsOfUse'));
+const Visitors = lazy(() => import('./pages/Visitors'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const SarinaAdmin = lazy(() => import('./pages/SarinaAdmin'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const DemoRequests = lazy(() => import('./pages/DemoRequests'));
+const Payment = lazy(() => import('./pages/Payment'));
+const Checkout = lazy(() => import('./pages/Checkout'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const Terms = lazy(() => import('./pages/Terms'));
+const DataDeletion = lazy(() => import('./pages/DataDeletion'));
+const OrderTracking = lazy(() => import('./pages/OrderTracking'));
+const MetaWebhook = lazy(() => import('./pages/MetaWebhook'));
+const WebhookUninstall = lazy(() => import('./pages/WebhookUninstall'));
+const WebhookDelete = lazy(() => import('./pages/WebhookDelete'));
+const AuthCallback = lazy(() => import('./pages/AuthCallback'));
+const CustomerOutreach = lazy(() => import('./pages/CustomerOutreach'));
+const CosmeticGrade = lazy(() => import('./pages/CosmeticGrade'));
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <ScrollToTop />
+              <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground" role="status">Loading…</div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/products" element={<Products />} />
@@ -82,6 +84,7 @@ const App = () => (
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              </Suspense>
             </BrowserRouter>
           </TooltipProvider>
         </CartProvider>
