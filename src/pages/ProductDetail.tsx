@@ -579,10 +579,15 @@ const ProductDetail = () => {
       {(packagingPhotos[product.id]?.length || 0) > 0 && (
         <section className="py-12 border-t border-border" aria-label="Official product photos">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mb-6">
-              Official Product Photos
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-foreground mb-3">
+              Actual Product Photos
             </h2>
-            <p className="text-sm text-muted-foreground mb-6">Brand-name edited packaging photo · not customer-submitted feedback</p>
+            <p className="text-sm text-muted-foreground mb-2">
+              Disclaimer: these are real photographs of the actual product packaging — what you receive will look like this. They are not customer-submitted feedback.
+            </p>
+            <p className="text-xs text-muted-foreground/80 mb-6">
+              Note: current stock still carries the earlier “Mittika” label spelling; freshly printed packaging reads MRITTIKA.
+            </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {packagingPhotos[product.id].map(photo => (
                 <figure key={photo.src}>
