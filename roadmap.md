@@ -20,3 +20,9 @@
 - [x] Flag missing packaging images: Onion, Coconut (front/back), and Rosemary (front/back). The file submitted as Onion_Powder_2 depicts Multani Mitti, not Onion.
 - [ ] Restore Amla comparison/Sarina-uploaded images; blocked because the original storage objects are unavailable.
 - [ ] Add genuine product reviews only after the customer supplies review text and permission.
+- [ ] Audit all five recent requests with a user-facing completion checklist and finish all unblocked items.
+- [ ] Replace the Shikakai packaging display with carefully reviewed Mrittika-lettered versions and disclose that the label lettering was digitally corrected.
+- [ ] Add Coconut, Rosemary, and Onion packaging photos only when genuine product photos are supplied; any generated imagery must be clearly labelled mockups, not actual product photos.
+- [ ] Fix the unresolved site-images public-write security finding so public users cannot overwrite or delete product photos; keep authorized admin publishing operational.
+- [ ] Verify the existing sitemap, robots.txt, AI-readable summary, and public policy pages against current public routes; update and publish them.
+- [ ] Publish the completed changes after checking current security scan findings.
