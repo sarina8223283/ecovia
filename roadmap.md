@@ -5,9 +5,18 @@
 - [ ] Restore the existing Amla comparison and Sarina-uploaded photos in admin and on the product page. Blocked: both original storage objects are missing; customer must reattach originals or approve recreated photos.
 - [x] Replace the footer inquiry email with info@ecovia.co.in and verify its email link.
 - [x] Publish all 28 actual packaging photos (customer-approved) in matching product galleries and beside feedback sections with an actual-product disclaimer. Pouches still show the earlier Mittika spelling; disclaimer on page states current stock carries the earlier label and fresh MRITTIKA packaging is coming. Old edited Amla asset deleted; real originals published instead.
-- [x] Inventory all 28 uploaded packaging photos, including the final Rose Petals, Bhringraj, and Orange Peel batch. Complete front/back sets: Amla, Brahmi, Bhringraj, Hibiscus, Kasturi Haldi, Moringa, Multani Mitti, Neem, Orange Peel, Reetha, Rose Petals, and Shikakai. Orange Peel has two front views and three back views. Onion has a back view only; Coconut and Rosemary have no uploaded packaging photos.
+- [x] Inventory all 28 uploaded packaging photos, including the final Rose Petals, Bhringraj, and Orange Peel batch. Complete front/back sets: Amla, Brahmi, Bhringraj, Hibiscus, Kasturi Haldi, Moringa, Multani Mitti, Neem, Orange Peel, Reetha, Rose Petals, and Shikakai. Orange Peel has two front views and three back views. Onion, Coconut, and Rosemary have no usable uploaded packaging photos.
 - [ ] Upload remaining packaging photos. Still missing: Onion (no usable photo — the file sent as Onion_Powder_2 shows a Multani Mitti label, published under Multani Mitti), Coconut front/back, Rosemary front/back.
 - [ ] Add 10–15 genuine reviews per product only after the customer supplies actual messages and permission; do not present invented reviews or generated photos as customer evidence.
 - [x] Check all 15 published catalog photos: inspected bowl lettering reads Mrittika. Unaccepted historical packaging remains excluded.
 - [ ] Make public pages readable without JavaScript. Diagnosis: published HTML is an empty SPA shell; customer declined the server-rendering upgrade. Existing framework retained. Added missing public-page metadata and corrected sitemap membership; latest crawler files require publishing to reach the live site.
 - [x] Reduce initial loading work with page/chat code splitting, lazy strip images and immediate hero text. Small Android-sized browser check: first content at 452 ms locally, Buy Now reaches checkout; real low-end device and slow-network timings remain unverified.
+
+## Recent five-request checklist
+- [x] Check Shikakai and other product titles for Mrittika spelling; Shikakai title is “Shikakai Powder | Mrittika by Ecovia Enterprises”.
+- [x] Keep the brand name Mrittika across product-page customer-facing copy; the remaining “Mittika” mention is the required explanation of old packaging spelling.
+- [ ] Correct the Shikakai front and back packaging-photo brand spelling and publish the reviewed versions with a clear retouch disclosure. Original package photos remain available as source references until the replacements are verified.
+- [x] Keep actual packaging imagery separate from customer reviews and show an actual-product-photo disclaimer.
+- [x] Flag missing packaging images: Onion, Coconut (front/back), and Rosemary (front/back). The file submitted as Onion_Powder_2 depicts Multani Mitti, not Onion.
+- [ ] Restore Amla comparison/Sarina-uploaded images; blocked because the original storage objects are unavailable.
+- [ ] Add genuine product reviews only after the customer supplies review text and permission.
